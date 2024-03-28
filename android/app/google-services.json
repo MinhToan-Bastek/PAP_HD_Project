@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "358887818301",
+    "project_id": "pap-project-9b4ad",
+    "storage_bucket": "pap-project-9b4ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:358887818301:android:e363b8faf7053a751c1654",
+        "android_client_info": {
+          "package_name": "com.example.pap_hd"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDn0V9cUlfeCZ_PyPO1pmuO2IpjBYfawS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
