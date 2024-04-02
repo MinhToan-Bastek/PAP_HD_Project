@@ -6,11 +6,20 @@ import 'package:pap_hd/components/patient_registration/info_patientRegis.dart';
 import 'package:pap_hd/components/patient_registration/title_patientRegis.dart';
 
 class PatientRegistScreen extends StatefulWidget {
+   final String maChuongTrinh;
+   final String username;
+  PatientRegistScreen({Key? key, required this.maChuongTrinh,required this.username}) : super(key: key);
   @override
   State<PatientRegistScreen> createState() => _PatientRegistScreenState();
 }
 
 class _PatientRegistScreenState extends State<PatientRegistScreen> {
+    @override
+  void initState() {
+    super.initState();
+    // In ra maChuongTrinh để kiểm tra
+    print("MaChuongTrinh được truyền vào là: ${widget.maChuongTrinh}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +47,9 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
                     child: Column(
                       children: [
                         //SizedBox(height: 5),
-                        PatientInfoForm(),
-                        AttachmentSection(),
-
+                        PatientInfoForm(maChuongTrinh: widget.maChuongTrinh, username: widget.username,),
                         AttachedDocumentsSection(),
-                         AttachmentSection(
- 
-),
+                         AttachmentSection(),
                         // Thêm các widget khác nếu cần
                       ],
                     ),

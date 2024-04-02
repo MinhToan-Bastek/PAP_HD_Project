@@ -1,192 +1,436 @@
+//Khóa tạm
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart'; // Import ImagePicker
+import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/model/img_provider.dart';
 import 'package:provider/provider.dart';
+//Main
+// class AttachmentSection extends StatefulWidget {
+//   @override
+//   _AttachmentSectionState createState() => _AttachmentSectionState();
+// }
 
+// class _AttachmentSectionState extends State<AttachmentSection> {
+//   final List<String> titles = [
+//     "M1",
+//     "M2",
+//     "CCCD",
+//     "Hồ sơ bệnh án",
+//     "Contact Log",
+//     "ADR"
+//   ];
+
+//   void _pickImage(int index) async {
+//     final ImagePicker _picker = ImagePicker();
+//     final XFile? image = await showModalBottomSheet<XFile?>(
+//         context: context,
+//         builder: (context) => Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: <Widget>[
+//                 ListTile(
+//                   leading: Icon(Icons.camera),
+//                   title: Text('Máy ảnh'),
+//                   onTap: () async {
+//                     Navigator.of(context).pop(
+//                         await _picker.pickImage(source: ImageSource.camera));
+//                   },
+//                 ),
+//                 ListTile(
+//                   leading: Icon(Icons.image),
+//                   title: Text('Thư viện'),
+//                   onTap: () async {
+//                     Navigator.of(context).pop(
+//                         await _picker.pickImage(source: ImageSource.gallery));
+//                   },
+//                 ),
+//               ],
+//             ));
+//     if (image != null) {
+//       Provider.of<DocumentImagesProvider>(context, listen: false)
+//           .setImage(index, image);
+//     }
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     List<XFile?> documentImages = Provider.of<DocumentImagesProvider>(context).documentImages;
+
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Padding(
+//           padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+//           child: Text(
+//             'Đính kèm tài liệu',
+//             style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               color: Colors.teal,
+//               fontSize: 16,
+//             ),
+//           ),
+//         ),
+//         Container(
+//           height: 130,
+//           margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+//           child: ListView.builder(
+//             scrollDirection: Axis.horizontal,
+//             itemCount: titles.length,
+//             itemBuilder: (context, index) {
+//               String title = titles[index];
+//               XFile? image = documentImages.length > index ? documentImages[index] : null;
+
+//               return Container(
+//                 width: 100,
+//                 height: 130,
+//                 margin: EdgeInsets.symmetric(horizontal: 4),
+//                 decoration: BoxDecoration(
+//                   color: Colors.grey[200],
+//                   border: Border.all(color: Colors.teal),
+//                   borderRadius: BorderRadius.circular(8),
+//                 ),
+//                 child: Stack(
+//                   children: [
+//                     // Image or Placeholder
+//                     Center(
+//                       child: image != null
+//                           ? Image.file(File(image.path), fit: BoxFit.cover)
+//                           : Column(
+//                               mainAxisAlignment: MainAxisAlignment.center,
+//                               children: [
+//                                 Icon(Icons.add_photo_alternate, color: Colors.teal),
+//                                 Text(
+//                                   title,
+//                                   style: TextStyle(color: Colors.teal),
+//                                 ),
+//                               ],
+//                             ),
+//                     ),
+//                     // Delete Icon
+//                     if (image != null)
+//                       Positioned(
+//                         right: 0,
+//                         top: 0,
+//                         child: GestureDetector(
+//                           onTap: () {
+//                             Provider.of<DocumentImagesProvider>(context, listen: false).clearImage(index);
+//                             setState(() {}); // Refresh the UI
+//                           },
+//                           child: Container(
+//                             color: Colors.teal,
+//                             child: Icon(
+//                               Icons.close,
+//                               color: Colors.white,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                     // Pick Image if no image
+//                     if (image == null)
+//                       Positioned.fill(
+//                         child: Material(
+//                           color: Colors.transparent,
+//                           child: InkWell(
+//                             onTap: () => _pickImage(index),
+//                           ),
+//                         ),
+//                       ),
+//                   ],
+//                 ),
+//               );
+//             },
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class AttachmentSection extends StatefulWidget {
-
-  AttachmentSection({super.key, });
   @override
   _AttachmentSectionState createState() => _AttachmentSectionState();
 }
 
 class _AttachmentSectionState extends State<AttachmentSection> {
-  
-  List<String> documentImages = [];
-    // 'assets/patient_registration/doc3.png',
-    // 'assets/patient_registration/doc2.png',
-    // 'assets/patient_registration/doc1.png',
-    // 'assets/patient_registration/doc1.png',
-    // 'assets/patient_registration/doc1.png',
-    // Thêm đường dẫn các hình ảnh khác tương ứng
-  
-   void addImage(String imagePath) {
-    setState(() {
-      documentImages.add(imagePath);
-    });
+  final List<String> titles = [
+    "M1",
+    "M2",
+    "CCCD",
+    "Hồ sơ bệnh án",
+    "ContactLog",
+    "ADR"
+  ];
+
+  void _pickImage(int index) async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await showModalBottomSheet<XFile?>(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.camera),
+            title: Text('Máy ảnh'),
+            onTap: () async {
+              final pickedImage =
+                  await _picker.pickImage(source: ImageSource.camera);
+              if (pickedImage != null) {
+                final String imageName =
+                    "${titles[index]}.${pickedImage.path.split('.').last}";
+                Provider.of<DocumentImagesProvider>(context, listen: false)
+                    .setImage(index, pickedImage, imageName);
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.image),
+            title: Text('Thư viện'),
+            onTap: () async {
+              final pickedImage =
+                  await _picker.pickImage(source: ImageSource.gallery);
+              if (pickedImage != null) {
+                final String imageName =
+                    "${titles[index]}.${pickedImage.path.split('.').last}";
+                Provider.of<DocumentImagesProvider>(context, listen: false)
+                    .setImage(index, pickedImage, imageName);
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 
-  // void sendImagesToServer() async {
-  // var imageProvider = Provider.of<ImageProviderModel>(context, listen: false);
-  // List<String> base64Images = [];
-
-  // for (String imagePath in imageProvider.images) {
-  //   File imageFile = File(imagePath);
-  //   List<int> imageBytes = await imageFile.readAsBytes();
-  //   String base64Image = base64Encode(imageBytes);
-  //   base64Images.add(base64Image);
-  // }
-
-  // // Gửi danh sách các ảnh dạng base64 đến server
-  // // Ví dụ: ApiService().sendImages(base64Images);
-  // }
-
-    // Map để theo dõi hình ảnh nào đang được chọn
-  Map<int, bool> selectedImages = {};
-
-
-  
   @override
   Widget build(BuildContext context) {
-     var imageProvider = Provider.of<ImageProviderModel>(context);
+    List<XFile?> documentImages =
+        Provider.of<DocumentImagesProvider>(context).documentImages;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0),
+          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
           child: Text(
             'Đính kèm tài liệu',
             style: TextStyle(
-              fontWeight: FontWeight.normal,
+              fontWeight: FontWeight.bold,
               color: Colors.teal,
               fontSize: 16,
             ),
           ),
         ),
         Container(
-          margin: EdgeInsets.symmetric(vertical: 10.0),
-          padding: EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Color(0xFFE0F2EF), // Màu nền phù hợp với màn hình của bạn
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 1,
-                blurRadius: 2,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-        //   child: SizedBox(
-        //   height: 110,
-        //   width: 360,
-        //   child: ListView.builder(
-        //     scrollDirection: Axis.horizontal,
-        //     itemCount: imageProvider.images.length,
-        //     itemBuilder: (BuildContext context, int index) {
-        //       // Cập nhật để hiển thị hình ảnh từ Provider
-        //       return Image.file(File(imageProvider.images[index]), width: 100, height: 120);
-        //     },
-        //   ),
-        // ),
+          height: 130,
+          margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: titles.length,
+            itemBuilder: (context, index) {
+              String title = titles[index];
+              XFile? image =
+                  documentImages.length > index ? documentImages[index] : null;
 
-        
-        //    child: SizedBox(
-        //   height: 110,
-        //   width: 360,
-        //   child: ListView.builder(
-        //     scrollDirection: Axis.horizontal,
-        //     itemCount: imageProvider.images.length, // Lấy số lượng ảnh từ Provider
-        //     itemBuilder: (BuildContext context, int index) {
-        //       return Stack(
-        //         alignment: Alignment.topRight,
-        //         children: [
-        //           Image.file(File(imageProvider.images[index]), width: 100, height: 120,),
-        //           Positioned(
-        //             right: 10,
-        //             top: 5,
-        //             child: GestureDetector(
-        //               onTap: () {
-        //                 // Gọi phương thức removeImageAt từ Provider khi người dùng nhấn "X"
-        //                 imageProvider.removeImageAt(index);
-        //               },
-        //               child: Container(
-        //                 padding: EdgeInsets.all(2),
-        //                 decoration: BoxDecoration(
-        //                   color: Colors.black54,
-        //                   borderRadius: BorderRadius.circular(12),
-        //                 ),
-        //                 child: Icon(Icons.close, size: 16, color: Colors.white,),
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       );
-        //     },
-        //   ),
-        // ),
-          child: SizedBox(
-            height: 110,
-            width: 360, // Chiều cao container chứa hình ảnh
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: imageProvider.images.length,
-              itemBuilder: (BuildContext context, int index) {
-                bool isSelected = selectedImages[index] ?? false;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedImages[index] = !isSelected;
-                    });
-                  },
-                  child: Stack(
-                    alignment: Alignment.topRight,
-                    children: [
-                     Image.file(File(imageProvider.images[index]), width: 100, height: 120,), // ví dụ chiều rộng là 150
-                      //  Image.file(
-                      //   File(documentImages[index]), // Sử dụng Image.file với đường dẫn tệp
-                      //   width: 100,
-                      //   height: 120,
-                      // ),
-                  if (isSelected)
-                    Positioned(
-                      right: 6, // Giảm giá trị này nếu muốn "X" sát hơn với tờ giấy
-                      // Giảm giá trị này nếu muốn "X" sát hơn với tờ giấy
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                           imageProvider.removeImageAt(index);
-                            selectedImages.remove(index);
-                          });
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(2), // Điều chỉnh padding cho "X" nếu cần
-                          decoration: BoxDecoration(
-                            color: Colors.black54, // Màu nền cho "X"
-                            borderRadius: BorderRadius.circular(12), // Điều chỉnh bo viền nếu cần
+              return Container(
+                width: 100,
+                height: 130,
+                margin: EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  border: Border.all(color: Colors.teal),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Stack(
+                  children: [
+                    // Image or Placeholder
+                    Center(
+                      child: image != null
+                          ? Image.file(File(image.path), fit: BoxFit.cover)
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_photo_alternate,
+                                    color: Colors.teal),
+                                Text(
+                                  title,
+                                  style: TextStyle(color: Colors.teal),
+                                ),
+                              ],
+                            ),
+                    ),
+                    // Delete Icon
+                    if (image != null)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            Provider.of<DocumentImagesProvider>(context,
+                                    listen: false)
+                                .clearImage(index);
+                            setState(() {}); // Refresh the UI
+                          },
+                          child: Container(
+                            color: Colors.teal,
+                            child: Icon(
+                              Icons.close,
+                              color: Colors.white,
+                            ),
                           ),
-                          child: Icon(Icons.close, size: 16, color: Colors.white,), // Kích thước của "X"
                         ),
                       ),
-                    ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    // Display Image Name
+                    // Display Image Name
+                    if (image != null &&
+                        Provider.of<DocumentImagesProvider>(context,
+                                    listen: false)
+                                .imageNames[index] !=
+                            null)
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          color: Colors.black54,
+                          child: Text(
+                            Provider.of<DocumentImagesProvider>(context,
+                                    listen: false)
+                                .imageNames[index]!,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+
+                    // Pick Image if no image
+                    if (image == null)
+                      Positioned.fill(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => _pickImage(index),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ],
     );
   }
- 
-
 }
 
 
 
 
+
+
+
+
+
+  // Trước khi sửa
+  // @override
+  // Widget build(BuildContext context) {
+  //   List<XFile?> documentImages =
+  //       Provider.of<DocumentImagesProvider>(context).documentImages;
+
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Padding(
+  //         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+  //         child: Text(
+  //           'Đính kèm tài liệu',
+  //           style: TextStyle(
+  //             fontWeight: FontWeight.bold,
+  //             color: Colors.teal,
+  //             fontSize: 16,
+  //           ),
+  //         ),
+  //       ),
+  //       Container(
+  //         height: 130,
+  //         margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+  //         child: ListView.builder(
+  //           scrollDirection: Axis.horizontal,
+  //           itemCount: titles.length,
+  //           itemBuilder: (context, index) {
+  //             String title = titles[index];
+  //             XFile? image =
+  //                 documentImages.length > index ? documentImages[index] : null;
+
+  //             return StatefulBuilder(
+  //               builder: (BuildContext context, StateSetter setState) {
+  //                 return GestureDetector(
+  //                   onTap: () {
+  //                     if (image != null) {
+  //                       // If an image exists, show delete icon
+  //                       showDialog(
+  //                         context: context,
+  //                         builder: (BuildContext context) {
+  //                           return AlertDialog(
+  //                             title: Text("Xóa ảnh"),
+  //                             content: Text("Bạn có chắc muốn xóa ảnh này?"),
+  //                             actions: [
+  //                               TextButton(
+  //                                 onPressed: () {
+  //                                   Navigator.of(context).pop();
+  //                                 },
+  //                                 child: Text("Hủy"),
+  //                               ),
+  //                               TextButton(
+  //                                 onPressed: () {
+  //                                   Provider.of<DocumentImagesProvider>(context,
+  //                                           listen: false)
+  //                                       .clearImage(index);
+  //                                   Navigator.of(context).pop();
+  //                                 },
+  //                                 child: Text("Xóa"),
+  //                               ),
+  //                             ],
+  //                           );
+  //                         },
+  //                       );
+  //                     } else {
+  //                       // If no image, prompt to pick an image
+  //                       _pickImage(index);
+  //                     }
+  //                   },
+  //                   child: Container(
+  //                     width: 100,
+  //                     height: 100,
+  //                     margin: EdgeInsets.symmetric(horizontal: 4),
+  //                     decoration: BoxDecoration(
+  //                       color: Colors.grey[200],
+  //                       border: Border.all(color: Colors.teal),
+  //                       borderRadius: BorderRadius.circular(8),
+  //                     ),
+  //                     child: image != null
+  //                         ? Image.file(File(image.path), fit: BoxFit.cover)
+  //                         : Center(
+  //                             child: Column(
+  //                               mainAxisAlignment: MainAxisAlignment.center,
+  //                               children: [
+  //                                 Text(
+  //                                   title,
+  //                                   style: TextStyle(color: Colors.teal),
+  //                                 ),
+  //                               ],
+  //                             ),
+  //                           ),
+  //                   ),
+  //                 );
+  //               },
+  //             );
+  //           },
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+ 

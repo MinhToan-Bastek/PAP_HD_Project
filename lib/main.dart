@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pap_hd/api/firebase_api.dart';
+import 'package:pap_hd/model/checkbox_provider.dart';
+import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/model/img_provider.dart';
 import 'package:pap_hd/pages/login.dart';
 import 'package:provider/provider.dart';
-
-
 
 
 void main() async {
@@ -35,8 +35,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ImageProviderModel(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ImageProviderModel()),
+        ChangeNotifierProvider(create: (context) => DocumentsData()), 
+        ChangeNotifierProvider(create: (context) => DocumentImagesProvider()), 
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
@@ -44,7 +48,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: LoginScreen()
+        home: LoginScreen(),
       ),
     );
   }

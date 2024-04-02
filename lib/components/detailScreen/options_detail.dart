@@ -6,11 +6,14 @@ import 'package:pap_hd/pages/approved_calendarReExam.dart';
 import 'package:pap_hd/pages/patient_registration.dart';
 
 class OptionsGrid extends StatelessWidget {
+    final String maChuongTrinh;
+     final String username; 
+      OptionsGrid({Key? key, required this.maChuongTrinh, required this.username}) : super(key: key); 
   @override
   Widget build(BuildContext context) {
     final options = [
       {'icon': 'assets/detailScreen/icon_work.svg', 'label': 'Tình trạng công việc'},
-      {'icon': 'assets/detailScreen/icon_patient.svg', 'label': 'Đăng ký bệnh nhân','screen': PatientRegistScreen()},
+      {'icon': 'assets/detailScreen/icon_patient.svg', 'label': 'Đăng ký bệnh nhân','screen': PatientRegistScreen(maChuongTrinh: maChuongTrinh,username:username)},
       {'icon': 'assets/detailScreen/icon_approved.svg', 'label': 'Xác nhận lịch tái khám','screen': ApprovedCalendarReExam()},
       {'icon': 'assets/detailScreen/icon_support.svg', 'label': 'Cập nhật thông tin hỗ trợ'},
       {'icon': 'assets/detailScreen/icon_reportbl.svg', 'label': 'Báo cáo biến cố bất lợi','screen': AdverseReporting()},
@@ -47,21 +50,32 @@ class OptionsGrid extends StatelessWidget {
           mainAxisSpacing: 10.0,
         ),
         itemCount: options.length,
-        itemBuilder: (context, index) {
-          return InkWell(
-            onTap: () {
-                Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => options[index]['screen'] as Widget),
-              );
-              print("${options[index]['label']} pressed");
-            },
-            child: OptionItem(
-              iconAsset: options[index]['icon'] as String,
-              label: options[index]['label'] as String,
-            ),
-          );
-        },
+       itemBuilder: (context, index) {
+  return InkWell(
+    onTap: () {
+      var screen = options[index]['screen'];
+      if (screen is Function) {
+        // Nếu 'screen' là một hàm, gọi hàm đó để tạo instance mới
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => screen()),
+        );
+      } else {
+        // Nếu 'screen' không phải là một hàm, tiếp tục điều hướng như bình thường
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => screen as Widget),
+        );
+      }
+      print("${options[index]['label']} pressed");
+    },
+    child: OptionItem(
+      iconAsset: options[index]['icon'] as String,
+      label: options[index]['label'] as String,
+    ),
+  );
+},
+
       ),
     );
   }

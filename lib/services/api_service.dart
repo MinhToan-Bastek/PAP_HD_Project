@@ -1,14 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:pap_hd/components/homeScreen/body.dart';
+import 'package:path/path.dart' as path;
 
 class ApiService {
-
   final String _baseUrl = "http://119.82.141.248:2345/api";
 
 //Login
-Future<Map<String, dynamic>> login(String username, String password) async {
+  Future<Map<String, dynamic>> login(String username, String password) async {
     final url = Uri.parse("$_baseUrl/Values/login");
 
     final response = await http.post(
@@ -40,8 +42,8 @@ Future<Map<String, dynamic>> login(String username, String password) async {
       'access_token': accesstoken,
       'token_app': tokenFCM,
     });
-      print('Dữ liệu gửi về Server: $body'); 
-      
+    print('Dữ liệu gửi về Server: $body');
+
     var response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -76,6 +78,7 @@ Future<Map<String, dynamic>> login(String username, String password) async {
       throw Exception('Failed to load projects');
     }
   }
+
   //Get list Detail - Màn hình Details
   Future<Map<String, dynamic>> fetchProjectDetails(String pid) async {
     final url = Uri.parse("$_baseUrl/Values/GetProjectDetail");
@@ -98,8 +101,127 @@ Future<Map<String, dynamic>> login(String username, String password) async {
     }
   }
 
+  //Get post đăng ký bệnh nhân
+  //MAIN
+//   Future<void> postPatientData(
+//   Map<String, dynamic> patientData, List<XFile?> documentImages) async {
+//   final url = Uri.parse("$_baseUrl/Values/CreatePatient");
+
+//   var request = http.MultipartRequest('POST', url);
+//   // Gói thông tin patientData vào JSON string và thêm vào fields
+//   var patientDataJson = json.encode(patientData);
+//   request.fields['Data'] = patientDataJson;
+
+//   // Thêm các fields từ patientData
+//   patientData.forEach((key, value) {
+//     if (value is String) {
+//       request.fields[key] = value;
+//     }
+//      // Lọc và chuyển danh sách documentImages sang chỉ bao gồm hình ảnh không null
+//   //List<XFile> nonNullDocumentImages = documentImages.where((element) => element != null).cast<XFile>().toList();
+//   });
+
+//   // Thêm hình ảnh
+//   for (var image in documentImages.where((element) => element != null)) {
+//     var stream = http.ByteStream(image!.openRead());
+//     var length = await image.length();
+//     var multipartFile = http.MultipartFile('File', stream, length,
+//         filename: path.basename(image.path));
+//     request.files.add(multipartFile);
+//   }
+
+//   var streamedResponse = await request.send();
+
+// try {
+//   // Kiểm tra nếu streamedResponse không null
+//   if (streamedResponse != null) {
+//     // Chuyển đổi StreamedResponse thành Response để dễ dàng xử lý hơn
+//     var response = await http.Response.fromStream(streamedResponse);
+
+//     if (response.statusCode == 200) {
+//       print(
+//           'Thông tin bệnh nhân và hình ảnh đã được gửi lên server thành công.');
+//       // Xử lý dữ liệu phản hồi ở đây, ví dụ:
+//       print('Phản hồi từ server: ${response.body}');
+//     } else {
+//       print(
+//           'Status Code: ${response.statusCode}');
+//       // Bạn cũng có thể in ra phản hồi chi tiết từ server nếu cần
+//       print('Phản hồi chi tiết: ${response.body}');
+//     }
+//   } else {
+//     // Xử lý trường hợp không nhận được phản hồi từ server
+//     print('Không nhận được phản hồi từ server.');
+//   }
+// } catch (e) {
+//   // Xử lý bất kỳ ngoại lệ nào xảy ra trong quá trình chuyển đổi hoặc xử lý phản hồi
+//   print('Có lỗi xảy ra khi xử lý phản hồi: $e');
+// }
+//   }
 
 
+Future<void> postPatientData(
+  Map<String, dynamic> patientData, List<XFile?> documentImages) async {
+  final url = Uri.parse("$_baseUrl/Values/CreatePatient");
+
+  var request = http.MultipartRequest('POST', url);
+  // Gói thông tin patientData vào JSON string và thêm vào fields
+  var patientDataJson = json.encode(patientData);
+  request.fields['Data'] = patientDataJson;
+
+  // Thêm các fields từ patientData
+  patientData.forEach((key, value) {
+    if (value is String) {
+      request.fields[key] = value;
+    }
+  });
+
+  // Thêm hình ảnh
+   List<String> fieldNames = ["M1", "M2", "CCCD", "Hồ sơ bệnh án", "Contact Log", "ADR"];
+
+  // Thêm hình ảnh với tên được đặt theo tên của ô tương ứng
+  for (int i = 0; i < documentImages.length; i++) {
+    var image = documentImages[i];
+    if (image != null) {
+      var stream = http.ByteStream(image.openRead());
+      var length = await image.length();
+      // Tạo tên file mới theo định dạng "TênÔ.jpg" hoặc tương tự
+      var baseName = fieldNames[i].endsWith('.') ? fieldNames[i].substring(0, fieldNames[i].length - 1) : fieldNames[i];
+      var fileName = '$baseName${path.extension(image.path)}';
+      var multipartFile = http.MultipartFile('File', stream, length, filename: fileName);
+      request.files.add(multipartFile);
+    }
+  }
+
+  var streamedResponse = await request.send();
+
+  try {
+    // Kiểm tra nếu streamedResponse không null
+    if (streamedResponse != null) {
+      // Chuyển đổi StreamedResponse thành Response để dễ dàng xử lý hơn
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        print(
+            'Thông tin bệnh nhân và hình ảnh đã được gửi lên server thành công.');
+        // Xử lý dữ liệu phản hồi ở đây, ví dụ:
+        print('Phản hồi từ server: ${response.body}');
+      } else {
+        print(
+            'Status Code: ${response.statusCode}');
+        // Bạn cũng có thể in ra phản hồi chi tiết từ server nếu cần
+        print('Phản hồi chi tiết: ${response.body}');
+      }
+    } else {
+      // Xử lý trường hợp không nhận được phản hồi từ server
+      print('Không nhận được phản hồi từ server.');
+    }
+  } catch (e) {
+    // Xử lý bất kỳ ngoại lệ nào xảy ra trong quá trình chuyển đổi hoặc xử lý phản hồi
+    print('Có lỗi xảy ra khi xử lý phản hồi: $e');
+  }
 }
 
 
+  
+}

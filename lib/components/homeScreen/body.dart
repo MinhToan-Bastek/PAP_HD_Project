@@ -183,8 +183,9 @@ class Project {
 
 class ProjectCard extends StatelessWidget {
   final Project project;
+   final String username;
   //final VoidCallback? onPressed;
-  const ProjectCard({Key? key, required this.project, //this.onPressed
+  const ProjectCard({Key? key, required this.project,required this.username //this.onPressed
   }) : super(key: key);
 
   @override
@@ -204,8 +205,8 @@ class ProjectCard extends StatelessWidget {
       print('Pid Details: ${project.pid}');
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailScreen(pid: project.pid!)),
-        );
+          MaterialPageRoute(builder: (context) => DetailScreen(pid: project.pid!, username: username),
+          ));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -320,7 +321,7 @@ class _ProjectsGridState extends State<ProjectsGrid> {
     //   },
     // );
      var screenSize = MediaQuery.of(context).size;
-    final int itemCount = widget.seeAll ? projects.length : 2;
+    final int itemCount = widget.seeAll ? projects.length : 3;
     // Giả sử bạn muốn mỗi ô grid có chiều rộng bằng một nửa chiều rộng màn hình trừ đi padding và spacing
     double desiredCellWidth =
         (screenSize.width / 2) - 32; // 16 padding on each side
@@ -340,7 +341,7 @@ class _ProjectsGridState extends State<ProjectsGrid> {
       ),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        return ProjectCard(project: projects[index]);
+        return ProjectCard(project: projects[index], username: widget.username,);
       },
     );
   }

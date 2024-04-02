@@ -78,7 +78,7 @@ class CustomBottomNavBar extends StatelessWidget {
             // Điều hướng đến trang Đăng ký bệnh nhân
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => PatientRegistScreen()),
+              MaterialPageRoute(builder: (context) => PatientRegistScreen(maChuongTrinh: '', username: '',)),
             );
             break;
         }

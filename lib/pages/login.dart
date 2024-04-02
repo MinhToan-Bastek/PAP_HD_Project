@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // Đăng nhập thành công, chuyển hướng đến HomeScreen
         print('Đăng nhập thành công với username: $username');
         print('Access_Token: $accessToken');
-        //await ApiService().fetchAndSendToken(username, accessToken);
+        await ApiService().fetchAndSendToken(username, accessToken);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen(username: username)),
