@@ -66,7 +66,7 @@ Widget build(BuildContext context) {
                           SizedBox(height: 16),
                           MedicineInfo(details: details),
                           SizedBox(height: 30),
-                          OptionsGrid(maChuongTrinh: snapshot.data!['MaChuongTrinh'] ?? 'Unknown', username: widget.username),
+                          OptionsGrid(maChuongTrinh: snapshot.data!['MaChuongTrinh'] ?? 'Unknown', username: widget.username,pid: widget.pid,),
                         ],
                       );
                     }

@@ -40,11 +40,14 @@
 // }
 
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:pap_hd/api/firebase_api.dart';
 import 'package:pap_hd/components/homeScreen/body.dart';
 import 'package:pap_hd/components/homeScreen/header_home.dart';
 import 'package:pap_hd/components/homeScreen/title_body.dart';
 import 'package:pap_hd/components/homeScreen/weather_home.dart';
+import 'package:pap_hd/notifications/flushBar.dart';
 
 class HomeScreen extends StatefulWidget {
    final String username;
@@ -56,6 +59,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _seeAll = false;
+  //Test thông báo
+   @override
+  void initState() {
+    super.initState();
+
+     FirebaseApi().initNotifications((String title, String body) {
+      showNotificationFlushbar(context, title, body); // Cập nhật để sử dụng Flushbar
+    });
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
     // Lấy kích thước màn hình

@@ -1,6 +1,8 @@
 
 import 'dart:io';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pap_hd/api/firebase_api.dart';
 import 'package:pap_hd/model/checkbox_provider.dart';
@@ -8,6 +10,12 @@ import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/model/img_provider.dart';
 import 'package:pap_hd/pages/login.dart';
 import 'package:provider/provider.dart';
+
+
+//Nhận thông báo khi màn hình tắt
+Future<void> backgroundMessageHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
+}
 
 
 void main() async {
@@ -25,7 +33,10 @@ void main() async {
   )
   : 
   await Firebase.initializeApp();
-  await FirebaseApi().initNotifications();
+   // Khởi tạo Firebase Analytics
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  //FirebaseApi().initNotifications(showNotificationSnackbar);
+  FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
   runApp(const MyApp());
 }
 

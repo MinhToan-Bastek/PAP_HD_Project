@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:pap_hd/components/bottomNavBar/regist_bottomNavBar.dart';
 import 'package:pap_hd/components/patient_registration/attached_document.dart';
@@ -5,10 +7,12 @@ import 'package:pap_hd/components/patient_registration/attachment_section.dart';
 import 'package:pap_hd/components/patient_registration/info_patientRegis.dart';
 import 'package:pap_hd/components/patient_registration/title_patientRegis.dart';
 
+//Main
 class PatientRegistScreen extends StatefulWidget {
    final String maChuongTrinh;
    final String username;
-  PatientRegistScreen({Key? key, required this.maChuongTrinh,required this.username}) : super(key: key);
+   final String pid;
+  PatientRegistScreen({Key? key, required this.maChuongTrinh,required this.username,required this.pid}) : super(key: key);
   @override
   State<PatientRegistScreen> createState() => _PatientRegistScreenState();
 }
@@ -38,7 +42,7 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
           ),
           Column(
             children: [
-              TitlePatientRegist(), // Phần title không cuộn
+              TitlePatientRegist(username: widget.username,pid: widget.pid,), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title
@@ -66,3 +70,6 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
     );
   }
 }
+
+
+

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pap_hd/pages/adverse_reporting.dart';
@@ -8,12 +10,13 @@ import 'package:pap_hd/pages/patient_registration.dart';
 class OptionsGrid extends StatelessWidget {
     final String maChuongTrinh;
      final String username; 
-      OptionsGrid({Key? key, required this.maChuongTrinh, required this.username}) : super(key: key); 
+     final String pid; 
+      OptionsGrid({Key? key, required this.maChuongTrinh, required this.username,required this.pid}) : super(key: key); 
   @override
   Widget build(BuildContext context) {
     final options = [
       {'icon': 'assets/detailScreen/icon_work.svg', 'label': 'Tình trạng công việc'},
-      {'icon': 'assets/detailScreen/icon_patient.svg', 'label': 'Đăng ký bệnh nhân','screen': PatientRegistScreen(maChuongTrinh: maChuongTrinh,username:username)},
+      {'icon': 'assets/detailScreen/icon_patient.svg', 'label': 'Đăng ký bệnh nhân','screen': PatientRegistScreen(maChuongTrinh: maChuongTrinh,username:username, pid: pid,)},
       {'icon': 'assets/detailScreen/icon_approved.svg', 'label': 'Xác nhận lịch tái khám','screen': ApprovedCalendarReExam()},
       {'icon': 'assets/detailScreen/icon_support.svg', 'label': 'Cập nhật thông tin hỗ trợ'},
       {'icon': 'assets/detailScreen/icon_reportbl.svg', 'label': 'Báo cáo biến cố bất lợi','screen': AdverseReporting()},
