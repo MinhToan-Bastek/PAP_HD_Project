@@ -42,10 +42,10 @@ class CustomBottomNavBarPending extends StatelessWidget {
             // );
             break;
           case 1:
-             Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen()),
-            );
+            //  Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen()),
+            // );
             break;
         }
       },

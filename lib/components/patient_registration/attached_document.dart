@@ -10,7 +10,7 @@ class AttachedDocumentsSection extends StatelessWidget {
     final documentsData = Provider.of<DocumentsData>(context);
     double screenWidth = MediaQuery.of(context).size.width;
     double padding = 16.0; // Adjust the padding if needed
-    double spacing = 8.0; // Adjust the spacing if needed, smaller value will reduce space
+    double spacing = 2.0; // Adjust the spacing if needed, smaller value will reduce space
     double width = (screenWidth - padding * 2 - spacing) / 2;
 
     return Container(
@@ -26,10 +26,10 @@ class AttachedDocumentsSection extends StatelessWidget {
               fontSize: 16,
             ),
           ),
-          SizedBox(height: padding),
+          //SizedBox(height: padding),
           Wrap(
             spacing: spacing, // Adjust the horizontal spacing between checkboxes
-            runSpacing: spacing, // Adjust the vertical spacing between rows of checkboxes
+            runSpacing: spacing/2, // Adjust the vertical spacing between rows of checkboxes
             children: documentsData.checkedItems.keys.map((key) {
               return Container(
                 width: width,

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class PatientInfoSearch extends StatefulWidget {
+   final Map<String, dynamic> patientDetail;
+
+  const PatientInfoSearch({super.key, required this.patientDetail});
   @override
   _PatientInfoSearchState createState() => _PatientInfoSearchState();
 }
@@ -11,6 +14,22 @@ class _PatientInfoSearchState extends State<PatientInfoSearch> {
   final TextEditingController _appointmentDateController =
       TextEditingController();
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
+
+  @override
+void initState() {
+  super.initState();
+  
+  if (widget.patientDetail['NgayThamGia'] != null) {
+    DateTime joiningDate = DateFormat('dd/MM/yyyy').parse(widget.patientDetail['NgayThamGia']);
+    _joiningDateController.text = _dateFormat.format(joiningDate);
+  }
+  
+  if (widget.patientDetail['NgayHenTaiKham'] != null) {
+    DateTime appointmentDate = DateFormat('dd/MM/yyyy').parse(widget.patientDetail['NgayHenTaiKham']);
+    _appointmentDateController.text = _dateFormat.format(appointmentDate);
+  }
+}
+
 
   @override
   void dispose() {
@@ -40,81 +59,44 @@ class _PatientInfoSearchState extends State<PatientInfoSearch> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //  _buildTextField('Tìm theo mã, tên, cccd', true),
-          // SizedBox(
-          //   height: 5,
-          // ),
-          _buildDropDown('Bệnh viện', ['Bệnh viện A', 'Bệnh viện B'], true),
+        children: [        
+          _buildReadOnlyTextField('Bệnh viện', widget.patientDetail['TenBenhVien'] ?? '',true),
           SizedBox(
             height: 5,
           ),
-          _buildTextField('Họ & tên', true),
+          _buildReadOnlyTextField('Họ & tên', widget.patientDetail['TenBenhNhan'] ?? '',true),
           SizedBox(
             height: 5,
           ),
-          _buildTextField('CCCD', true),
+          _buildReadOnlyTextField('CCCD', widget.patientDetail['CCCD'] ?? '',true),
           SizedBox(
             height: 5,
           ),
-          _buildTextField('Số điện thoại', true),
+          _buildReadOnlyTextField('Số điện thoại', widget.patientDetail['SoDienThoai'] ?? '',true),
           SizedBox(
             height: 5,
           ),
-          _buildDateField('Ngày tham gia', _joiningDateController, true),
+           _buildReadOnlyTextField('Ngày tham gia', _joiningDateController.text,true),
           SizedBox(
             height: 5,
           ),
-          _buildDateField(
-              'Ngày hẹn tái khám', _appointmentDateController, false),
+           _buildReadOnlyTextField('Ngày hẹn tái khám', _appointmentDateController.text,false),
                SizedBox(
             height: 5,
           ),
-          _buildTextField('Mã số tương tác', false),
+         
         ],
       ),
     );
   }
-
-  Widget _buildDropDown(String label, List<String> items, bool isRequired) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        label: RichText(
-          text: TextSpan(
-            text: label,
-            style: TextStyle(color: Colors.teal, fontSize: 16),
-            children: isRequired
-                ? [
-                    TextSpan(
-                        text: ' *',
-                        style: TextStyle(color: Colors.red, fontSize: 16))
-                  ]
-                : [],
-          ),
-        ),
-        enabledBorder: _enabledBorder(),
-        focusedBorder: _focusedBorder(),
-        contentPadding: EdgeInsets.only(top: 15),
-      ),
-      items: items.map((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-            style: TextStyle(fontSize: 14), // Điều chỉnh kích thước chữ tại đây
-          ),
-        );
-      }).toList(),
-      onChanged: (newValue) {
-        // handle change
-      },
-    );
-  }
-
-  Widget _buildTextField(String label, bool isRequired) {
-    return TextFormField(
-      decoration: InputDecoration(
-        label: RichText(
+   Widget _buildReadOnlyTextField(String label, String value,bool isRequired) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: TextFormField(
+        readOnly: true,
+        initialValue: value,
+        decoration: InputDecoration(
+          label: RichText(
           text: TextSpan(
             text: label,
             style: TextStyle(color: Colors.teal, fontSize: 16),
@@ -130,8 +112,7 @@ class _PatientInfoSearchState extends State<PatientInfoSearch> {
         enabledBorder: _enabledBorder(),
         focusedBorder: _focusedBorder(),
          contentPadding: EdgeInsets.only(top: 15),
-        // Chỉnh sửa content padding tại đây
-       
+        ),
       ),
     );
   }

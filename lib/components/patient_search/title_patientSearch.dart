@@ -15,11 +15,7 @@ class TitlePatientSearch extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.arrow_back, size: 40), // Biểu tượng của nút back
             onPressed: () {
-             Navigator.pop(context);
-            //   Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => DetailScreen()),
-            // );
+             Navigator.pop(context);           
             },
           ),
           Expanded(

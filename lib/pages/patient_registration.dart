@@ -9,16 +9,23 @@ import 'package:pap_hd/components/patient_registration/title_patientRegis.dart';
 
 //Main
 class PatientRegistScreen extends StatefulWidget {
-   final String maChuongTrinh;
-   final String username;
-   final String pid;
-  PatientRegistScreen({Key? key, required this.maChuongTrinh,required this.username,required this.pid}) : super(key: key);
+  final String maChuongTrinh;
+  final String username;
+  final String pid;
+  PatientRegistScreen(
+      {Key? key,
+      required this.maChuongTrinh,
+      required this.username,
+      required this.pid})
+      : super(key: key);
   @override
   State<PatientRegistScreen> createState() => _PatientRegistScreenState();
 }
 
 class _PatientRegistScreenState extends State<PatientRegistScreen> {
-    @override
+  final GlobalKey<PatientInfoFormState> formKey =
+      GlobalKey<PatientInfoFormState>();
+  @override
   void initState() {
     super.initState();
     // In ra maChuongTrinh để kiểm tra
@@ -28,7 +35,6 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Stack(
         children: [
           Container(
@@ -42,7 +48,10 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
           ),
           Column(
             children: [
-              TitlePatientRegist(username: widget.username,pid: widget.pid,), // Phần title không cuộn
+              TitlePatientRegist(
+                username: widget.username,
+                pid: widget.pid,
+              ), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title
@@ -51,9 +60,13 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
                     child: Column(
                       children: [
                         //SizedBox(height: 5),
-                        PatientInfoForm(maChuongTrinh: widget.maChuongTrinh, username: widget.username,),
+                        PatientInfoForm(
+                          key: formKey,
+                          maChuongTrinh: widget.maChuongTrinh,
+                          username: widget.username, pid: widget.pid,
+                        ),
                         AttachedDocumentsSection(),
-                         AttachmentSection(),
+                        AttachmentSection(),
                         // Thêm các widget khác nếu cần
                       ],
                     ),
@@ -64,12 +77,14 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
           ),
         ],
       ),
-     bottomNavigationBar: CustomBottomNavBarRegist(
+      bottomNavigationBar: CustomBottomNavBarRegist(
+        formKey: formKey, // Sử dụng GlobalKey đã khởi tạo ở trên
+        onSavePressed: () {
+          if (formKey.currentState != null) {
+            formKey.currentState!.submitPatientInfo();
+          }
+        },
       ),
-
     );
   }
 }
-
-
-

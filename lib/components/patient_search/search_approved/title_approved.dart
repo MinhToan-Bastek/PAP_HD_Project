@@ -4,7 +4,8 @@ import 'package:pap_hd/pages/details.dart';
 import 'package:pap_hd/pages/search.dart';
 
 class TitleApprovedSearch extends StatelessWidget {
-  const TitleApprovedSearch({Key? key}) : super(key: key);
+   final String username; 
+  const TitleApprovedSearch({Key? key,required this.username}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,16 +13,14 @@ class TitleApprovedSearch extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // IconButton(
-          //   icon: Icon(Icons.arrow_back, size: 40), // Biểu tượng của nút back
-          //   onPressed: () {
-          //      Navigator.pushReplacement(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => DetailScreen()),
-          //   );
-          //    //Navigator.pop(context);
-          //   },
-          // ),
+          IconButton(
+            icon: Icon(Icons.arrow_back, size: 40), // Biểu tượng của nút back
+            onPressed: () {
+            
+
+             Navigator.pop(context);
+            },
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

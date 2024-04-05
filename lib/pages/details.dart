@@ -82,7 +82,7 @@ Widget build(BuildContext context) {
           bottom: 0,
           left: 0,
           right: 0,
-          child: CustomBottomNavBar(),
+          child: CustomBottomNavBar(username: widget.username),
         ),
       ],
     ),

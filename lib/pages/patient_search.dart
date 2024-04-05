@@ -7,9 +7,15 @@ import 'package:pap_hd/components/patient_registration/info_patientRegis.dart';
 import 'package:pap_hd/components/patient_registration/title_patientRegis.dart';
 import 'package:pap_hd/components/patient_search/info_patientSearch.dart';
 import 'package:pap_hd/components/patient_search/searchBar.dart';
+import 'package:pap_hd/components/patient_search/search_approved/attachmentSection_approSearch.dart';
+import 'package:pap_hd/components/patient_search/search_approved/check_radio_ApprovedSearch.dart';
 import 'package:pap_hd/components/patient_search/title_patientSearch.dart';
 
 class PatientSearchScreen extends StatefulWidget {
+  final Map<String, dynamic> patientDetail;
+
+  const PatientSearchScreen({super.key,required this.patientDetail});
+
   
   @override
   State<PatientSearchScreen> createState() => _PatientSearchScreenState();
@@ -44,13 +50,9 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> {
                         
                         //SizedBox(height: 5),
                         SearchBarWidget(),
-                        PatientInfoSearch(),
-                        AttachmentSection(
-  
-),
-                        //AttachedDocumentsSection(),
-                         //AttachmentSection(),
-                        // Thêm các widget khác nếu cần
+                        PatientInfoSearch(patientDetail: widget.patientDetail),    
+                        AttachmentChecklist(patientDetail: widget.patientDetail),           
+                        AttachmentSectionSearchApproved(patientDetail: widget.patientDetail),
                       ],
                     ),
                   ),

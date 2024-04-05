@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pap_hd/components/patient_registration/info_patientRegis.dart';
 import 'package:pap_hd/pages/home.dart';
 import 'package:pap_hd/pages/info_ReExam_Pending.dart';
 import 'package:pap_hd/model/img_provider.dart';
@@ -12,9 +13,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class CustomBottomNavBarRegist extends StatelessWidget {
+  
+   final VoidCallback onSavePressed;
+   final GlobalKey<PatientInfoFormState> formKey;
   final picker = ImagePicker();
   String? base64String;
-  CustomBottomNavBarRegist({super.key});
+  CustomBottomNavBarRegist({super.key,required this.onSavePressed,required this.formKey});
 
   
   Future<void> getImageFromCamera(BuildContext context) async {
@@ -69,35 +73,6 @@ class CustomBottomNavBarRegist extends StatelessWidget {
   }
 }
 
-//   Future<void> getImageFromGallery(BuildContext context) async {
-//   // Yêu cầu quyền truy cập thư viện ảnh
-//   var permissionStatus = await Permission.photos.request();
-
-//   if (permissionStatus == PermissionStatus.granted) {
-//     final picker = ImagePicker();
-//     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-//     if (pickedFile != null) {
-//       // Chuyển đổi ảnh thành dạng base64
-//       File imageFile = File(pickedFile.path);
-//       List<int> imageBytes = await imageFile.readAsBytes();
-//       String base64Image = base64Encode(imageBytes);
-//        print('Số lượng ảnh base64: ${base64Image.length}');
-
-//       // Thêm ảnh vào danh sách và gửi về server
-//       Provider.of<ImageProviderModel>(context, listen: false).addImage(pickedFile.path);
-//       // Ví dụ: ApiService().sendImage(base64Image);
-//     } else {
-//       print('Không có ảnh được chọn.');
-//     }
-//   } else {
-//     print('Quyền truy cập thư viện ảnh không được cấp.');
-//   }
-// }
-
-
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -127,11 +102,12 @@ class CustomBottomNavBarRegist extends StatelessWidget {
           label: 'Chọn từ thư viện',
         ),
         BottomNavigationBarItem(
+          
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_save.svg',
             height: 35,
           ),
-          label: 'Lưu bệnh nhân',
+          label: 'Lưu bệnh nhân',        
         ),
       ],
       selectedItemColor: Colors.black,
@@ -154,10 +130,7 @@ class CustomBottomNavBarRegist extends StatelessWidget {
             getImageFromGallery(context);
             break;
           case 3:
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => InfoReExamPending()),
-            // );
+         onSavePressed();
             break;
         }
       },

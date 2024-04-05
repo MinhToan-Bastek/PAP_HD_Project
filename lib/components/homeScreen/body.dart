@@ -210,7 +210,7 @@ class ProjectCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Color(0xFF99E3C9),
+          color: Color(0xFFE9F9F7),
           borderRadius: BorderRadius.circular(24.0),
         ),
         child: Padding(

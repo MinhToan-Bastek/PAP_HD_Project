@@ -1,33 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:pap_hd/pages/patient_search.dart';
 import 'package:pap_hd/pages/patient_searchApproved.dart';
+import 'package:pap_hd/services/api_service.dart';
 
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
+  final String username;
+
+  const SearchScreen({super.key, required this.username});
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-       
         title: Text('Tìm bệnh nhân'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.search,),
+            icon: Icon(
+              Icons.search,
+            ),
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: CustomSearchDelegate(),
+                delegate: CustomSearchDelegate(widget.username),
               );
             },
           ),
         ],
       ),
-       extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/homeScreen/home_background.png"), 
+            image: AssetImage("assets/homeScreen/home_background.png"),
             fit: BoxFit.cover,
           ),
         ),
@@ -41,9 +51,12 @@ class SearchScreen extends StatelessWidget {
 
 // Tạo một SearchDelegate để xử lý hành vi tìm kiếm
 class CustomSearchDelegate extends SearchDelegate {
-   CustomSearchDelegate() : super(
-    searchFieldLabel: "Tìm theo mã, tên, CCCD", // Đặt placeholder cho search bar
-  );
+  final String username;
+  CustomSearchDelegate(this.username)
+      : super(
+          searchFieldLabel:
+              "Tìm theo mã, tên, CCCD", // Đặt placeholder cho search bar
+        );
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -61,7 +74,10 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back,color: Colors.black,),
+      icon: Icon(
+        Icons.arrow_back,
+        color: Colors.black,
+      ),
       onPressed: () {
         close(context, null);
       },
@@ -69,41 +85,81 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 
   @override
-  Widget buildResults(BuildContext context) {
-    if (query.toLowerCase() == 'bệnh nhân 1') {
-      // Điều hướng đến PatientSearchScreen nếu người dùng tìm "bệnh nhân 1"
-      Future.delayed(Duration.zero, () {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PatientSearchScreen()));
+Widget buildResults(BuildContext context) {
+  return Center(
+    child: Text('Không có kết quả'),
+  );
+}
 
-      });
+
+  void navigateToDetailScreen(BuildContext context, String idBenhNhan) async {
+    try {
+      final patientDetail = await ApiService().getPatientById(idBenhNhan);
+      print('Giá trị TinhTrang: ${patientDetail['TinhTrang']}');
+      if (patientDetail['TinhTrang'] == '0') {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientSearchScreen(patientDetail: patientDetail)));
+      } else if (patientDetail['TinhTrang'] == '2') {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen(patientDetail: patientDetail, username: username,)));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi khi lấy thông tin bệnh nhân')));
     }
-    else if(query.toLowerCase() == 'bệnh nhân 2'){
-      Future.delayed(Duration.zero, () {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen()));
-      });
-    }
-    return Center(
-      child: Text('Không tìm thấy dữ liệu: "$query"'),
-    );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestions = ['Bệnh nhân 1', 'Bệnh nhân 2', 'Bệnh nhân 3'];
+    if (query.isEmpty) {
+      return Center(child: Text('Nhập từ khóa để tìm kiếm'));
+    }
 
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (context, index) {
-        final suggestion = suggestions[index];
-        return ListTile(
-          title: Text(suggestion),
-          onTap: () {
-            query = suggestion;
-            showResults(context);
-          },
-        );
+    return FutureBuilder(
+      future: ApiService().searchPatients(username, query),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Có lỗi xảy ra'));
+        } else {
+          final List<dynamic> results = snapshot.data ?? [];
+          if (results.isEmpty) {
+            return Center(child: Text('Không tìm thấy kết quả'));
+          }
+
+          return ListView.builder(
+            itemCount: results.length,
+            itemBuilder: (context, index) {
+              final patient = results[index];
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                       '${patient['MaBenhNhan']} - ${patient['TenBenhNhan']}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('CCCD: ${patient['CCCD']}'),
+                        Text(
+                            'Số điện thoại: ${patient['SoDienThoai']}'), 
+                      ],
+                    ),
+                    
+                     onTap: () => navigateToDetailScreen(context, patient['IdBenhNhan'].toString()),
+                  ),
+                  Divider(
+                    color: Colors.teal,
+                    height: 0,
+                    thickness: 0.2,
+                  ),
+                ],
+              );
+            },
+          );
+        }
       },
     );
   }
 }
-

@@ -7,145 +7,6 @@ import 'package:image_picker/image_picker.dart'; // Import ImagePicker
 import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/model/img_provider.dart';
 import 'package:provider/provider.dart';
-//Main
-// class AttachmentSection extends StatefulWidget {
-//   @override
-//   _AttachmentSectionState createState() => _AttachmentSectionState();
-// }
-
-// class _AttachmentSectionState extends State<AttachmentSection> {
-//   final List<String> titles = [
-//     "M1",
-//     "M2",
-//     "CCCD",
-//     "Hồ sơ bệnh án",
-//     "Contact Log",
-//     "ADR"
-//   ];
-
-//   void _pickImage(int index) async {
-//     final ImagePicker _picker = ImagePicker();
-//     final XFile? image = await showModalBottomSheet<XFile?>(
-//         context: context,
-//         builder: (context) => Column(
-//               mainAxisSize: MainAxisSize.min,
-//               children: <Widget>[
-//                 ListTile(
-//                   leading: Icon(Icons.camera),
-//                   title: Text('Máy ảnh'),
-//                   onTap: () async {
-//                     Navigator.of(context).pop(
-//                         await _picker.pickImage(source: ImageSource.camera));
-//                   },
-//                 ),
-//                 ListTile(
-//                   leading: Icon(Icons.image),
-//                   title: Text('Thư viện'),
-//                   onTap: () async {
-//                     Navigator.of(context).pop(
-//                         await _picker.pickImage(source: ImageSource.gallery));
-//                   },
-//                 ),
-//               ],
-//             ));
-//     if (image != null) {
-//       Provider.of<DocumentImagesProvider>(context, listen: false)
-//           .setImage(index, image);
-//     }
-//   }
-//   @override
-//   Widget build(BuildContext context) {
-//     List<XFile?> documentImages = Provider.of<DocumentImagesProvider>(context).documentImages;
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Padding(
-//           padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-//           child: Text(
-//             'Đính kèm tài liệu',
-//             style: TextStyle(
-//               fontWeight: FontWeight.bold,
-//               color: Colors.teal,
-//               fontSize: 16,
-//             ),
-//           ),
-//         ),
-//         Container(
-//           height: 130,
-//           margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
-//           child: ListView.builder(
-//             scrollDirection: Axis.horizontal,
-//             itemCount: titles.length,
-//             itemBuilder: (context, index) {
-//               String title = titles[index];
-//               XFile? image = documentImages.length > index ? documentImages[index] : null;
-
-//               return Container(
-//                 width: 100,
-//                 height: 130,
-//                 margin: EdgeInsets.symmetric(horizontal: 4),
-//                 decoration: BoxDecoration(
-//                   color: Colors.grey[200],
-//                   border: Border.all(color: Colors.teal),
-//                   borderRadius: BorderRadius.circular(8),
-//                 ),
-//                 child: Stack(
-//                   children: [
-//                     // Image or Placeholder
-//                     Center(
-//                       child: image != null
-//                           ? Image.file(File(image.path), fit: BoxFit.cover)
-//                           : Column(
-//                               mainAxisAlignment: MainAxisAlignment.center,
-//                               children: [
-//                                 Icon(Icons.add_photo_alternate, color: Colors.teal),
-//                                 Text(
-//                                   title,
-//                                   style: TextStyle(color: Colors.teal),
-//                                 ),
-//                               ],
-//                             ),
-//                     ),
-//                     // Delete Icon
-//                     if (image != null)
-//                       Positioned(
-//                         right: 0,
-//                         top: 0,
-//                         child: GestureDetector(
-//                           onTap: () {
-//                             Provider.of<DocumentImagesProvider>(context, listen: false).clearImage(index);
-//                             setState(() {}); // Refresh the UI
-//                           },
-//                           child: Container(
-//                             color: Colors.teal,
-//                             child: Icon(
-//                               Icons.close,
-//                               color: Colors.white,
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     // Pick Image if no image
-//                     if (image == null)
-//                       Positioned.fill(
-//                         child: Material(
-//                           color: Colors.transparent,
-//                           child: InkWell(
-//                             onTap: () => _pickImage(index),
-//                           ),
-//                         ),
-//                       ),
-//                   ],
-//                 ),
-//               );
-//             },
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
 
 class AttachmentSection extends StatefulWidget {
   @override
@@ -213,11 +74,11 @@ class _AttachmentSectionState extends State<AttachmentSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 18),
           child: Text(
             'Đính kèm tài liệu',
             style: TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.normal,
               color: Colors.teal,
               fontSize: 16,
             ),

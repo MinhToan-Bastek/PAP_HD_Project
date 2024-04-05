@@ -5,7 +5,15 @@ import 'package:pap_hd/pages/patient_registration.dart';
 import 'package:pap_hd/pages/patient_search.dart';
 import 'package:pap_hd/pages/search.dart';
 
-class CustomBottomNavBar extends StatelessWidget {
+class CustomBottomNavBar extends StatefulWidget {
+   final String username;
+
+  const CustomBottomNavBar({super.key, required this.username});
+  @override
+  State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
+}
+
+class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
@@ -71,14 +79,14 @@ class CustomBottomNavBar extends StatelessWidget {
           case 3:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SearchScreen()),
+              MaterialPageRoute(builder: (context) => SearchScreen(username: widget.username)),
             );
             break;
           case 4:
             // Điều hướng đến trang Đăng ký bệnh nhân
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => PatientRegistScreen(maChuongTrinh: '', username: '', pid: '',)),
+              MaterialPageRoute(builder: (context) => PatientRegistScreen(maChuongTrinh: '', username: widget.username, pid: '',)),
             );
             break;
         }
