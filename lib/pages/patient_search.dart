@@ -13,8 +13,10 @@ import 'package:pap_hd/components/patient_search/title_patientSearch.dart';
 
 class PatientSearchScreen extends StatefulWidget {
   final Map<String, dynamic> patientDetail;
-
-  const PatientSearchScreen({super.key,required this.patientDetail});
+  final String username;
+  final String id;
+  final String pid;
+  const PatientSearchScreen({super.key,required this.patientDetail,required this.username, required this.id, required this.pid});
 
   
   @override
@@ -62,7 +64,7 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBarPending(),
+      bottomNavigationBar: CustomBottomNavBarPending(patientDetail: widget.patientDetail, username: widget.username, id :widget.id, pid: widget.pid,),
     );
   }
 }

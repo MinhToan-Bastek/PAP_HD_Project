@@ -9,6 +9,7 @@ import 'package:pap_hd/services/api_service.dart';
 class DetailScreen extends StatefulWidget {
   final String pid;
    final String username;
+   
   const DetailScreen({super.key, required this.pid, required this.username});
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -16,6 +17,7 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   late Future<Map<String, dynamic>> projectDetails;
+  
   @override
   void initState() {
     super.initState();
@@ -66,7 +68,8 @@ Widget build(BuildContext context) {
                           SizedBox(height: 16),
                           MedicineInfo(details: details),
                           SizedBox(height: 30),
-                          OptionsGrid(maChuongTrinh: snapshot.data!['MaChuongTrinh'] ?? 'Unknown', username: widget.username,pid: widget.pid,),
+                          OptionsGrid(maChuongTrinh: snapshot.data!['MaChuongTrinh'] ?? 'Unknown', username: widget.username,pid: widget.pid,                     
+                           ),
                         ],
                       );
                     }
@@ -82,7 +85,7 @@ Widget build(BuildContext context) {
           bottom: 0,
           left: 0,
           right: 0,
-          child: CustomBottomNavBar(username: widget.username),
+          child: CustomBottomNavBar(username: widget.username, pid: widget.pid),
         ),
       ],
     ),

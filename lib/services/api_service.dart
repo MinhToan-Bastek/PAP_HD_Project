@@ -230,5 +230,62 @@ Future<List<dynamic>> searchPatients(String username, String query) async {
     }
 }
 
+//Duyệt bệnh nhân
+Future<bool> approvePatient(String username, int id, int status) async {
+  final url = Uri.parse("$_baseUrl/Values/ChangeStatusPatient");
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, dynamic>{
+      'username': username,
+      'id': id,
+      'status': status,
+    }),
+  );
+
+  if (response.statusCode == 200 || response.statusCode == 201) {
+    final Map<String, dynamic> responseBody = jsonDecode(response.body);   
+    if (responseBody['Status'] == 1 && responseBody['Message'].toLowerCase() == "success") {
+      print(response.body);
+      return true; // Duyệt thành công
+    }
+}
+  return false;
+}
+ // Danh sách bệnh nhân
+ Future<Map<String, dynamic>> fetchPatients({
+  required String username,
+  String query = "",
+  required int status,
+  required int pageIndex,
+  required int pageSize,
+  required String sortColumn,
+  required String sortDir,
+}) async {
+  final url = Uri.parse("$_baseUrl/Values/GetListPatientDetail");
+
+  final response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json; charset=UTF-8"},
+    body: jsonEncode({
+      'username': username,
+      'query': query,
+      'status': status,
+      'pageindex': pageIndex,
+      'pagesize': pageSize,
+      'sortcolumn': sortColumn,
+      'sortdir': sortDir,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception('Failed to load patients');
+  }
+}
+
 
 }

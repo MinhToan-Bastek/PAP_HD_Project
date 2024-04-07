@@ -2,21 +2,75 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pap_hd/model/ListPatient_CardScroll.dart';
 import 'package:pap_hd/pages/adverse_reporting.dart';
 import 'package:pap_hd/pages/adverse_status.dart';
 import 'package:pap_hd/pages/approved_calendarReExam.dart';
+import 'package:pap_hd/pages/list_patientDetail.dart';
 import 'package:pap_hd/pages/patient_registration.dart';
+import 'package:pap_hd/services/api_service.dart';
 
-class OptionsGrid extends StatelessWidget {
+
+
+class OptionsGrid extends StatefulWidget {
     final String maChuongTrinh;
      final String username; 
      final String pid; 
+     
       OptionsGrid({Key? key, required this.maChuongTrinh, required this.username,required this.pid}) : super(key: key); 
+
+  @override
+  State<OptionsGrid> createState() => _OptionsGridState();
+}
+
+class _OptionsGridState extends State<OptionsGrid> {
+
+  void fetchAndNavigateToListPatients(BuildContext context) async {
+  try {
+    final response = await ApiService().fetchPatients(
+      username: widget.username,
+      status: -1,
+      pageIndex: 1,
+      pageSize: 5,
+      sortColumn: "IdBenhNhan",
+      sortDir: "asc",
+    );
+
+    if (response is Map<String, dynamic>) {
+      List<dynamic> patientsJson = response['ListPatients'] ?? [];
+      List<Patient> patientsList = patientsJson.map((json) => Patient.fromJson(json)).toList();
+
+      PatientSummary summary = PatientSummary(
+        total: response['TongCong'],
+        confirmed: response['XacNhan'],
+        temporaryConfirmed: response['XacNhanTamThoi'],
+        rejected: response['TuChoi'],
+        awaitingConfirmation: response['ChoXacNhan'],
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ListPatientDetail(patientsList: patientsList, summary: summary),
+        ),
+      );
+    } else {
+      throw Exception('Unexpected response format');
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Lỗi khi tải danh sách bệnh nhân: $e')),
+    );
+  }
+}
+
+
+
   @override
   Widget build(BuildContext context) {
     final options = [
       {'icon': 'assets/detailScreen/icon_work.svg', 'label': 'Tình trạng công việc'},
-      {'icon': 'assets/detailScreen/icon_patient.svg', 'label': 'Đăng ký bệnh nhân','screen': PatientRegistScreen(maChuongTrinh: maChuongTrinh,username:username, pid: pid,)},
+      {'icon': 'assets/detailScreen/icon_patient.svg', 'label': 'Đăng ký bệnh nhân','screen': PatientRegistScreen(maChuongTrinh: widget.maChuongTrinh,username:widget.username, pid: widget.pid,)},
       {'icon': 'assets/detailScreen/icon_approved.svg', 'label': 'Xác nhận lịch tái khám','screen': ApprovedCalendarReExam()},
       {'icon': 'assets/detailScreen/icon_support.svg', 'label': 'Cập nhật thông tin hỗ trợ'},
       {'icon': 'assets/detailScreen/icon_reportbl.svg', 'label': 'Báo cáo biến cố bất lợi','screen': AdverseReporting()},
@@ -26,7 +80,10 @@ class OptionsGrid extends StatelessWidget {
       },
       {'icon': 'assets/detailScreen/icon_rpmedicine.svg', 'label': 'Báo cáo kiểm tra thuốc'},
       {'icon': 'assets/detailScreen/icon_rpmedicine.svg', 'label': 'Tình trạng báo cáo biến cố bất lợi','screen': AdverseStatus()},
+      {'icon': 'assets/detailScreen/icon_rpmedicine.svg', 'label': 'Danh sách bệnh nhân',},
     ];
+     // Hàm để gọi API và lấy danh sách bệnh nhân
+    
 
     return Container(
       constraints: BoxConstraints(maxWidth: 380.0),
@@ -54,30 +111,31 @@ class OptionsGrid extends StatelessWidget {
         ),
         itemCount: options.length,
        itemBuilder: (context, index) {
+  final option = options[index];
   return InkWell(
     onTap: () {
-      var screen = options[index]['screen'];
-      if (screen is Function) {
-        // Nếu 'screen' là một hàm, gọi hàm đó để tạo instance mới
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => screen()),
-        );
-      } else {
-        // Nếu 'screen' không phải là một hàm, tiếp tục điều hướng như bình thường
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => screen as Widget),
-        );
+      if (option['label'] == 'Danh sách bệnh nhân') {
+        fetchAndNavigateToListPatients(context);
+      } else if (option.containsKey('screen')) {
+        final screenWidget = option['screen'];
+        if (screenWidget != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => screenWidget as Widget),
+          );
+        }
       }
-      print("${options[index]['label']} pressed");
+      print("${option['label']} pressed");
     },
     child: OptionItem(
-      iconAsset: options[index]['icon'] as String,
-      label: options[index]['label'] as String,
+      iconAsset: option['icon'] as String,
+      label: option['label'] as String,
     ),
   );
 },
+
+
+
 
       ),
     );

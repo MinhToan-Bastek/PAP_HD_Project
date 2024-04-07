@@ -7,8 +7,8 @@ import 'package:pap_hd/pages/search.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
    final String username;
-
-  const CustomBottomNavBar({super.key, required this.username});
+  final String pid;
+  const CustomBottomNavBar({super.key, required this.username, required this.pid});
   @override
   State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
 }
@@ -79,7 +79,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           case 3:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SearchScreen(username: widget.username)),
+              MaterialPageRoute(builder: (context) => SearchScreen(username: widget.username, pid: widget.pid,)),
             );
             break;
           case 4:
