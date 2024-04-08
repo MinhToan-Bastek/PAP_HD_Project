@@ -5,6 +5,9 @@ import 'package:pap_hd/pages/patient_registration.dart';
 import 'package:pap_hd/pages/update_info_patient.dart';
 
 class CustomBottomNavBarApproved extends StatelessWidget {
+  final String tenChuongTrinh;
+
+  const CustomBottomNavBarApproved({super.key, required this.tenChuongTrinh});
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
@@ -61,7 +64,7 @@ class CustomBottomNavBarApproved extends StatelessWidget {
           case 2:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => UpdateInfoPatient()),
+              MaterialPageRoute(builder: (context) => UpdateInfoPatient(tenChuongTrinh: tenChuongTrinh,)),
             );
             break;
           case 3:

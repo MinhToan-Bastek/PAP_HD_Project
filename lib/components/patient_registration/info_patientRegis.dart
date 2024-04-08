@@ -30,12 +30,16 @@ class PatientInfoForm extends StatefulWidget {
   final String pid;
   final String maChuongTrinh;
   final String username;
-
+  final String name;
+  final String tenChuongTrinh;
   PatientInfoForm(
       {Key? key,
       required this.maChuongTrinh,
       required this.username,
-      required this.pid})
+      required this.pid,
+      required this.name,
+      required this.tenChuongTrinh,
+      })
       : super(key: key);
   @override
   PatientInfoFormState createState() => PatientInfoFormState();
@@ -239,7 +243,7 @@ void showSearchHospitalModal(BuildContext context, List<Hospital> hospitals, voi
         context,
         MaterialPageRoute(
             builder: (context) =>
-                DetailScreen(pid: widget.pid, username: widget.username)),
+                DetailScreen(pid: widget.pid, username: widget.username, name: widget.name,tenChuongTrinh: widget.tenChuongTrinh,)),
       );
     } catch (e) {
       // Hiển thị thông báo lỗi

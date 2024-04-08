@@ -17,7 +17,8 @@ import 'package:pap_hd/components/patient_search/title_patientSearch.dart';
 class PatientSearchApprovedScreen extends StatefulWidget {
    final Map<String, dynamic> patientDetail;
    final String username;
-  const PatientSearchApprovedScreen({super.key,required this.patientDetail,required this.username});
+   final String tenChuongTrinh;
+  const PatientSearchApprovedScreen({super.key,required this.patientDetail,required this.username, required this.tenChuongTrinh});
   @override
   State<PatientSearchApprovedScreen> createState() => _PatientSearchApprovedScreenState();
 }
@@ -39,7 +40,7 @@ class _PatientSearchApprovedScreenState extends State<PatientSearchApprovedScree
           ),
           Column(
             children: [
-              TitleApprovedSearch(username: widget.username,), // Phần title không cuộn
+              TitleApprovedSearch(username: widget.username,patientDetail: widget.patientDetail), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title
@@ -64,7 +65,7 @@ class _PatientSearchApprovedScreenState extends State<PatientSearchApprovedScree
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBarApproved(),
+      bottomNavigationBar: CustomBottomNavBarApproved(tenChuongTrinh: widget.tenChuongTrinh,),
     );
   }
 }

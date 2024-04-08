@@ -17,6 +17,9 @@ import 'package:pap_hd/components/update_info/attached_update.dart';
 import 'package:pap_hd/components/update_info/update_info_body.dart';
 
 class AdverseReporting extends StatefulWidget {
+  final String tenChuongTrinh;
+
+  const AdverseReporting({super.key, required this.tenChuongTrinh});
   
   @override
   State<AdverseReporting> createState() => _AdverseReportingState();
@@ -47,7 +50,7 @@ class _AdverseReportingState extends State<AdverseReporting> {
           ),
           Column(
             children: [
-              TitleAdverseReport(), // Phần title không cuộn
+              TitleAdverseReport(tenChuongTrinh: widget.tenChuongTrinh,), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title

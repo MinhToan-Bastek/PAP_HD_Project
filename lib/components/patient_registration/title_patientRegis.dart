@@ -6,7 +6,9 @@ import 'package:pap_hd/pages/home.dart';
 class TitlePatientRegist extends StatelessWidget {
    final String username;
    final String pid;
-  const TitlePatientRegist({Key? key, required this.username,required this.pid}) : super(key: key);
+   final String name;
+   final String tenChuongTrinh;
+  const TitlePatientRegist({Key? key, required this.username,required this.pid,required this.name,required this.tenChuongTrinh}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class TitlePatientRegist extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => DetailScreen(
                       username:
-                          username, pid: pid,), // Thay 'HomeScreen()' bằng tên màn hình home của bạn
+                          username, pid: pid,name: name,tenChuongTrinh: tenChuongTrinh,), // Thay 'HomeScreen()' bằng tên màn hình home của bạn
                 ),
               );
             },
@@ -37,7 +39,7 @@ class TitlePatientRegist extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        'Chương trình Jakavi',
+                        tenChuongTrinh,
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,

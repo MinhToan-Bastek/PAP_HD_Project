@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pap_hd/model/ListPatient_CardScroll.dart';
@@ -8,82 +9,130 @@ import 'package:pap_hd/pages/adverse_status.dart';
 import 'package:pap_hd/pages/approved_calendarReExam.dart';
 import 'package:pap_hd/pages/list_patientDetail.dart';
 import 'package:pap_hd/pages/patient_registration.dart';
+import 'package:pap_hd/pages/update_info_patient.dart';
 import 'package:pap_hd/services/api_service.dart';
 
-
-
 class OptionsGrid extends StatefulWidget {
-    final String maChuongTrinh;
-     final String username; 
-     final String pid; 
-     
-      OptionsGrid({Key? key, required this.maChuongTrinh, required this.username,required this.pid}) : super(key: key); 
+  final String maChuongTrinh;
+  final String username;
+  final String pid;
+  final String name;
+  final String tenChuongTrinh;
+  OptionsGrid(
+      {Key? key,
+      required this.maChuongTrinh,
+      required this.username,
+      required this.pid,required this.name, required this.tenChuongTrinh})
+      : super(key: key);
 
   @override
   State<OptionsGrid> createState() => _OptionsGridState();
 }
 
 class _OptionsGridState extends State<OptionsGrid> {
-
   void fetchAndNavigateToListPatients(BuildContext context) async {
-  try {
-    final response = await ApiService().fetchPatients(
-      username: widget.username,
-      status: -1,
-      pageIndex: 1,
-      pageSize: 5,
-      sortColumn: "IdBenhNhan",
-      sortDir: "asc",
-    );
-
-    if (response is Map<String, dynamic>) {
-      List<dynamic> patientsJson = response['ListPatients'] ?? [];
-      List<Patient> patientsList = patientsJson.map((json) => Patient.fromJson(json)).toList();
-
-      PatientSummary summary = PatientSummary(
-        total: response['TongCong'],
-        confirmed: response['XacNhan'],
-        temporaryConfirmed: response['XacNhanTamThoi'],
-        rejected: response['TuChoi'],
-        awaitingConfirmation: response['ChoXacNhan'],
+    try {
+      final response = await ApiService().fetchPatients(
+        username: widget.username,
+        status: -1,
+        pageIndex: 1,
+        pageSize: 5,
+        sortColumn: "IdBenhNhan",
+        sortDir: "asc",
       );
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ListPatientDetail(patientsList: patientsList, summary: summary),
-        ),
+      if (response is Map<String, dynamic>) {
+        List<dynamic> patientsJson = response['ListPatients'] ?? [];
+        List<Patient> patientsList =
+            patientsJson.map((json) => Patient.fromJson(json)).toList();
+
+        PatientSummary summary = PatientSummary(
+          total: response['TongCong'],
+          confirmed: response['XacNhan'],
+          temporaryConfirmed: response['XacNhanTamThoi'],
+          rejected: response['TuChoi'],
+          awaitingConfirmation: response['ChoXacNhan'],
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ListPatientDetail(
+              patientsList: patientsList,
+              summary: summary,
+              username: widget.username,
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Unexpected response format');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi khi tải danh sách bệnh nhân: $e')),
       );
-    } else {
-      throw Exception('Unexpected response format');
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Lỗi khi tải danh sách bệnh nhân: $e')),
-    );
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     final options = [
-      {'icon': 'assets/detailScreen/icon_work.svg', 'label': 'Tình trạng công việc'},
-      {'icon': 'assets/detailScreen/icon_patient.svg', 'label': 'Đăng ký bệnh nhân','screen': PatientRegistScreen(maChuongTrinh: widget.maChuongTrinh,username:widget.username, pid: widget.pid,)},
-      {'icon': 'assets/detailScreen/icon_approved.svg', 'label': 'Xác nhận lịch tái khám','screen': ApprovedCalendarReExam()},
-      {'icon': 'assets/detailScreen/icon_support.svg', 'label': 'Cập nhật thông tin hỗ trợ'},
-      {'icon': 'assets/detailScreen/icon_reportbl.svg', 'label': 'Báo cáo biến cố bất lợi','screen': AdverseReporting()},
+      {
+        'icon': 'assets/detailScreen/icon_work.svg',
+        'label': 'Tình trạng công việc'
+      },
+      {
+        'icon': 'assets/detailScreen/icon_patient.svg',
+        'label': 'Đăng ký bệnh nhân',
+        'screen': PatientRegistScreen(
+          maChuongTrinh: widget.maChuongTrinh,
+          username: widget.username,
+          pid: widget.pid,
+          name: widget.name,
+          tenChuongTrinh : widget.tenChuongTrinh
+        )
+      },
+      {
+        'icon': 'assets/detailScreen/icon_approved.svg',
+        'label': 'Xác nhận lịch tái khám',
+        'screen': ApprovedCalendarReExam(
+          tenChuongTrinh: widget.tenChuongTrinh,
+        )
+      },
+      {
+        'icon': 'assets/detailScreen/icon_support.svg',
+        'label': 'Cập nhật thông tin hỗ trợ',
+        'screen': UpdateInfoPatient(
+          tenChuongTrinh: widget.tenChuongTrinh,
+        )
+      },
+      {
+        'icon': 'assets/detailScreen/icon_reportbl.svg',
+        'label': 'Báo cáo biến cố bất lợi',
+        'screen': AdverseReporting(
+          tenChuongTrinh: widget.tenChuongTrinh,
+          )
+      },
       {
         'icon': 'assets/detailScreen/icon_infopati.svg',
         'label': 'Thông báo bệnh nhân ngừng chương trình',
       },
-      {'icon': 'assets/detailScreen/icon_rpmedicine.svg', 'label': 'Báo cáo kiểm tra thuốc'},
-      {'icon': 'assets/detailScreen/icon_rpmedicine.svg', 'label': 'Tình trạng báo cáo biến cố bất lợi','screen': AdverseStatus()},
-      {'icon': 'assets/detailScreen/icon_rpmedicine.svg', 'label': 'Danh sách bệnh nhân',},
+      {
+        'iconData': CupertinoIcons.doc_text_search,
+        'label': 'Báo cáo kiểm tra thuốc'
+      },
+      {
+        'iconData': CupertinoIcons.exclamationmark_circle,
+        'label': 'Tình trạng báo cáo biến cố bất lợi',
+        'screen': AdverseStatus(
+          tenChuongTrinh: widget.tenChuongTrinh,
+        )
+      },
+      {
+        'iconData': CupertinoIcons.list_dash,
+        'label': 'Danh sách bệnh nhân',
+      },
     ];
-     // Hàm để gọi API và lấy danh sách bệnh nhân
-    
 
     return Container(
       constraints: BoxConstraints(maxWidth: 380.0),
@@ -110,54 +159,66 @@ class _OptionsGridState extends State<OptionsGrid> {
           mainAxisSpacing: 10.0,
         ),
         itemCount: options.length,
-       itemBuilder: (context, index) {
-  final option = options[index];
-  return InkWell(
-    onTap: () {
-      if (option['label'] == 'Danh sách bệnh nhân') {
-        fetchAndNavigateToListPatients(context);
-      } else if (option.containsKey('screen')) {
-        final screenWidget = option['screen'];
-        if (screenWidget != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => screenWidget as Widget),
+        itemBuilder: (context, index) {
+          final option = options[index];
+          return InkWell(
+            onTap: () {
+              if (option['label'] == 'Danh sách bệnh nhân') {
+                fetchAndNavigateToListPatients(context);
+              } else if (option.containsKey('screen')) {
+                final screenWidget = option['screen'];
+                if (screenWidget != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => screenWidget as Widget),
+                  );
+                }
+              }
+              print("${option['label']} pressed");
+            },
+            child: OptionItem(
+              iconAsset: option['icon'] as String?,
+              iconData: option['iconData'] as IconData?,
+              label: option['label'] as String,
+            ),
           );
-        }
-      }
-      print("${option['label']} pressed");
-    },
-    child: OptionItem(
-      iconAsset: option['icon'] as String,
-      label: option['label'] as String,
-    ),
-  );
-},
-
-
-
-
+        },
       ),
     );
   }
 }
 
 class OptionItem extends StatelessWidget {
-  final String iconAsset;
+  final String? iconAsset;
   final String label;
+  final IconData? iconData;
 
-  const OptionItem({Key? key, required this.iconAsset, required this.label})
-      : super(key: key);
+  const OptionItem({
+    Key? key,
+    this.iconAsset,
+    required this.label,
+    this.iconData, // Thêm tham số này
+  })  : assert(iconAsset != null || iconData != null,
+            'Cần cung cấp ít nhất một loại icon'),
+        super(key: key); 
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        SvgPicture.asset(
-          iconAsset,
-          height: 30.0,
-        ),
+        
+        if (iconAsset != null)
+          SvgPicture.asset(
+            iconAsset!,
+            height: 30.0,
+          )
+        else if (iconData != null)
+          Icon(
+            iconData,
+            size: 30.0,
+          ),
         SizedBox(height: 8.0),
         Text(
           label,

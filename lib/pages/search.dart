@@ -9,7 +9,14 @@ import 'package:pap_hd/services/api_service.dart';
 class SearchScreen extends StatefulWidget {
   final String username;
   final String pid;
-  const SearchScreen({super.key, required this.username,required this.pid});
+  final String name;
+  final String tenChuongTrinh;
+  const SearchScreen(
+      {super.key,
+      required this.username,
+      required this.pid,
+      required this.name,
+      required this.tenChuongTrinh});
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
@@ -30,7 +37,8 @@ class _SearchScreenState extends State<SearchScreen> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: CustomSearchDelegate(widget.username, widget.pid),
+                delegate: CustomSearchDelegate(
+                    widget.username, widget.pid, widget.name, widget.tenChuongTrinh),
               );
             },
           ),
@@ -55,8 +63,10 @@ class _SearchScreenState extends State<SearchScreen> {
 // Tạo một SearchDelegate để xử lý hành vi tìm kiếm
 class CustomSearchDelegate extends SearchDelegate {
   final String username;
-   final String pid; 
-  CustomSearchDelegate(this.username, this.pid)
+  final String pid;
+  final String name;
+  final String tenChuongTrinh;
+  CustomSearchDelegate(this.username, this.pid, this.name, this.tenChuongTrinh)
       : super(
           searchFieldLabel:
               "Tìm theo mã, tên, CCCD", // Đặt placeholder cho search bar
@@ -89,39 +99,40 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 
   @override
-Widget buildResults(BuildContext context) {
-  return Center(
-    child: Text('Không có kết quả'),
-  );
-}
-
+  Widget buildResults(BuildContext context) {
+    return Center(
+      child: Text('Không có kết quả'),
+    );
+  }
 
   void navigateToDetailScreen(BuildContext context, String idBenhNhan) async {
-    // try {
-    //   final patientDetail = await ApiService().getPatientById(idBenhNhan);
-    //   print('Giá trị TinhTrang: ${patientDetail['TinhTrang']}');
-    //   if (patientDetail['TinhTrang'] == '0') {
-    //     Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientSearchScreen(patientDetail: patientDetail,username: username, id: idBenhNhan)));
-    //   } else if (patientDetail['TinhTrang'] == '1') {
-    //     Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen(patientDetail: patientDetail, username: username,)));
-    //   }
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi khi lấy thông tin bệnh nhân')));
-    // }
     try {
-  final patientDetail = await ApiService().getPatientById(idBenhNhan);
-  print('Giá trị TinhTrang: ${patientDetail['TinhTrang']}');
-  int tinhTrang = int.parse(patientDetail['TinhTrang']);
+      final patientDetail = await ApiService().getPatientById(idBenhNhan);
+      print('Giá trị TinhTrang: ${patientDetail['TinhTrang']}');
+      int tinhTrang = int.parse(patientDetail['TinhTrang']);
 
-  if (tinhTrang == 0) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientSearchScreen(patientDetail: patientDetail, username: username, id: idBenhNhan, pid: pid,)));
-  } else if (tinhTrang > 0) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen(patientDetail: patientDetail, username: username,)));
-  }
-} catch (e) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi khi lấy thông tin bệnh nhân: $e')));
-}
-
+      if (tinhTrang == 0) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PatientSearchScreen(
+                  patientDetail: patientDetail,
+                  username: username,
+                  id: idBenhNhan,
+                  pid: pid,
+                  name: name,
+                  tenChuongTrinh: tenChuongTrinh,
+                )));
+      } else if (tinhTrang > 0) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PatientSearchApprovedScreen(
+                  patientDetail: patientDetail,
+                  username: username,
+                  tenChuongTrinh: tenChuongTrinh,
+                )));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi khi lấy thông tin bệnh nhân: $e')));
+    }
   }
 
   @override
@@ -151,7 +162,7 @@ Widget buildResults(BuildContext context) {
                 children: [
                   ListTile(
                     title: Text(
-                       '${patient['MaBenhNhan']} - ${patient['TenBenhNhan']}',
+                      '${patient['MaBenhNhan']} - ${patient['TenBenhNhan']}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -160,12 +171,11 @@ Widget buildResults(BuildContext context) {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('CCCD: ${patient['CCCD']}'),
-                        Text(
-                            'Số điện thoại: ${patient['SoDienThoai']}'), 
+                        Text('Số điện thoại: ${patient['SoDienThoai']}'),
                       ],
                     ),
-                    
-                     onTap: () => navigateToDetailScreen(context, patient['IdBenhNhan'].toString()),
+                    onTap: () => navigateToDetailScreen(
+                        context, patient['IdBenhNhan'].toString()),
                   ),
                   Divider(
                     color: Colors.teal,

@@ -51,7 +51,7 @@ class _ScrollPatientState extends State<ScrollPatient> {
     List<Map<String, dynamic>> cardsData = getCardsData();
 
     return Container(
-      height: 130.0,
+      height: 120.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: cardsData.length,
@@ -64,34 +64,35 @@ class _ScrollPatientState extends State<ScrollPatient> {
               widget.onTap(index);
             },
             child: Container(
-              width: 160.0,
-              margin: EdgeInsets.all(8.0),
+              width: 115.0,
+              margin: EdgeInsets.all(12.0),
               decoration: BoxDecoration(
                 color: selectedIndex == index ? Color(0xFFB8F3E1) : Color(0xFFE0F2EF),
                 borderRadius: BorderRadius.circular(10),
+                 boxShadow: selectedIndex == index ? [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 8, spreadRadius: 1)] : [],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
                       cardsData[index]['count'],
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 4),
                     SvgPicture.asset(
                       cardsData[index]['iconPath'],
                       width: 20,
                       height: 20,
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 4),
                     Text(
                       cardsData[index]['label'],
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 12),
                     ),
                   ],
                 ),

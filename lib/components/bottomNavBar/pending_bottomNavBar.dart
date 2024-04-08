@@ -11,7 +11,9 @@ class CustomBottomNavBarPending extends StatefulWidget {
     final String username;
     final String id;
     final String pid;
-  const CustomBottomNavBarPending({super.key, this.patientDetail,required this.username, required this.id,required this.pid});
+    final String name;
+    final String tenChuongTrinh;
+  const CustomBottomNavBarPending({super.key, this.patientDetail,required this.username, required this.id,required this.pid, required this.name, required this.tenChuongTrinh});
   @override
   State<CustomBottomNavBarPending> createState() => _CustomBottomNavBarPendingState();
 }
@@ -32,7 +34,7 @@ class _CustomBottomNavBarPendingState extends State<CustomBottomNavBarPending> {
      
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DetailScreen(pid: widget.pid, username: widget.username)),
+        MaterialPageRoute(builder: (context) => DetailScreen(pid: widget.pid, username: widget.username, name: widget.name,tenChuongTrinh: widget.tenChuongTrinh,)),
       );
     } else {
      

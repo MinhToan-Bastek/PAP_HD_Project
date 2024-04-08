@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class UpdateInfoBody extends StatefulWidget {
@@ -10,12 +11,25 @@ class _UpdateInfoBodyState extends State<UpdateInfoBody> {
   final TextEditingController _joiningDateController = TextEditingController();
   final TextEditingController _appointmentDateController =
       TextEditingController();
+  final TextEditingController _medicineBoxController = TextEditingController();
+  final TextEditingController _supportiveMedicineBoxController =
+      TextEditingController();
+  final TextEditingController _emptyMedicineBoxController = TextEditingController();
+  final TextEditingController _returnedMedicineBoxController = TextEditingController();
+  final TextEditingController _lostMedicineBoxController = TextEditingController();
+  
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
+  final RegExp _numericRegex = RegExp(r'^[0-9]*$'); // Chỉ cho phép nhập số
 
   @override
   void dispose() {
     _joiningDateController.dispose();
     _appointmentDateController.dispose();
+    _medicineBoxController.dispose();
+    _supportiveMedicineBoxController.dispose();
+    _emptyMedicineBoxController.dispose();
+    _returnedMedicineBoxController.dispose();
+    _lostMedicineBoxController.dispose();
     super.dispose();
   }
 
@@ -69,15 +83,15 @@ class _UpdateInfoBodyState extends State<UpdateInfoBody> {
               ),
               SizedBox(width: 16), // Khoảng cách giữa hai widget
               Expanded(
-                child: _buildTextField('Số lượng', true),
+                child: _buildNumericTextField('Số lượng (hộp)', _medicineBoxController, true),
               ),
             ],
           ),
-           SizedBox(
+          SizedBox(
             height: 5,
           ),
 
-            Text(
+          Text(
             'Thuốc hỗ trợ',
             style: TextStyle(fontSize: 16),
           ),
@@ -88,14 +102,14 @@ class _UpdateInfoBodyState extends State<UpdateInfoBody> {
               ),
               SizedBox(width: 16), // Khoảng cách giữa hai widget
               Expanded(
-                child: _buildTextField('Số lượng', true),
+                child: _buildNumericTextField('Số lượng (hộp)', _supportiveMedicineBoxController, true),
               ),
             ],
           ),
-           SizedBox(
+          SizedBox(
             height: 5,
           ),
-            Text(
+          Text(
             'Vỉ vỏ thuốc rỗng',
             style: TextStyle(fontSize: 16),
           ),
@@ -106,14 +120,14 @@ class _UpdateInfoBodyState extends State<UpdateInfoBody> {
               ),
               SizedBox(width: 16), // Khoảng cách giữa hai widget
               Expanded(
-                child: _buildTextField('Số lượng', false),
+                child: _buildNumericTextField('Số lượng (hộp)', _emptyMedicineBoxController, false),
               ),
             ],
           ),
-           SizedBox(
+          SizedBox(
             height: 5,
           ),
-            Text(
+          Text(
             'Thuốc trả lại',
             style: TextStyle(fontSize: 16),
           ),
@@ -124,14 +138,14 @@ class _UpdateInfoBodyState extends State<UpdateInfoBody> {
               ),
               SizedBox(width: 16), // Khoảng cách giữa hai widget
               Expanded(
-                child: _buildTextField('Số lượng', false),
+                child: _buildNumericTextField('Số lượng (hộp)', _returnedMedicineBoxController, false),
               ),
             ],
           ),
-           SizedBox(
+          SizedBox(
             height: 5,
           ),
-            Text(
+          Text(
             'Thuốc thất lạc',
             style: TextStyle(fontSize: 16),
           ),
@@ -142,11 +156,11 @@ class _UpdateInfoBodyState extends State<UpdateInfoBody> {
               ),
               SizedBox(width: 16), // Khoảng cách giữa hai widget
               Expanded(
-                child: _buildTextField('Số lượng', false),
+                child: _buildNumericTextField('Số lượng (hộp)', _lostMedicineBoxController, false),
               ),
             ],
           ),
-          
+
         ],
       ),
     );
@@ -173,6 +187,33 @@ class _UpdateInfoBodyState extends State<UpdateInfoBody> {
         contentPadding: EdgeInsets.only(top: 15),
         // Chỉnh sửa content padding tại đây
       ),
+    );
+  }
+
+  Widget _buildNumericTextField(String label, TextEditingController controller, bool isRequired) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        label: RichText(
+          text: TextSpan(
+            text: label,
+            style: TextStyle(color: Colors.teal, fontSize: 16),
+            children: isRequired
+                ? [
+                    TextSpan(
+                        text: ' *',
+                        style: TextStyle(color: Colors.red, fontSize: 16))
+                  ]
+                : [],
+          ),
+        ),
+        enabledBorder: _enabledBorder(),
+        focusedBorder: _focusedBorder(),
+        contentPadding: EdgeInsets.only(top: 15),
+        // Chỉnh sửa content padding tại đây
+      ),
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^[0-9]*$'))], // nhập số
     );
   }
 

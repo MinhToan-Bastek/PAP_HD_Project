@@ -12,6 +12,9 @@ import 'package:pap_hd/components/update_info/attached_update.dart';
 import 'package:pap_hd/components/update_info/update_info_body.dart';
 
 class ApprovedCalendarReExam extends StatefulWidget {
+  final String tenChuongTrinh;
+
+  const ApprovedCalendarReExam({super.key, required this.tenChuongTrinh});
   
   @override
   State<ApprovedCalendarReExam> createState() => _ApprovedCalendarReExamState();
@@ -42,7 +45,9 @@ class _ApprovedCalendarReExamState extends State<ApprovedCalendarReExam> {
           ),
           Column(
             children: [
-              TitleCalendarReExam(), // Phần title không cuộn
+              TitleCalendarReExam(
+                tenChuongTrinh: widget.tenChuongTrinh,
+              ), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title

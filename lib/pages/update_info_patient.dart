@@ -13,11 +13,14 @@ import 'package:pap_hd/components/patient_search/search_approved/searchBarApprov
 import 'package:pap_hd/components/patient_search/title_patientSearch.dart';
 import 'package:pap_hd/components/update_info/attached_update.dart';
 import 'package:pap_hd/components/update_info/attached_update_interact.dart';
+import 'package:pap_hd/components/update_info/attachment_section_update.dart';
 import 'package:pap_hd/components/update_info/search_bar_update.dart';
 import 'package:pap_hd/components/update_info/title_updatePatient.dart';
 import 'package:pap_hd/components/update_info/update_info_body.dart';
 
 class UpdateInfoPatient extends StatefulWidget {
+  final String tenChuongTrinh;
+  const UpdateInfoPatient({super.key, required this.tenChuongTrinh});
   
   @override
   State<UpdateInfoPatient> createState() => _UpdateInfoPatientState();
@@ -40,7 +43,7 @@ class _UpdateInfoPatientState extends State<UpdateInfoPatient> {
           ),
           Column(
             children: [
-              TitlePatientUpdate(), // Phần title không cuộn
+              TitlePatientUpdate(tenChuongTrinh: widget.tenChuongTrinh,), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title
@@ -50,10 +53,9 @@ class _UpdateInfoPatientState extends State<UpdateInfoPatient> {
                        mainAxisAlignment: MainAxisAlignment.center,
                       children: [                      
                         SearchBarUpdate(),
-                        UpdateInfoBody(),
-                        AttachmentSection(),
+                        UpdateInfoBody(),                       
                         AttachedUpdate(),
-                        AttachmentSection(),
+                        AttachmentSectionUpdateInfo(),
                         AttachedUpdateInteract(),
                        
                       ],

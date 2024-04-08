@@ -16,9 +16,17 @@ class PatientSearchScreen extends StatefulWidget {
   final String username;
   final String id;
   final String pid;
-  const PatientSearchScreen({super.key,required this.patientDetail,required this.username, required this.id, required this.pid});
+  final String name;
+  final String tenChuongTrinh;
+  const PatientSearchScreen(
+      {super.key,
+      required this.patientDetail,
+      required this.username,
+      required this.id,
+      required this.pid,
+      required this.name,
+      required this.tenChuongTrinh});
 
-  
   @override
   State<PatientSearchScreen> createState() => _PatientSearchScreenState();
 }
@@ -47,14 +55,15 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 15.0),
                     child: Column(
-                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        
                         //SizedBox(height: 5),
                         SearchBarWidget(),
-                        PatientInfoSearch(patientDetail: widget.patientDetail),    
-                        AttachmentChecklist(patientDetail: widget.patientDetail),           
-                        AttachmentSectionSearchApproved(patientDetail: widget.patientDetail),
+                        PatientInfoSearch(patientDetail: widget.patientDetail),
+                        AttachmentChecklist(
+                            patientDetail: widget.patientDetail),
+                        AttachmentSectionSearchApproved(
+                            patientDetail: widget.patientDetail),
                       ],
                     ),
                   ),
@@ -64,7 +73,14 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBarPending(patientDetail: widget.patientDetail, username: widget.username, id :widget.id, pid: widget.pid,),
+      bottomNavigationBar: CustomBottomNavBarPending(
+        patientDetail: widget.patientDetail,
+        username: widget.username,
+        id: widget.id,
+        pid: widget.pid,
+        name: widget.name,
+        tenChuongTrinh: widget.tenChuongTrinh,
+      ),
     );
   }
 }

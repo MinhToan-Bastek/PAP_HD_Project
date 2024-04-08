@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pap_hd/pages/home.dart';
@@ -6,9 +7,16 @@ import 'package:pap_hd/pages/patient_search.dart';
 import 'package:pap_hd/pages/search.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
-   final String username;
+  final String username;
   final String pid;
-  const CustomBottomNavBar({super.key, required this.username, required this.pid});
+  final String name;
+  final String tenChuongTrinh;
+  const CustomBottomNavBar(
+      {super.key,
+      required this.username,
+      required this.pid,
+      required this.name,
+      required this.tenChuongTrinh});
   @override
   State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
 }
@@ -23,41 +31,43 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_home.svg',
-            height: 35,
+            height: 30,
           ),
           label: 'Trang chủ',
         ),
         BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/bottomNavBar/icon_chat.svg',
-            height: 35,
-          ),
+          icon: Icon(CupertinoIcons.bell, size: 30),
+          // icon: SvgPicture.asset(
+          //   'assets/bottomNavBar/icon_chat.svg',
+          //   height: 30,
+          // ),
           label: 'Thông báo hệ thống',
         ),
+        // BottomNavigationBarItem(
+        //   icon: SvgPicture.asset(
+        //     'assets/bottomNavBar/icon_scan.svg',
+        //     height: 30,
+        //   ),
+        //   label: 'Scan tài liệu',
+        // ),
         BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/bottomNavBar/icon_scan.svg',
-            height: 35,
-          ),
-          label: 'Scan tài liệu',
-        ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/bottomNavBar/icon_verify.svg',
-            height: 35,
-          ),
+          icon: Icon(CupertinoIcons.search, size: 30),
+          // icon: SvgPicture.asset(
+          //   'assets/bottomNavBar/icon_verify.svg',
+          //   height: 35,
+          // ),
           label: 'Tìm bệnh nhân',
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_regis.svg',
-            height: 35,
+            height: 30,
           ),
           label: 'Đăng ký bệnh nhân',
         ),
       ],
-      selectedItemColor: Colors.black, 
-      unselectedItemColor: Colors.black, 
+      selectedItemColor: Colors.black,
+      unselectedItemColor: Colors.black,
       selectedLabelStyle: TextStyle(fontSize: 8),
       unselectedLabelStyle: TextStyle(fontSize: 8),
       // Đặt index hiện tại để hỗ trợ highlighting item hiện tại, nếu cần
@@ -74,19 +84,29 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             // Điều hướng đến trang thông báo hệ thống
             break;
           case 2:
-            // Điều hướng đến trang Scan tài liệu
-            break;
-          case 3:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SearchScreen(username: widget.username, pid: widget.pid,)),
+              MaterialPageRoute(
+                  builder: (context) => SearchScreen(
+                        username: widget.username,
+                        pid: widget.pid,
+                        name: widget.name,
+                        tenChuongTrinh: widget.tenChuongTrinh,
+                      )),
             );
             break;
-          case 4:
+          case 3:
             // Điều hướng đến trang Đăng ký bệnh nhân
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => PatientRegistScreen(maChuongTrinh: '', username: widget.username, pid: '',)),
+              MaterialPageRoute(
+                  builder: (context) => PatientRegistScreen(
+                        maChuongTrinh: '',
+                        username: widget.username,
+                        pid: widget.pid,
+                        name: widget.name,
+                        tenChuongTrinh: widget.tenChuongTrinh,
+                      )),
             );
             break;
         }

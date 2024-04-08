@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 
 class CustomListPatient extends StatelessWidget {
   final String card;
@@ -16,6 +17,7 @@ class CustomListPatient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Column(
@@ -31,7 +33,7 @@ class CustomListPatient extends StatelessWidget {
               ),
 
               SizedBox(width: 24),
-              
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,6 +57,19 @@ class CustomListPatient extends StatelessWidget {
                           style: TextStyle(color: Colors.grey, fontSize: 12),
                         ),
                         Spacer(),
+                         Icon(
+                          Icons.calendar_month,
+                          color: Colors.grey,
+                          size: 14,
+                        ),
+                        Text(
+                          'Ngày tham gia:',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 12,
+                          ),
+                        ),
                         Text(
                           joinDate,
                           style: TextStyle(
@@ -93,7 +108,7 @@ class CustomListPatient extends StatelessWidget {
             padding: EdgeInsets.only(top: 12.0), // Adjust padding for spacing
             child: Divider(
               color: Colors.teal,
-              thickness: 1,
+              thickness: 0.3,
             ),
           ),
         ],

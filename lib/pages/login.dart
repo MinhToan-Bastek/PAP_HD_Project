@@ -29,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       var responseData = await ApiService().login(username, password);
       var accessToken = responseData['access_token'];
+      var name = responseData['name'];
       var message = responseData['message'];
       if (message == 'success') {
         // Kiểm tra token_access
@@ -38,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await ApiService().fetchAndSendToken(username, accessToken);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen(username: username)),
+          MaterialPageRoute(builder: (context) => HomeScreen(username: username, name: name,tenChuongTrinh: "",)),
         );
       } else {
         // Đăng nhập thất bại, hiển thị thông báo lỗi

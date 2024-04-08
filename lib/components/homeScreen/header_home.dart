@@ -3,14 +3,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pap_hd/pages/login.dart';
 
 class Header extends StatelessWidget {
+  final String name;
+  const Header({super.key, required this.name});
+
   Widget buildIconMenu(BuildContext context) {
     return GestureDetector(
       onTap: () {
         print("Icon Menu Pressed");
         Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
         // Xử lý khi icon menu được nhấn
         // Đặt hành động bạn muốn thực hiện ở đây
       },
@@ -65,7 +68,7 @@ class Header extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Hello Hitachi !',
+                'Hello $name !',
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,

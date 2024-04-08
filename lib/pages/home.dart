@@ -51,7 +51,9 @@ import 'package:pap_hd/notifications/flushBar.dart';
 
 class HomeScreen extends StatefulWidget {
    final String username;
-  const HomeScreen({super.key, required this.username});
+   final String name;
+   final String tenChuongTrinh;
+  const HomeScreen({super.key, required this.username, required this.name, required this.tenChuongTrinh});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -90,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               SizedBox(height: 15),
-              Header(),
+              Header(name: widget.name),
               // Các phần khác của màn hình
               WeatherWidget(),
               SizedBox(height: 15),
@@ -103,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 isSeeAll: _seeAll,
               ),
                Flexible( // Cho phép GridView mở rộng đầy đủ không gian có thể
-              child: ProjectsGrid(seeAll: _seeAll, username: widget.username),
+              child: ProjectsGrid(seeAll: _seeAll, username: widget.username, name: widget.name,TenChuongTrinh: widget.tenChuongTrinh,),
             ),
               //ProjectsGrid(seeAll: _seeAll),
               

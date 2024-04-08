@@ -184,8 +184,10 @@ class Project {
 class ProjectCard extends StatelessWidget {
   final Project project;
    final String username;
+   final String name;
+   final String TenChuongTrinh;
   //final VoidCallback? onPressed;
-  const ProjectCard({Key? key, required this.project,required this.username //this.onPressed
+  const ProjectCard({Key? key, required this.project,required this.username, required this.name, required this.TenChuongTrinh
   }) : super(key: key);
 
   @override
@@ -205,7 +207,7 @@ class ProjectCard extends StatelessWidget {
       print('Pid Details: ${project.pid}');
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailScreen(pid: project.pid!, username: username),
+          MaterialPageRoute(builder: (context) => DetailScreen(pid: project.pid!, username: username, name: name,tenChuongTrinh: TenChuongTrinh,),
           ));
       },
       child: Container(
@@ -272,7 +274,9 @@ class ProjectCard extends StatelessWidget {
 class ProjectsGrid extends StatefulWidget {
   final bool seeAll;
   final String username;
-  ProjectsGrid({Key? key, required this.seeAll, required this.username}) : super(key: key);
+  final String name;
+  final String TenChuongTrinh;
+  ProjectsGrid({Key? key, required this.seeAll, required this.username, required this.name, required this.TenChuongTrinh}) : super(key: key);
 
   @override
   _ProjectsGridState createState() => _ProjectsGridState();
@@ -341,7 +345,7 @@ class _ProjectsGridState extends State<ProjectsGrid> {
       ),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        return ProjectCard(project: projects[index], username: widget.username,);
+        return ProjectCard(project: projects[index], username: widget.username,name: widget.name,TenChuongTrinh: widget.TenChuongTrinh,);
       },
     );
   }

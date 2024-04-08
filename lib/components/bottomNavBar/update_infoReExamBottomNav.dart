@@ -69,36 +69,6 @@ class UpdateBottomNavBarReExam extends StatelessWidget {
   }
 }
 
-//   Future<void> getImageFromGallery(BuildContext context) async {
-//   // Yêu cầu quyền truy cập thư viện ảnh
-//   var permissionStatus = await Permission.photos.request();
-
-//   if (permissionStatus == PermissionStatus.granted) {
-//     final picker = ImagePicker();
-//     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-//     if (pickedFile != null) {
-//       // Chuyển đổi ảnh thành dạng base64
-//       File imageFile = File(pickedFile.path);
-//       List<int> imageBytes = await imageFile.readAsBytes();
-//       String base64Image = base64Encode(imageBytes);
-//        print('Số lượng ảnh base64: ${base64Image.length}');
-
-//       // Thêm ảnh vào danh sách và gửi về server
-//       Provider.of<ImageProviderModel>(context, listen: false).addImage(pickedFile.path);
-//       // Ví dụ: ApiService().sendImage(base64Image);
-//     } else {
-//       print('Không có ảnh được chọn.');
-//     }
-//   } else {
-//     print('Quyền truy cập thư viện ảnh không được cấp.');
-//   }
-// }
-
-
-
-  
-
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(

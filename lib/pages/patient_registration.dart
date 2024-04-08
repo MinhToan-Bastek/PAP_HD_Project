@@ -12,11 +12,13 @@ class PatientRegistScreen extends StatefulWidget {
   final String maChuongTrinh;
   final String username;
   final String pid;
+   final String name;
+   final String tenChuongTrinh;
   PatientRegistScreen(
       {Key? key,
       required this.maChuongTrinh,
       required this.username,
-      required this.pid})
+      required this.pid, required this.name, required this.tenChuongTrinh})
       : super(key: key);
   @override
   State<PatientRegistScreen> createState() => _PatientRegistScreenState();
@@ -30,6 +32,7 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
     super.initState();
     // In ra maChuongTrinh để kiểm tra
     print("MaChuongTrinh được truyền vào là: ${widget.maChuongTrinh}");
+    print("Tên chương trình được truyền vào là: ${widget.tenChuongTrinh}");
   }
 
   @override
@@ -51,6 +54,8 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
               TitlePatientRegist(
                 username: widget.username,
                 pid: widget.pid,
+                name: widget.name,
+                tenChuongTrinh: widget.tenChuongTrinh,
               ), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
@@ -64,6 +69,8 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
                           key: formKey,
                           maChuongTrinh: widget.maChuongTrinh,
                           username: widget.username, pid: widget.pid,
+                          name: widget.name,
+                          tenChuongTrinh: widget.tenChuongTrinh,
                         ),
                         AttachedDocumentsSection(),
                         AttachmentSection(),

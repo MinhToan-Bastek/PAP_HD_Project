@@ -3,6 +3,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pap_hd/pages/home.dart';
 
 class HeaderAll extends StatelessWidget {
+  final String username;
+   final String name;
+   final String tenChuongTrinh;
+
+  const HeaderAll({super.key, required this.username, required this.name, required this.tenChuongTrinh});
   Widget buildBackIcon(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -20,7 +25,9 @@ class HeaderAll extends StatelessWidget {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => HomeScreen(username: 'toancm',)),
+                  builder: (BuildContext context) =>
+                      HomeScreen(username: username, name: name, tenChuongTrinh: tenChuongTrinh,),
+                ),
                 (Route<dynamic> route) => false,
               );
             },

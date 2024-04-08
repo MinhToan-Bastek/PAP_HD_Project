@@ -4,7 +4,8 @@ import 'package:pap_hd/pages/details.dart';
 import 'package:pap_hd/pages/search.dart';
 
 class TitleAdverseReport extends StatelessWidget {
-  const TitleAdverseReport({Key? key}) : super(key: key);
+  final String tenChuongTrinh;
+  const TitleAdverseReport({Key? key, required this.tenChuongTrinh}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class TitleAdverseReport extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        'Chương trình Jakavi',
+                          tenChuongTrinh,
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,
