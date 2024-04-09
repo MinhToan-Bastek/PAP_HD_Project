@@ -22,6 +22,6 @@ void showNotificationFlushbar(BuildContext context, String title, String body) {
     duration: Duration(seconds: 4), // Thời gian hiển thị thông báo
     margin: EdgeInsets.all(8),
     borderRadius: BorderRadius.circular(24),
-    backgroundColor: Color(0xFF9EF6D6)
+    backgroundColor: Color(0xFFE9F9F7)
   ).show(context);
 }

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
-
 class MedicineDetails {
   final String patientCount;
   final String participationCount;
@@ -19,14 +18,14 @@ class MedicineDetails {
     required this.patientCount,
     required this.participationCount,
     required this.participationStopCount,
-     this.dateStart,
-     this.dateFinish,
+    this.dateStart,
+    this.dateFinish,
     required this.inStock,
     required this.expected,
     required this.available,
   });
 
-  //FormatDate từ API 
+  //FormatDate từ API
   static DateTime? tryParseDate(String? dateString) {
     if (dateString == null || dateString.isEmpty) {
       return null;
@@ -59,7 +58,7 @@ class MedicineDetails {
 class MedicineInfo extends StatefulWidget {
   final MedicineDetails details;
 
-  const MedicineInfo({super.key,required this.details});
+  const MedicineInfo({super.key, required this.details});
   @override
   State<MedicineInfo> createState() => _MedicineInfoState();
 }
@@ -67,7 +66,7 @@ class MedicineInfo extends StatefulWidget {
 class _MedicineInfoState extends State<MedicineInfo> {
   @override
   Widget build(BuildContext context) {
-     final String formattedStartDate = widget.details.dateStart != null
+    final String formattedStartDate = widget.details.dateStart != null
         ? DateFormat('dd/MM/yyyy').format(widget.details.dateStart!)
         : 'Unknown';
 
@@ -81,9 +80,24 @@ class _MedicineInfoState extends State<MedicineInfo> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          CircleAvatar(
-            radius: 70,
-            backgroundImage: AssetImage('assets/detailScreen/img_medicine.png'),
+          Container(            
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), 
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              radius: 70,
+              backgroundColor: Colors.white, 
+              backgroundImage:
+                  AssetImage('assets/detailScreen/img_medicine.png'),
+            ),
           ),
           SizedBox(width: 10),
           Expanded(
@@ -99,11 +113,11 @@ class _MedicineInfoState extends State<MedicineInfo> {
                   ),
                 ),
                 Text(
-                   '${widget.details.participationCount} đang tham gia,${widget.details.participationStopCount} dừng chương trình',
+                  '${widget.details.participationCount} đang tham gia,${widget.details.participationStopCount} dừng chương trình',
                   style: TextStyle(fontSize: 12),
                 ),
                 Text(
-                   dateRange,
+                  dateRange,
                   style: TextStyle(fontSize: 12),
                 ),
                 SizedBox(height: 10),
@@ -111,20 +125,19 @@ class _MedicineInfoState extends State<MedicineInfo> {
                   svgAsset: 'assets/detailScreen/icon_instock.svg',
                   text: 'In Stock: ${widget.details.inStock}',
                   iconColor: Colors.black,
-                   textColor: Colors.black,
+                  textColor: Colors.black,
                 ),
                 InfoLine(
                   svgAsset: 'assets/detailScreen/icon_expected.svg',
                   text: 'Expected: ${widget.details.expected}',
                   iconColor: Color(0xFF709505),
-                   textColor: Colors.black,
+                  textColor: Colors.black,
                 ),
                 InfoLine(
-                  svgAsset: 'assets/detailScreen/icon_available.svg',
-                  text: 'Available: ${widget.details.available}',
-                  iconColor: Color(0xFF025D3C),
-                   textColor: Color(0xFF025D3C)
-                ),
+                    svgAsset: 'assets/detailScreen/icon_available.svg',
+                    text: 'Available: ${widget.details.available}',
+                    iconColor: Color(0xFF025D3C),
+                    textColor: Color(0xFF025D3C)),
               ],
             ),
           ),
@@ -138,14 +151,14 @@ class InfoLine extends StatelessWidget {
   final String svgAsset;
   final String text;
   final Color iconColor;
-   final Color textColor;
-   
+  final Color textColor;
+
   const InfoLine({
     Key? key,
     required this.svgAsset,
     required this.text,
     required this.iconColor,
-     required this.textColor,
+    required this.textColor,
   }) : super(key: key);
 
   @override

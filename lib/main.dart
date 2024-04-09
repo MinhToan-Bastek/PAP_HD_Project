@@ -5,9 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pap_hd/api/firebase_api.dart';
+import 'package:pap_hd/components/bottomNavBar/bottomNavBar.dart';
 import 'package:pap_hd/model/checkbox_provider.dart';
 import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/model/img_provider.dart';
+import 'package:pap_hd/notifications/NotificationService.dart';
 import 'package:pap_hd/pages/login.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +17,15 @@ import 'package:provider/provider.dart';
 //Nhận thông báo khi màn hình tắt
 Future<void> backgroundMessageHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
+  handleIncomingNotification(message);
 }
+void handleIncomingNotification(RemoteMessage message) {
+  String title = message.notification?.title ?? "Thông báo mới";
+  String body = message.notification?.body ?? "Bạn có một thông báo mới";
+  
+  NotificationService().addNotification(title, body);
+}
+
 
 
 void main() async {
@@ -35,8 +45,20 @@ void main() async {
   await Firebase.initializeApp();
    // Khởi tạo Firebase Analytics
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-  //FirebaseApi().initNotifications(showNotificationSnackbar);
+  // Nhận thông báo khi màn hình tắt
   FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
+
+  // Nhận thông báo khi màn hình bật
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    handleIncomingNotification(message);
+    print("Got a message whilst in the foreground!");
+    print("Message data: ${message.data}");
+    if (message.notification != null) {
+      print("Message also contained a notification: ${message.notification?.title}");
+    }
+  });
+
+
   runApp(const MyApp());
 }
 

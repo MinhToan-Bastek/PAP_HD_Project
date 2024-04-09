@@ -4,6 +4,7 @@ import 'package:pap_hd/components/bottomNavBar/bottomNavBar.dart';
 import 'package:pap_hd/components/detailScreen/medicine_detail.dart';
 import 'package:pap_hd/components/detailScreen/options_detail.dart';
 import 'package:pap_hd/components/header_all.dart';
+import 'package:pap_hd/main.dart';
 import 'package:pap_hd/services/api_service.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -101,7 +102,7 @@ class _DetailScreenState extends State<DetailScreen> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: CustomBottomNavBar(
+            child: CustomBottomNavBar(          
               username: widget.username,
               pid: widget.pid,
               name: widget.name,

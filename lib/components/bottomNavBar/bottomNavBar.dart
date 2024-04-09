@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pap_hd/notifications/NotificationService.dart';
 import 'package:pap_hd/pages/home.dart';
+import 'package:pap_hd/pages/notification.dart';
 import 'package:pap_hd/pages/patient_registration.dart';
 import 'package:pap_hd/pages/patient_search.dart';
 import 'package:pap_hd/pages/search.dart';
+
 
 class CustomBottomNavBar extends StatefulWidget {
   final String username;
@@ -12,20 +15,26 @@ class CustomBottomNavBar extends StatefulWidget {
   final String name;
   final String tenChuongTrinh;
   const CustomBottomNavBar(
-      {super.key,
+      {Key? key,
       required this.username,
       required this.pid,
       required this.name,
-      required this.tenChuongTrinh});
+      required this.tenChuongTrinh}): super(key: key);
   @override
-  State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
+  CustomBottomNavBarState createState() => CustomBottomNavBarState();
 }
 
-class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
+class CustomBottomNavBarState extends State<CustomBottomNavBar> {
+  void updateNotificationCount(int count) {
+    setState(() {
+      notificationCount += count;
+    });
+  }
+  int notificationCount = 0;
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Colors.white, // Màu nền theo hình ảnh
+      backgroundColor: Colors.white, 
       type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(
@@ -35,14 +44,57 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           ),
           label: 'Trang chủ',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(CupertinoIcons.bell, size: 30),
-          // icon: SvgPicture.asset(
-          //   'assets/bottomNavBar/icon_chat.svg',
-          //   height: 30,
-          // ),
+          BottomNavigationBarItem(
+          icon: Stack(
+            children: <Widget>[
+              Icon(CupertinoIcons.bell, size: 30),
+              Positioned(
+                right: 0,
+                child: ValueListenableBuilder<int>(
+                  valueListenable: NotificationService().notificationCount,
+                  builder: (_, count, __) => count > 0
+                      ? Container(
+                          padding: EdgeInsets.all(1),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 12,
+                            minHeight: 12,
+                          ),
+                          child: Text(
+                            '$count',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : Container(), // Không hiển thị gì nếu không có thông báo
+                ),
+              ),
+            ],
+          ),
           label: 'Thông báo hệ thống',
         ),
+        // BottomNavigationBarItem(
+        //   icon: SvgPicture.asset(
+        //     'assets/bottomNavBar/icon_home.svg',
+        //     height: 30,
+        //   ),
+        //   label: 'Trang chủ',
+        // ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(CupertinoIcons.bell, size: 30),
+        //   // icon: SvgPicture.asset(
+        //   //   'assets/bottomNavBar/icon_chat.svg',
+        //   //   height: 30,
+        //   // ),
+        //   label: 'Thông báo hệ thống',
+        // ),
+
         // BottomNavigationBarItem(
         //   icon: SvgPicture.asset(
         //     'assets/bottomNavBar/icon_scan.svg',
@@ -70,8 +122,8 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       unselectedItemColor: Colors.black,
       selectedLabelStyle: TextStyle(fontSize: 8),
       unselectedLabelStyle: TextStyle(fontSize: 8),
-      // Đặt index hiện tại để hỗ trợ highlighting item hiện tại, nếu cần
-      currentIndex: 0, // Trang chủ được chọn mặc định
+      
+      currentIndex: 0, 
       onTap: (index) {
         switch (index) {
           case 0:
@@ -81,7 +133,11 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             // );
             break;
           case 1:
-            // Điều hướng đến trang thông báo hệ thống
+          NotificationService().clearNotifications(); 
+             Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NotificationsPage()),
+    );
             break;
           case 2:
             Navigator.push(
@@ -113,4 +169,5 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       },
     );
   }
+ 
 }
