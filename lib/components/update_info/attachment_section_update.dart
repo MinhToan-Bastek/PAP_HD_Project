@@ -15,12 +15,12 @@ class AttachmentSectionUpdateInfo extends StatefulWidget {
 
 class _AttachmentSectionUpdateInfoState extends State<AttachmentSectionUpdateInfo> {
   final List<String> titles = [
-    "M1",
-    "M2",
-    "CCCD",
-    "Hồ sơ bệnh án",
+    "M7",
+    "Toa thuốc hỗ trợ",
+    "Hóa đơn mua ngoài",
+    "ADR",
     "ContactLog",
-    "ADR"
+    
   ];
 
   void _pickImage(int index) async {
@@ -89,7 +89,7 @@ class _AttachmentSectionUpdateInfoState extends State<AttachmentSectionUpdateInf
           margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: titles.length,
+            itemCount: titles.length,            
             itemBuilder: (context, index) {
               String title = titles[index];
               XFile? image =
@@ -113,10 +113,10 @@ class _AttachmentSectionUpdateInfoState extends State<AttachmentSectionUpdateInf
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add_photo_alternate,
-                                    color: Colors.teal),
+                                
                                 Text(
                                   title,
+                                    textAlign: TextAlign.center,
                                   style: TextStyle(color: Colors.teal),
                                 ),
                               ],

@@ -186,7 +186,7 @@ void showSearchHospitalModal(BuildContext context, List<Hospital> hospitals, voi
     );
     if (pickedDate != null) {
       setState(() {
-        controller.text = _dateFormat.format(pickedDate);
+        controller.text = DateFormat('MM/dd/yyyy').format(pickedDate);
       });
     }
   }

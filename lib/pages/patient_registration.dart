@@ -70,7 +70,7 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
                           maChuongTrinh: widget.maChuongTrinh,
                           username: widget.username, pid: widget.pid,
                           name: widget.name,
-                          tenChuongTrinh: widget.tenChuongTrinh,
+                          tenChuongTrinh: widget.tenChuongTrinh, 
                         ),
                         AttachedDocumentsSection(),
                         AttachmentSection(),

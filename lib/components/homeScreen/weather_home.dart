@@ -91,7 +91,6 @@ class WeatherWidget extends StatelessWidget {
     );
   }
 }
-
 class WeatherDetail extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -115,10 +114,7 @@ class WeatherDetail extends StatelessWidget {
             child: Column(
               children: [
                 Icon(
-                  IconData(icon.codePoint,
-                      fontFamily: icon.fontFamily,
-                      fontPackage: icon.fontPackage,
-                      matchTextDirection: true),
+                  icon, 
                   size: 48.0,
                   color: iconColor,
                 ),
@@ -144,10 +140,7 @@ class WeatherDetail extends StatelessWidget {
         : Column(
             children: [
               Icon(
-                IconData(icon.codePoint,
-                    fontFamily: icon.fontFamily,
-                    fontPackage: icon.fontPackage,
-                    matchTextDirection: true),
+                icon, 
                 color: iconColor,
               ),
               Text(
@@ -167,3 +160,81 @@ class WeatherDetail extends StatelessWidget {
           );
   }
 }
+
+// class WeatherDetail extends StatelessWidget {
+//   final IconData icon;
+//   final String label;
+//   final String value;
+//   final bool isMain;
+//   final Color iconColor;
+
+//   const WeatherDetail({
+//     Key? key,
+//     required this.icon,
+//     required this.label,
+//     required this.value,
+//     this.isMain = false,
+//     required this.iconColor,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return isMain
+//         ? Expanded(
+//             child: Column(
+//               children: [
+//                 Icon(
+//                   IconData(icon.codePoint,
+//                       fontFamily: icon.fontFamily,
+//                       fontPackage: icon.fontPackage,
+//                       matchTextDirection: true),
+//                   size: 48.0,
+//                   color: iconColor,
+//                 ),
+//                 Text(
+//                   label,
+//                   textAlign: TextAlign.center,
+//                   style: TextStyle(
+//                     fontWeight: FontWeight.bold,
+//                     fontSize: 16.0,
+//                   ),
+//                 ),
+//                 Text(
+//                   value,
+//                   style: TextStyle(
+//                     fontWeight: FontWeight.bold,
+//                     fontSize: 48.0,
+//                     color: iconColor,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           )
+//         : Column(
+//             children: [
+//               Icon(
+//                 IconData(icon.codePoint,
+//                     fontFamily: icon.fontFamily,
+//                     fontPackage: icon.fontPackage,
+//                     matchTextDirection: true),
+//                 color: iconColor,
+//               ),
+//               Text(
+//                 value,
+//                 style: TextStyle(
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//               Text(
+//                 label,
+//                 style: TextStyle(
+//                   fontSize: 12.0,
+//                   color: Colors.black,
+//                 ),
+//               ),
+//             ],
+//           );
+//   }
+// }
+
+ 

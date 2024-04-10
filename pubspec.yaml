@@ -64,7 +64,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/noti_iconbackgroud.png"
+  image_path: "assets/ic_launcher.png"
 flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the

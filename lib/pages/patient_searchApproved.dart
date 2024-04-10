@@ -65,7 +65,7 @@ class _PatientSearchApprovedScreenState extends State<PatientSearchApprovedScree
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBarApproved(tenChuongTrinh: widget.tenChuongTrinh,),
+      bottomNavigationBar: CustomBottomNavBarApproved(tenChuongTrinh: widget.tenChuongTrinh,patientDetail: widget.patientDetail, username: widget.username,),
     );
   }
 }

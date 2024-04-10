@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pap_hd/components/patient_registration/info_patientRegis.dart';
+import 'package:pap_hd/components/update_info/update_info_body.dart';
 import 'package:pap_hd/pages/home.dart';
 import 'package:pap_hd/pages/info_ReExam_Pending.dart';
 import 'package:pap_hd/model/img_provider.dart';
@@ -12,9 +14,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class UpdateBottomNavBarReExam extends StatelessWidget {
+  final VoidCallback onSavePressed;
+   final GlobalKey<UpdateInfoBodyState> formKey;
   final picker = ImagePicker();
   String? base64String;
-  UpdateBottomNavBarReExam({super.key});
+  UpdateBottomNavBarReExam({super.key,required this.onSavePressed,required this.formKey});
 
   
   Future<void> getImageFromCamera(BuildContext context) async {
@@ -101,7 +105,7 @@ class UpdateBottomNavBarReExam extends StatelessWidget {
             'assets/bottomNavBar/icon_save.svg',
             height: 35,
           ),
-          label: 'Lưu bệnh nhân',
+          label: 'Lưu ',
         ),
       ],
       selectedItemColor: Colors.black,
@@ -124,10 +128,7 @@ class UpdateBottomNavBarReExam extends StatelessWidget {
             getImageFromGallery(context);
             break;
           case 3:
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => InfoReExamPending()),
-            );
+            onSavePressed();
             break;
         }
       },

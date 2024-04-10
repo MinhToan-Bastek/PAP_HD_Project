@@ -102,9 +102,9 @@ class _OptionsGridState extends State<OptionsGrid> {
       {
         'icon': 'assets/detailScreen/icon_support.svg',
         'label': 'Cập nhật thông tin hỗ trợ',
-        'screen': UpdateInfoPatient(
-          tenChuongTrinh: widget.tenChuongTrinh,
-        )
+        // 'screen': UpdateInfoPatient(
+        //   tenChuongTrinh: widget.tenChuongTrinh,
+        // )
       },
       {
         'icon': 'assets/detailScreen/icon_reportbl.svg',

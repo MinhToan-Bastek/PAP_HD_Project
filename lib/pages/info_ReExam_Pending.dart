@@ -41,8 +41,7 @@ class _InfoReExamPendingState extends State<InfoReExamPending> {
                         
                         //SizedBox(height: 5),
                         SearchBarReExam(),
-                        UpdateInfoBody(),
-                        //MedicineForm(),
+                        //UpdateInfoBody(),                      
                         AttachmentSection(),
                         AttachedUpdate(),
                         AttachmentSection(),

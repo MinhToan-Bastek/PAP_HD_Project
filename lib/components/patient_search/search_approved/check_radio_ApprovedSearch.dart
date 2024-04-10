@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class AttachmentChecklist extends StatefulWidget {
   final Map<String, dynamic> patientDetail;
 
-  const AttachmentChecklist({Key? key, required this.patientDetail}) : super(key: key);
+  const AttachmentChecklist({Key? key, required this.patientDetail})
+      : super(key: key);
 
   @override
   _AttachmentChecklistState createState() => _AttachmentChecklistState();
@@ -59,13 +60,18 @@ class _AttachmentChecklistState extends State<AttachmentChecklist> {
             spacing: spacing,
             runSpacing: spacing,
             children: [
-              _buildCheckbox(width, 'M1', _isCheckedM1, (value) => _isCheckedM1 = value),
-              _buildCheckbox(width, 'M2', _isCheckedM2, (value) => _isCheckedM2 = value),
-              _buildCheckbox(width, 'CCCD', _isCheckedCCCD, (value) => _isCheckedCCCD = value),
-              _buildCheckbox(width, 'Hồ sơ bệnh án', _isCheckedHoSoBenhAn, (value) => _isCheckedHoSoBenhAn = value),
-              _buildCheckbox(width, 'Contact log', _isCheckedContactLog, (value) => _isCheckedContactLog = value),
+              _buildCheckbox(
+                  width, 'M1', _isCheckedM1, (value) => _isCheckedM1 = value),
+              _buildCheckbox(
+                  width, 'M2', _isCheckedM2, (value) => _isCheckedM2 = value),
+              _buildCheckbox(width, 'CCCD', _isCheckedCCCD,
+                  (value) => _isCheckedCCCD = value),
+              _buildCheckbox(width, 'Hồ sơ bệnh án', _isCheckedHoSoBenhAn,
+                  (value) => _isCheckedHoSoBenhAn = value),
+              _buildCheckbox(width, 'Contact log', _isCheckedContactLog,
+                  (value) => _isCheckedContactLog = value),
             ],
-          ),         
+          ),
           SizedBox(height: padding),
           Text(
             'Thông tin ADR',
@@ -76,14 +82,23 @@ class _AttachmentChecklistState extends State<AttachmentChecklist> {
             ),
           ),
           SizedBox(height: padding),
-          _buildRadio(width, 'Có', true, _isCheckedADR, (value) => _isCheckedADR = value),
-          _buildRadio(width, 'Không', false, _isCheckedADR, (value) => _isCheckedADR = value),
+          Wrap(
+            spacing: spacing, 
+            runSpacing: spacing, 
+            children: [
+              _buildRadio(width, 'Có', true, _isCheckedADR,
+                  (value) => _isCheckedADR = value),
+              _buildRadio(width, 'Không', false, _isCheckedADR,
+                  (value) => _isCheckedADR = value),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCheckbox(double width, String title, bool isChecked, Function(bool) onChanged) {
+  Widget _buildCheckbox(
+      double width, String title, bool isChecked, Function(bool) onChanged) {
     return Container(
       width: width,
       child: CheckboxListTile(
@@ -93,12 +108,12 @@ class _AttachmentChecklistState extends State<AttachmentChecklist> {
         controlAffinity: ListTileControlAffinity.leading,
         contentPadding: EdgeInsets.zero,
         activeColor: Colors.teal,
-       
       ),
     );
   }
 
-  Widget _buildRadio(double width, String title, bool value, bool groupValue, Function(bool) onChanged) {
+  Widget _buildRadio(double width, String title, bool value, bool groupValue,
+      Function(bool) onChanged) {
     return Container(
       width: width,
       child: RadioListTile<bool>(
@@ -107,7 +122,7 @@ class _AttachmentChecklistState extends State<AttachmentChecklist> {
         groupValue: groupValue,
         onChanged: (value) => setState(() => onChanged(value!)),
         activeColor: Colors.teal,
-          contentPadding: EdgeInsets.symmetric(horizontal: 4),
+        contentPadding: EdgeInsets.symmetric(horizontal: 4),
       ),
     );
   }

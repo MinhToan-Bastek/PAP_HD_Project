@@ -101,94 +101,105 @@ class ApiService {
       throw Exception('Failed to load project details');
     }
   }
- //Get post đăng ký bệnh nhân
-Future<void> postPatientData(
-  Map<String, dynamic> patientData, List<XFile?> documentImages) async {
-  final url = Uri.parse("$_baseUrl/Values/CreatePatient");
 
-  var request = http.MultipartRequest('POST', url);
-  // Gói thông tin patientData vào JSON string và thêm vào fields
-  var patientDataJson = json.encode(patientData);
-  request.fields['Data'] = patientDataJson;
+  //Get post đăng ký bệnh nhân
+  Future<void> postPatientData(
+      Map<String, dynamic> patientData, List<XFile?> documentImages) async {
+    final url = Uri.parse("$_baseUrl/Values/CreatePatient");
 
-  // Thêm các fields từ patientData
-  patientData.forEach((key, value) {
-    if (value is String) {
-      request.fields[key] = value;
-    }
-  });
+    var request = http.MultipartRequest('POST', url);
+    // Gói thông tin patientData vào JSON string và thêm vào fields
+    var patientDataJson = json.encode(patientData);
+    request.fields['Data'] = patientDataJson;
 
-  // Thêm hình ảnh
-   List<String> fieldNames = ["M1", "M2", "CCCD", "Hồ sơ bệnh án", "Contact Log", "ADR"];
-
-  // Thêm hình ảnh với tên được đặt theo tên của ô tương ứng
-  for (int i = 0; i < documentImages.length; i++) {
-    var image = documentImages[i];
-    if (image != null) {
-      var stream = http.ByteStream(image.openRead());
-      var length = await image.length();
-      // Tạo tên file mới theo định dạng "TênÔ.jpg" hoặc tương tự
-      var baseName = fieldNames[i].endsWith('.') ? fieldNames[i].substring(0, fieldNames[i].length - 1) : fieldNames[i];
-      var fileName = '$baseName${path.extension(image.path)}';
-      var multipartFile = http.MultipartFile('File', stream, length, filename: fileName);
-      request.files.add(multipartFile);
-    }
-  }
-
-  var streamedResponse = await request.send();
-
-  try {
-    // Kiểm tra nếu streamedResponse không null
-    if (streamedResponse != null) {
-      // Chuyển đổi StreamedResponse thành Response để dễ dàng xử lý hơn
-      var response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200) {
-        print(
-            'Thông tin bệnh nhân và hình ảnh đã được gửi lên server thành công.');
-        // Xử lý dữ liệu phản hồi ở đây, ví dụ:
-        print('Phản hồi từ server: ${response.body}');
-      } else {
-        print(
-            'Status Code: ${response.statusCode}');
-        // Bạn cũng có thể in ra phản hồi chi tiết từ server nếu cần
-        print('Phản hồi chi tiết: ${response.body}');
+    // Thêm các fields từ patientData
+    patientData.forEach((key, value) {
+      if (value is String) {
+        request.fields[key] = value;
       }
-    } else {
-      // Xử lý trường hợp không nhận được phản hồi từ server
-      print('Không nhận được phản hồi từ server.');
+    });
+
+    // Thêm hình ảnh
+    List<String> fieldNames = [
+      "M1",
+      "M2",
+      "CCCD",
+      "Hồ sơ bệnh án",
+      "Contact Log",
+      "ADR"
+    ];
+
+    // Thêm hình ảnh với tên được đặt theo tên của ô tương ứng
+    for (int i = 0; i < documentImages.length; i++) {
+      var image = documentImages[i];
+      if (image != null) {
+        var stream = http.ByteStream(image.openRead());
+        var length = await image.length();
+        // Tạo tên file mới theo định dạng "TênÔ.jpg" hoặc tương tự
+        var baseName = fieldNames[i].endsWith('.')
+            ? fieldNames[i].substring(0, fieldNames[i].length - 1)
+            : fieldNames[i];
+        var fileName = '$baseName${path.extension(image.path)}';
+        var multipartFile =
+            http.MultipartFile('File', stream, length, filename: fileName);
+        request.files.add(multipartFile);
+      }
     }
-  } catch (e) {
-    // Xử lý bất kỳ ngoại lệ nào xảy ra trong quá trình chuyển đổi hoặc xử lý phản hồi
-    print('Có lỗi xảy ra khi xử lý phản hồi: $e');
+
+    var streamedResponse = await request.send();
+
+    try {
+      // Kiểm tra nếu streamedResponse không null
+      if (streamedResponse != null) {
+        // Chuyển đổi StreamedResponse thành Response để dễ dàng xử lý hơn
+        var response = await http.Response.fromStream(streamedResponse);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          print(
+              'Thông tin bệnh nhân và hình ảnh đã được gửi lên server thành công.');
+          // Xử lý dữ liệu phản hồi ở đây, ví dụ:
+          print('Phản hồi từ server: ${response.body}');
+        } else {
+          print('Status Code: ${response.statusCode}');
+          // Bạn cũng có thể in ra phản hồi chi tiết từ server nếu cần
+          print('Phản hồi chi tiết: ${response.body}');
+        }
+      } else {
+        // Xử lý trường hợp không nhận được phản hồi từ server
+        print('Không nhận được phản hồi từ server.');
+      }
+    } catch (e) {
+      // Xử lý bất kỳ ngoại lệ nào xảy ra trong quá trình chuyển đổi hoặc xử lý phản hồi
+      print('Có lỗi xảy ra khi xử lý phản hồi: $e');
+    }
   }
-}
 
 //Lấy danh sách bệnh viện
-Future<List<Hospital>> fetchHospitals(String username) async {
-  final url = Uri.parse("$_baseUrl/Values/GetListHospital");
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, dynamic>{
-      'username': username,
-    
-    }),
-  );
+  Future<List<Hospital>> fetchHospitals(String username) async {
+    final url = Uri.parse("$_baseUrl/Values/GetListHospital");
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'username': username,
+      }),
+    );
 
-  if (response.statusCode == 200) {
-    List<dynamic> hospitalsJson = json.decode(response.body);
-    List<Hospital> hospitals = hospitalsJson.map((hospitalJson) => Hospital.fromJson(hospitalJson)).toList();
-    return hospitals;
-  } else {
-    throw Exception('Failed to load hospitals');
+    if (response.statusCode == 200) {
+      List<dynamic> hospitalsJson = json.decode(response.body);
+      List<Hospital> hospitals = hospitalsJson
+          .map((hospitalJson) => Hospital.fromJson(hospitalJson))
+          .toList();
+      return hospitals;
+    } else {
+      throw Exception('Failed to load hospitals');
+    }
   }
-}
 
 //Search bệnh nhân
-Future<List<dynamic>> searchPatients(String username, String query) async {
+  Future<List<dynamic>> searchPatients(String username, String query) async {
     final url = Uri.parse("$_baseUrl/Values/GetListPatient");
     final response = await http.post(
       url,
@@ -222,70 +233,137 @@ Future<List<dynamic>> searchPatients(String username, String query) async {
     );
 
     if (response.statusCode == 200) {
-       print(response.body);
-       
+      print(response.body);
+
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load patient details');
     }
-}
+  }
 
 //Duyệt bệnh nhân
-Future<bool> approvePatient(String username, int id, int status) async {
-  final url = Uri.parse("$_baseUrl/Values/ChangeStatusPatient");
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, dynamic>{
-      'username': username,
-      'id': id,
-      'status': status,
-    }),
-  );
+  Future<bool> approvePatient(String username, int id, int status) async {
+    final url = Uri.parse("$_baseUrl/Values/ChangeStatusPatient");
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'username': username,
+        'id': id,
+        'status': status,
+      }),
+    );
 
-  if (response.statusCode == 200 || response.statusCode == 201) {
-    final Map<String, dynamic> responseBody = jsonDecode(response.body);   
-    if (responseBody['Status'] == 1 && responseBody['Message'].toLowerCase() == "success") {
-      print(response.body);
-      return true; // Duyệt thành công
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+      if (responseBody['Status'] == 1 &&
+          responseBody['Message'].toLowerCase() == "success") {
+        print(response.body);
+        return true; // Duyệt thành công
+      }
     }
-}
-  return false;
-}
- // Danh sách bệnh nhân
- Future<Map<String, dynamic>> fetchPatients({
-  required String username,
-  String query = "",
-  required int status,
-  required int pageIndex,
-  required int pageSize,
-  required String sortColumn,
-  required String sortDir,
-}) async {
-  final url = Uri.parse("$_baseUrl/Values/GetListPatientDetail");
-
-  final response = await http.post(
-    url,
-    headers: {"Content-Type": "application/json; charset=UTF-8"},
-    body: jsonEncode({
-      'username': username,
-      'query': query,
-      'status': status,
-      'pageindex': pageIndex,
-      'pagesize': pageSize,
-      'sortcolumn': sortColumn,
-      'sortdir': sortDir,
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Failed to load patients');
+    return false;
   }
-}
 
+  // Danh sách bệnh nhân
+  Future<Map<String, dynamic>> fetchPatients({
+    required String username,
+    String query = "",
+    required int status,
+    required int pageIndex,
+    required int pageSize,
+    required String sortColumn,
+    required String sortDir,
+  }) async {
+    final url = Uri.parse("$_baseUrl/Values/GetListPatientDetail");
 
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json; charset=UTF-8"},
+      body: jsonEncode({
+        'username': username,
+        'query': query,
+        'status': status,
+        'pageindex': pageIndex,
+        'pagesize': pageSize,
+        'sortcolumn': sortColumn,
+        'sortdir': sortDir,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load patients');
+    }
+  }
+
+//Cập nhật thông tin tái khám
+  Future<void> updateReExam(Map<String, dynamic> patientDataUpdate,
+      List<XFile?> documentImages) async {
+    final url = Uri.parse("$_baseUrl/Values/CreateInforExamination");
+
+    var request = http.MultipartRequest('POST', url);
+     // Gói thông tin patientData vào JSON string và thêm vào fields
+    var patientDataJson = json.encode(patientDataUpdate);
+    request.fields['Data'] = patientDataJson;
+
+    patientDataUpdate.forEach((key, value) {
+      if (value != null) {
+        request.fields[key] = value.toString();
+      }
+    });
+
+    // Thêm hình ảnh
+    List<String> fieldNames = [
+      "M7",
+      "Toa thuốc hỗ trợ",
+      "Hóa đơn mua ngoài",
+      "ADR",
+      "ContactLog",
+    ];
+
+      for (int i = 0; i < documentImages.length; i++) {
+      var image = documentImages[i];
+      if (image != null) {
+        var stream = http.ByteStream(image.openRead());
+        var length = await image.length();
+        // Tạo tên file mới theo định dạng "TênÔ.jpg" hoặc tương tự
+        var baseName = fieldNames[i].endsWith('.')
+            ? fieldNames[i].substring(0, fieldNames[i].length - 1)
+            : fieldNames[i];
+        var fileName = '$baseName${path.extension(image.path)}';
+        var multipartFile =
+            http.MultipartFile('File', stream, length, filename: fileName);
+        request.files.add(multipartFile);
+      }
+    }
+  var streamedResponse = await request.send();
+    try {
+      // Kiểm tra nếu streamedResponse không null
+      if (streamedResponse != null) {
+        // Chuyển đổi StreamedResponse thành Response để dễ dàng xử lý hơn
+        var response = await http.Response.fromStream(streamedResponse);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          print(
+              'Thông tin bệnh nhân và hình ảnh đã được gửi lên server thành công.');
+          // Xử lý dữ liệu phản hồi ở đây, ví dụ:
+          print('Phản hồi từ server: ${response.body}');
+        } else {
+          print('Status Code: ${response.statusCode}');
+          // Bạn cũng có thể in ra phản hồi chi tiết từ server nếu cần
+          print('Phản hồi chi tiết: ${response.body}');
+        }
+      } else {
+        // Xử lý trường hợp không nhận được phản hồi từ server
+        print('Không nhận được phản hồi từ server.');
+      }
+    } catch (e) {
+      // Xử lý bất kỳ ngoại lệ nào xảy ra trong quá trình chuyển đổi hoặc xử lý phản hồi
+      print('Có lỗi xảy ra khi xử lý phản hồi: $e');
+    }
+  }
 }

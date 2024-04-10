@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:pap_hd/api/firebase_api.dart';
 import 'package:pap_hd/components/bottomNavBar/bottomNavBar.dart';
 import 'package:pap_hd/model/checkbox_provider.dart';
+import 'package:pap_hd/model/checkbox_updateReExam.dart';
 import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/model/img_provider.dart';
 import 'package:pap_hd/notifications/NotificationService.dart';
@@ -73,6 +74,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => ImageProviderModel()),
         ChangeNotifierProvider(create: (context) => DocumentsData()), 
         ChangeNotifierProvider(create: (context) => DocumentImagesProvider()), 
+        ChangeNotifierProvider(create: (context) => DocumentsDataUpdate()), 
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

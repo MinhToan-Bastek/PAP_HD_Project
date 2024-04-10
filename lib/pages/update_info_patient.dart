@@ -20,13 +20,21 @@ import 'package:pap_hd/components/update_info/update_info_body.dart';
 
 class UpdateInfoPatient extends StatefulWidget {
   final String tenChuongTrinh;
-  const UpdateInfoPatient({super.key, required this.tenChuongTrinh});
-  
+  final Map<String, dynamic> patientDetail;
+  final String username;
+  const UpdateInfoPatient(
+      {super.key,
+      required this.tenChuongTrinh,
+      required this.patientDetail,
+      required this.username});
+
   @override
   State<UpdateInfoPatient> createState() => _UpdateInfoPatientState();
 }
 
 class _UpdateInfoPatientState extends State<UpdateInfoPatient> {
+  final GlobalKey<UpdateInfoBodyState> formKey =
+      GlobalKey<UpdateInfoBodyState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,21 +51,26 @@ class _UpdateInfoPatientState extends State<UpdateInfoPatient> {
           ),
           Column(
             children: [
-              TitlePatientUpdate(tenChuongTrinh: widget.tenChuongTrinh,), // Phần title không cuộn
+              TitlePatientUpdate(
+                tenChuongTrinh: widget.tenChuongTrinh,
+              ), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title
                   child: Padding(
                     padding: const EdgeInsets.only(top: 15.0),
                     child: Column(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [                      
-                        SearchBarUpdate(),
-                        UpdateInfoBody(),                       
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //SearchBarUpdate(),
+                        UpdateInfoBody(
+                          patientDetail: widget.patientDetail,
+                          username: widget.username,
+                           key: formKey,
+                        ),
                         AttachedUpdate(),
                         AttachmentSectionUpdateInfo(),
-                        AttachedUpdateInteract(),
-                       
+                        //AttachedUpdateInteract(),
                       ],
                     ),
                   ),
@@ -67,8 +80,14 @@ class _UpdateInfoPatientState extends State<UpdateInfoPatient> {
           ),
         ],
       ),
-      bottomNavigationBar: UpdateBottomNavBarReExam(),
+      bottomNavigationBar: UpdateBottomNavBarReExam(
+        formKey: formKey, // Sử dụng GlobalKey đã khởi tạo ở trên
+        onSavePressed: () {
+          if (formKey.currentState != null) {
+            formKey.currentState!.updateReExamInfo();
+          }
+        },
+      ),
     );
   }
-  
 }

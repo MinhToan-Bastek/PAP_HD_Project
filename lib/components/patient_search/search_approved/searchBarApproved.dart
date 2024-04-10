@@ -15,7 +15,7 @@ class _SearchBarApprovedWidgetState extends State<SearchBarApprovedWidget> {
   String formatDate(String dateString) {
     try {
     
-      DateTime dateTime = DateFormat("d/M/yyyy h:mm:ss a").parse(dateString);
+      DateTime dateTime = DateFormat("M/d/yyyy h:mm:ss a").parse(dateString);
       
       return DateFormat('dd/MM/yyyy').format(dateTime);
     } catch (e) {
