@@ -14,6 +14,9 @@ class ScrollPatient extends StatefulWidget {
 }
 
 class _ScrollPatientState extends State<ScrollPatient> {
+  // Thêm một danh sách mới để lưu trữ các status
+final List<int> statusValues = [-1, 2, 1, 3, 0]; // Cập nhật giá trị status tương ứng
+
   int selectedIndex = 0;
 
   List<Map<String, dynamic>> getCardsData() {
@@ -57,11 +60,12 @@ class _ScrollPatientState extends State<ScrollPatient> {
         itemCount: cardsData.length,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
+            
             onTap: () {
               setState(() {
                 selectedIndex = index;
               });
-              widget.onTap(index);
+              widget.onTap(statusValues[index]);
             },
             child: Container(
               width: 115.0,

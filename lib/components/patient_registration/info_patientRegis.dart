@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pap_hd/components/patient_registration/attachment_section.dart';
@@ -24,7 +25,7 @@ class Hospital {
 
 
 
-
+enum TextFieldType { text, phoneNumber,cccd }
 
 class PatientInfoForm extends StatefulWidget {
   final String pid;
@@ -270,21 +271,21 @@ void showSearchHospitalModal(BuildContext context, List<Hospital> hospitals, voi
           SizedBox(
             height: 5,
           ),
-          _buildTextField('Họ & tên', _nameController, true),
+          _buildTextField('Họ & tên', _nameController, true, TextFieldType.text),
           if (!_isFormValid && !_isNameValid)
             Text(
               'Vui lòng nhập Họ & Tên',
               style: TextStyle(color: Colors.red),
             ),
           SizedBox(height: 5),
-          _buildTextField('CCCD', _cccdController, true),
+         _buildTextField('CCCD', _cccdController, true, TextFieldType.cccd),
           if (!_isFormValid && !_isCccdValid)
             Text(
               'Vui lòng nhập CCCD',
               style: TextStyle(color: Colors.red),
             ),
           SizedBox(height: 5),
-          _buildTextField('Số điện thoại', _phoneController, true),
+          _buildTextField('Số điện thoại', _phoneController, true, TextFieldType.phoneNumber),
           if (!_isFormValid && !_isPhoneValid)
             Text(
               'Vui lòng nhập Số điện thoại',
@@ -351,11 +352,54 @@ void showSearchHospitalModal(BuildContext context, List<Hospital> hospitals, voi
     );
   }
 
-  Widget _buildTextField(
-      String label, TextEditingController controller, bool isRequired) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
+  // Widget _buildTextField(
+  //     String label, TextEditingController controller, bool isRequired) {
+  //   return TextFormField(
+  //     controller: controller,
+  //     decoration: InputDecoration(
+  //       label: RichText(
+  //         text: TextSpan(
+  //           text: label,
+  //           style: TextStyle(color: Colors.teal, fontSize: 16),
+  //           children: isRequired
+  //               ? [
+  //                   TextSpan(
+  //                       text: ' *',
+  //                       style: TextStyle(color: Colors.red, fontSize: 16))
+  //                 ]
+  //               : [],
+  //         ),
+  //       ),
+  //       enabledBorder: _enabledBorder(),
+  //       focusedBorder: _focusedBorder(),
+  //       contentPadding: EdgeInsets.only(top: 15),
+  //       // Chỉnh sửa content padding tại đây
+  //     ),
+  //   );
+  // }
+
+
+
+Widget _buildTextField(String label, TextEditingController controller, bool isRequired, TextFieldType fieldType) {
+  List<TextInputFormatter> inputFormatters = [];
+  
+ 
+  switch (fieldType) {
+     case TextFieldType.text:
+     
+      inputFormatters.add(FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\s]+$')));
+      break;
+    case TextFieldType.phoneNumber:
+      inputFormatters.add(FilteringTextInputFormatter.digitsOnly);
+      break;
+       case TextFieldType.cccd:
+      inputFormatters.add(FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9]+$')));
+      break;
+  }
+
+  return TextFormField(
+    controller: controller,
+    decoration: InputDecoration(
         label: RichText(
           text: TextSpan(
             text: label,
@@ -369,29 +413,17 @@ void showSearchHospitalModal(BuildContext context, List<Hospital> hospitals, voi
                 : [],
           ),
         ),
-        enabledBorder: _enabledBorder(),
+         enabledBorder: _enabledBorder(),
         focusedBorder: _focusedBorder(),
         contentPadding: EdgeInsets.only(top: 15),
-        // Chỉnh sửa content padding tại đây
-      ),
-    );
-  }
+        ),
+    inputFormatters: inputFormatters, 
+    keyboardType: fieldType == TextFieldType.phoneNumber ? TextInputType.phone : TextInputType.text,
+    
+  );
+  
+}
 
-//   Widget _buildSearchableDropdown(BuildContext context, List<Hospital> items) {
-//   return TextFormField(
-//     readOnly: true,
-//     controller: TextEditingController(text: items.firstWhere((item) => item.maBenhVien == selectedMaBenhVien, orElse: () => Hospital(maBenhVien: '', tenBenhVien: '')).tenBenhVien),
-//     decoration: InputDecoration(
-//       labelText: 'Bệnh viện',
-//       suffixIcon: Icon(Icons.arrow_drop_down),
-//     ),
-//     onTap: () => showSearchHospitalModal(context, items, (selectedValue) {
-//       setState(() {
-//         selectedMaBenhVien = selectedValue;
-//       });
-//     }),
-//   );
-// }
 Widget _buildSearchableDropdown(String label, BuildContext context, List<Hospital> items, bool isRequired) {
   return TextFormField(
     readOnly: true,

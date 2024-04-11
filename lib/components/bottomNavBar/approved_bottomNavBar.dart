@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pap_hd/pages/home.dart';
+import 'package:pap_hd/pages/list_ReExam.dart';
 import 'package:pap_hd/pages/patient_registration.dart';
 import 'package:pap_hd/pages/update_info_patient.dart';
 
@@ -18,28 +19,32 @@ class CustomBottomNavBarApproved extends StatelessWidget {
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_home.svg',
-            height: 35,
+            height: 30,
           ),
           label: 'Trang chủ',
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_confirm.svg',
-            height: 35,
+            height: 30,
           ),
           label: 'Xác nhận lịch tái khám',
+        ),
+          BottomNavigationBarItem(
+          icon: Icon(Icons.playlist_play_outlined, size: 30),
+          label: 'Danh sách phiếu tái khám',
         ),
          BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_update.svg',
-            height: 35,
+            height: 30,
           ),
           label: 'Cập nhật thông tin tái khám',
         ),
          BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_flag.svg',
-            height: 35,
+            height: 30,
           ),
           label: 'Báo cáo biến cố bất lợi',
         ),
@@ -65,11 +70,17 @@ class CustomBottomNavBarApproved extends StatelessWidget {
           case 2:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => UpdateInfoPatient(tenChuongTrinh: tenChuongTrinh,patientDetail: patientDetail,username: username,)),
+              MaterialPageRoute(builder: (context) => ListReExam(username: username,patientDetail: patientDetail)),
             );
             break;
           case 3:
-            // Điều hướng đến trang Duyệt bệnh nhân
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UpdateInfoPatient(tenChuongTrinh: tenChuongTrinh,patientDetail: patientDetail,username: username,)),
+            );
+            break;
+             case 4:
+            // Điều hướng đến trang 
             break;
         }
       },

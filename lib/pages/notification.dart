@@ -13,6 +13,7 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: Stack(
         children: [
@@ -25,6 +26,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
             ),
           ),
+
           Column(
             children: [
               TitleNotification(),
@@ -42,6 +44,39 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         return Column(
                           children: [
                             ListTile(
+                              leading: Padding(
+                                padding: const EdgeInsets.only(right: 2, top: 4),
+                                child: CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor:
+                                      Colors.teal,
+                                  child: Stack(
+                                    clipBehavior: Clip
+                                        .none, 
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 25,
+                                        backgroundImage: AssetImage(
+                                            'assets/profile.png'), // Ảnh lớn
+                                      ),
+                                      Positioned(
+                                        right:
+                                            -12, 
+                                        bottom:
+                                            -5, 
+                                        child: CircleAvatar(
+                                          radius: 15,
+                                          backgroundColor: Colors
+                                              .white, 
+                                          backgroundImage: AssetImage(
+                                              'assets/ic_edit.png'), // Ảnh nhỏ
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                   
+                                ),
+                              ),
                               title: Text(notification.title,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
@@ -50,17 +85,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   children: [
                                     TextSpan(
                                       text: notification.body,
-                                      style: TextStyle(
-                                          color:
-                                              Colors.black), 
+                                      style: TextStyle(color: Colors.black),
                                     ),
                                     TextSpan(
                                       text: '\n' +
                                           DateFormat('dd/MM/yyyy HH:mm').format(
                                               notification.receivedTime),
-                                      style: TextStyle(
-                                          color: Colors
-                                              .grey),
+                                      style: TextStyle(color: Colors.grey),
                                     ),
                                   ],
                                 ),
@@ -100,72 +131,4 @@ class _NotificationsPageState extends State<NotificationsPage> {
       ),
     );
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: Stack(
-  //       children: [
-  //      Container(
-  //         decoration: BoxDecoration(
-  //           image: DecorationImage(
-  //             image: AssetImage("assets/homeScreen/home_background.png"),
-  //             fit: BoxFit.cover,
-  //           ),
-  //         ),
-  //         child: ValueListenableBuilder<List<NotificationDetail>>(
-  //           valueListenable: NotificationService().notificationDetails,
-  //           builder: (context, notificationList, child) {
-  //             if (notificationList.isEmpty) {
-  //               return Center(child: Text("Không có thông báo mới"));
-  //             }
-  //             return ListView.builder(
-  //               itemCount: notificationList.length,
-  //               itemBuilder: (context, index) {
-  //                 final notification = notificationList[index];
-  //                 return Column(
-  //                   children: [
-  //                     ListTile(
-  //                       title: Text(notification.title,
-  //                           style: TextStyle(fontWeight: FontWeight.bold)),
-  //                       subtitle: Text(
-  //                         notification.body +
-  //                             "\n" +
-  //                             DateFormat('dd/MM/yyyy HH:mm')
-  //                                 .format(notification.receivedTime),
-  //                         style: TextStyle(color: Colors.grey),
-  //                       ),
-  //                       isThreeLine: true,
-  //                       contentPadding: EdgeInsets.fromLTRB(20.0, 8.0, 20.0, 0.0),
-  //                       trailing: IconButton(
-  //                         icon: Icon(CupertinoIcons.delete,
-  //                             size: 16, color: Colors.red),
-  //                         onPressed: () {
-
-  //                           NotificationService().removeNotificationAt(index);
-  //                           ScaffoldMessenger.of(context).showSnackBar(
-  //                             SnackBar(
-  //                               content: Text('Thông báo đã được xóa thành công'),
-  //                               duration: Duration(
-  //                                   seconds:
-  //                                       2),
-  //                             ),
-  //                           );
-  //                         },
-  //                       ),
-  //                     ),
-  //                     Divider(
-  //                       color: Colors.teal.withOpacity(0.3),
-  //                     ), // Thêm Divider
-  //                   ],
-  //                 );
-  //               },
-  //             );
-  //           },
-  //         ),
-  //       ),
-  //       ],
-  //     ),
-
-  //   );
-  // }
 }

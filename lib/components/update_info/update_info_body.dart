@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:pap_hd/components/patient_registration/info_patientRegis.dart';
 import 'package:pap_hd/model/checkbox_provider.dart';
 import 'package:pap_hd/model/checkbox_updateReExam.dart';
 import 'package:pap_hd/model/documentImages_provider.dart';
@@ -9,10 +10,10 @@ import 'package:pap_hd/services/api_service.dart';
 import 'package:provider/provider.dart';
 
 class UpdateInfoBody extends StatefulWidget {
-  
   final Map<String, dynamic> patientDetail;
   final String username;
-  const UpdateInfoBody({Key? key, required this.patientDetail, required this.username})
+  const UpdateInfoBody(
+      {Key? key, required this.patientDetail, required this.username})
       : super(key: key);
 
   @override
@@ -20,6 +21,14 @@ class UpdateInfoBody extends StatefulWidget {
 }
 
 class UpdateInfoBodyState extends State<UpdateInfoBody> {
+  bool _isFormValid = true;
+  bool _medicineBoxValid = false;
+  bool _medicineBoxQuantityValid = false;
+  bool _appointmentDateValid = false;
+  bool _isJoiningDateValid = false;
+  bool _supportiveMedicineBoxValid = false;
+  bool _supportiveMedicineBoxQuantityValid = false;
+
   final TextEditingController _joiningDateController = TextEditingController();
   final TextEditingController _appointmentDateController =
       TextEditingController();
@@ -33,8 +42,9 @@ class UpdateInfoBodyState extends State<UpdateInfoBody> {
   final TextEditingController _lostMedicineBoxController =
       TextEditingController();
 
-final TextEditingController _medicineBoxQuantityController = TextEditingController();
-      final TextEditingController _supportiveMedicineBoxQuantityController =
+  final TextEditingController _medicineBoxQuantityController =
+      TextEditingController();
+  final TextEditingController _supportiveMedicineBoxQuantityController =
       TextEditingController();
   final TextEditingController _emptyMedicineBoxQuantityController =
       TextEditingController();
@@ -43,38 +53,132 @@ final TextEditingController _medicineBoxQuantityController = TextEditingControll
   final TextEditingController _lostMedicineBoxQuantityController =
       TextEditingController();
 
-
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
   final RegExp _numericRegex = RegExp(r'^[0-9]*$');
 
   final TextEditingController _cccdController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _cccdController.dispose();
-    _joiningDateController.dispose();
-    _appointmentDateController.dispose();
-    _medicineBoxController.dispose();
-    _supportiveMedicineBoxController.dispose();
-    _emptyMedicineBoxController.dispose();
-    _returnedMedicineBoxController.dispose();
-    _lostMedicineBoxController.dispose();
+  // @override
+  // void dispose() {
+  //   _nameController.dispose();
+  //   _cccdController.dispose();
+  //   _joiningDateController.dispose();
+  //   _appointmentDateController.dispose();
+  //   _medicineBoxController.dispose();
+  //   _supportiveMedicineBoxController.dispose();
+  //   _emptyMedicineBoxController.dispose();
+  //   _returnedMedicineBoxController.dispose();
+  //   _lostMedicineBoxController.dispose();
 
-_medicineBoxQuantityController.dispose();
-     _supportiveMedicineBoxQuantityController.dispose();
-    _emptyMedicineBoxQuantityController.dispose();
-    _returnedMedicineBoxQuantityController.dispose();
-    _lostMedicineBoxQuantityController.dispose();
-    super.dispose();
+  //   _medicineBoxQuantityController.dispose();
+  //   _supportiveMedicineBoxQuantityController.dispose();
+  //   _emptyMedicineBoxQuantityController.dispose();
+  //   _returnedMedicineBoxQuantityController.dispose();
+  //   _lostMedicineBoxQuantityController.dispose();
+  //   super.dispose();
+  // }
+
+  @override
+void dispose() {
+  // Remove listeners before disposing
+  _medicineBoxController.removeListener(_onMedicineBoxChanged);
+  _medicineBoxQuantityController.removeListener(_onMedicineBoxQuantityChanged);
+  _appointmentDateController.removeListener(_onAppointmentDateChanged);
+  _joiningDateController.removeListener(_onJoiningDateChanged);
+  _supportiveMedicineBoxController.removeListener(_onSupportiveMedicineBoxChanged);
+  _supportiveMedicineBoxQuantityController.removeListener(_onSupportiveMedicineBoxQuantityChanged);
+  // Dispose text controllers
+  _nameController.dispose();
+  _cccdController.dispose();
+  _joiningDateController.dispose();
+  _appointmentDateController.dispose();
+  _medicineBoxController.dispose();
+  _supportiveMedicineBoxController.dispose();
+  _emptyMedicineBoxController.dispose();
+  _returnedMedicineBoxController.dispose();
+  _lostMedicineBoxController.dispose();
+  _medicineBoxQuantityController.dispose();
+  _supportiveMedicineBoxQuantityController.dispose();
+  _emptyMedicineBoxQuantityController.dispose();
+  _returnedMedicineBoxQuantityController.dispose();
+  _lostMedicineBoxQuantityController.dispose();
+  super.dispose();
+}
+
+void _onMedicineBoxChanged() {
+  if (_medicineBoxController.text.isNotEmpty) {
+    setState(() => _medicineBoxValid = true);
   }
+}
+
+void _onMedicineBoxQuantityChanged() {
+  if (_medicineBoxQuantityController.text.isNotEmpty) {
+    setState(() => _medicineBoxQuantityValid = true);
+  }
+}
+
+void _onAppointmentDateChanged() {
+  if (_appointmentDateController.text.isNotEmpty) {
+    setState(() => _appointmentDateValid = true);
+  }
+}
+
+void _onJoiningDateChanged() {
+  if (_joiningDateController.text.isNotEmpty) {
+    setState(() => _isJoiningDateValid = true);
+  }
+}
+
+void _onSupportiveMedicineBoxChanged() {
+  if (_supportiveMedicineBoxController.text.isNotEmpty) {
+    setState(() => _supportiveMedicineBoxValid = true);
+  }
+}
+
+void _onSupportiveMedicineBoxQuantityChanged() {
+  if (_supportiveMedicineBoxQuantityController.text.isNotEmpty) {
+    setState(() => _supportiveMedicineBoxQuantityValid = true);
+  }
+}
+
 
   @override
   void initState() {
     super.initState();
     _nameController.text = widget.patientDetail['TenBenhNhan'] ?? '';
     _cccdController.text = widget.patientDetail['CCCD'] ?? '';
+
+     _medicineBoxController.addListener(() {
+    if (_medicineBoxController.text.isNotEmpty) {
+      setState(() => _medicineBoxValid = true);
+    }
+  });
+    _medicineBoxQuantityController.addListener(() {
+    if (_medicineBoxQuantityController.text.isNotEmpty) {
+      setState(() => _medicineBoxQuantityValid = true);
+    }
+  });
+   _appointmentDateController.addListener(() {
+    if (_appointmentDateController.text.isNotEmpty) {
+      setState(() => _appointmentDateValid = true);
+    }
+  });
+  _joiningDateController.addListener(() {
+    if (_joiningDateController.text.isNotEmpty) {
+      setState(() => _isJoiningDateValid = true);
+    }
+  });
+  _supportiveMedicineBoxController.addListener(() {
+    if (_supportiveMedicineBoxController.text.isNotEmpty) {
+      setState(() => _supportiveMedicineBoxValid = true);
+    }
+  });
+  _supportiveMedicineBoxQuantityController.addListener(() {
+    if (_supportiveMedicineBoxQuantityController.text.isNotEmpty) {
+      setState(() => _supportiveMedicineBoxQuantityValid = true);
+    }
+  });
   }
 
   Future<void> _selectDate(
@@ -85,25 +189,30 @@ _medicineBoxQuantityController.dispose();
       firstDate: DateTime(1900),
       lastDate: DateTime(2101),
     );
-   if (pickedDate != null) {
-  setState(() {
-    controller.text = DateFormat('MM/dd/yyyy').format(pickedDate);
-  });
-}
+    if (pickedDate != null) {
+      setState(() {
+        controller.text = DateFormat('MM/dd/yyyy').format(pickedDate);
+      });
+    }
   }
 
   void updateReExamInfo() async {
-    // Kiểm tra các trường dữ liệu đã nhập
-    bool _isReExamDateValid = _joiningDateController.text.isNotEmpty;
-    bool _isAppointmentDateValid = _appointmentDateController.text.isNotEmpty;
-    bool _isThuocThuongMaiHamLuongValid =
-        _medicineBoxController.text.isNotEmpty;
-    // Thêm các kiểm tra cho các trường dữ liệu khác nếu cần
+    // Kiểm tra xem các trường đã được nhập hay chưa
+    _medicineBoxValid = _medicineBoxController.text.isNotEmpty;
+    _medicineBoxQuantityValid = _medicineBoxQuantityController.text.isNotEmpty;
+    _appointmentDateValid = _appointmentDateController.text.isNotEmpty;
+    _isJoiningDateValid = _joiningDateController.text.isNotEmpty;
+    _supportiveMedicineBoxValid =
+        _supportiveMedicineBoxController.text.isNotEmpty;
+    _supportiveMedicineBoxQuantityValid =
+        _supportiveMedicineBoxQuantityController.text.isNotEmpty;
 
-    bool _isFormValid = _isReExamDateValid &&
-        _isAppointmentDateValid &&
-        _isThuocThuongMaiHamLuongValid;
-    // Thêm các trường khác vào _isFormValid nếu cần
+    _isFormValid = _medicineBoxValid &&
+        _medicineBoxQuantityValid &&
+        _appointmentDateValid &&
+        _isJoiningDateValid &&
+        _supportiveMedicineBoxValid &&
+        _supportiveMedicineBoxQuantityValid;
 
     if (!_isFormValid) {
       setState(() {}); // Cập nhật UI để hiển thị thông báo lỗi
@@ -111,7 +220,8 @@ _medicineBoxQuantityController.dispose();
     }
 
     // Lấy dữ liệu từ Provider hoặc từ nguồn dữ liệu khác
-    final documentsData = Provider.of<DocumentsDataUpdate>(context, listen: false);
+    final documentsData =
+        Provider.of<DocumentsDataUpdate>(context, listen: false);
     final documentImagesProvider =
         Provider.of<DocumentImagesProvider>(context, listen: false);
     List<XFile?> documentImages = documentImagesProvider.documentImages;
@@ -120,7 +230,7 @@ _medicineBoxQuantityController.dispose();
     final Map<String, dynamic> patientDataUpdate = {
       "MaChuongTrinh": widget.patientDetail['MaChuongTrinh'],
       "MaBenhVien": widget.patientDetail['MaBenhVien'],
-      "MaBenhNhan":widget.patientDetail['MaBenhNhan'],
+      "MaBenhNhan": widget.patientDetail['MaBenhNhan'],
       "NgayKham": _joiningDateController.text.trim(),
       "NgayHenTaiKham": _appointmentDateController.text.trim(),
       "ThuocThuongMaiHamLuong": _medicineBoxController.text.trim(),
@@ -128,7 +238,8 @@ _medicineBoxQuantityController.dispose();
           int.tryParse(_medicineBoxQuantityController.text.trim()) ?? 0,
       "ThuocHoTroHamLuong": _supportiveMedicineBoxController.text.trim(),
       "ThuocHoTroSoLuong":
-          int.tryParse(_supportiveMedicineBoxQuantityController.text.trim()) ?? 0,
+          int.tryParse(_supportiveMedicineBoxQuantityController.text.trim()) ??
+              0,
       "VoThuocRongHamLuong": _emptyMedicineBoxController.text.trim(),
       "VoThuocRongSoLuong":
           double.tryParse(_emptyMedicineBoxQuantityController.text.trim()) ?? 0,
@@ -138,10 +249,11 @@ _medicineBoxQuantityController.dispose();
       "ThuocThatLacHamLuong": _lostMedicineBoxController.text.trim(),
       "ThuocThatLacSoLuong":
           int.tryParse(_lostMedicineBoxQuantityController.text.trim()) ?? 0,
-         
-      "Check_M7":  documentsData.checkedItems['M7']! ? "1" : "0",
-      "Check_ToaThuocHoTro": documentsData.checkedItems['Toa thuốc hỗ trợ']! ? "1" : "0",
-      "Check_HoaDonMuaNgoai": documentsData.checkedItems['Hóa đơn mua ngoài']! ? "1" : "0",
+      "Check_M7": documentsData.checkedItems['M7']! ? "1" : "0",
+      "Check_ToaThuocHoTro":
+          documentsData.checkedItems['Toa thuốc hỗ trợ']! ? "1" : "0",
+      "Check_HoaDonMuaNgoai":
+          documentsData.checkedItems['Hóa đơn mua ngoài']! ? "1" : "0",
       "Check_ContactLog": documentsData.selectedContactLog == 0 ? "1" : "0",
       "Check_ADR": documentsData.selectedADR == 0 ? "1" : "0",
       "Username": widget.username,
@@ -169,28 +281,73 @@ _medicineBoxQuantityController.dispose();
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildTextFieldNameCccd(
-              controller: _nameController,
-              label: 'Tên Bệnh Nhân',
-              isRequired: false),
+            controller: _nameController,
+            label: 'Tên Bệnh Nhân',
+            isRequired: false,
+            fieldType: TextFieldType.text,
+          ),
           SizedBox(height: 5),
           _buildTextFieldNameCccd(
-              controller: _cccdController, label: 'CCCD', isRequired: false),
+            controller: _cccdController,
+            label: 'CCCD',
+            isRequired: false,
+            fieldType: TextFieldType.cccd,
+          ),
           SizedBox(height: 5),
           _buildDateField('Ngày khám', _joiningDateController, true),
+          if (!_isFormValid && !_isJoiningDateValid)
+            Text(
+              'Vui lòng nhập ngày khám',
+              style: TextStyle(color: Colors.red,fontSize: 12),
+            ),
           SizedBox(height: 5),
           _buildDateField(
               'Ngày hẹn tái khám', _appointmentDateController, true),
-           SizedBox(height: 30),
+          if (!_isFormValid && !_appointmentDateValid)
+            Text(
+              'Vui lòng nhập ngày hẹn tái khám',
+              style: TextStyle(color: Colors.red,fontSize: 12),
+            ),
+          SizedBox(height: 30),
           Text('Thuốc thương mại', style: TextStyle(fontSize: 16)),
           Row(
             children: [
               Expanded(
-                  child: _buildTextField(
-                      'Hàm lượng', true, _medicineBoxController)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTextField('Hàm lượng', true, _medicineBoxController),
+                    if (!_isFormValid && !_medicineBoxValid)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 8.0), // Điều chỉnh padding nếu cần
+                        child: Text(
+                          'Nhập hàm lượng',
+                          style: TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
               SizedBox(width: 16),
               Expanded(
-                  child: _buildNumericTextField(
-                      'Số lượng (hộp)', _medicineBoxQuantityController, true)),
+                child: Column(
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildNumericTextField(
+                        'Số lượng (hộp)', _medicineBoxQuantityController, true),
+                    if (!_isFormValid && !_medicineBoxQuantityValid)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 8.0), // Điều chỉnh padding nếu cần
+                        child: Text(
+                          'Nhập số lượng',
+                          style: TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
           SizedBox(height: 30),
@@ -198,15 +355,46 @@ _medicineBoxQuantityController.dispose();
           Row(
             children: [
               Expanded(
-                  child: _buildTextField(
-                      'Hàm lượng', true, _supportiveMedicineBoxController)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTextField(
+                        'Hàm lượng', true, _supportiveMedicineBoxController),
+                    if (!_isFormValid && !_supportiveMedicineBoxValid)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 8.0), // Điều chỉnh padding nếu cần
+                        child: Text(
+                          'Nhập hàm lượng',
+                          style: TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
               SizedBox(width: 16),
               Expanded(
-                  child: _buildNumericTextField('Số lượng (hộp)',
-                      _supportiveMedicineBoxQuantityController, true)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildNumericTextField('Số lượng (hộp)',
+                        _supportiveMedicineBoxQuantityController, true),
+                    if (!_isFormValid && !_supportiveMedicineBoxQuantityValid)
+                       Padding(
+                        padding: const EdgeInsets.only(
+                            top: 8.0), // Điều chỉnh padding nếu cần
+                        child: Text(
+                          'Nhập số lượng',
+                          style: TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
-           SizedBox(height: 30),
+
+          SizedBox(height: 30),
           Text('Vỉ vỏ thuốc rỗng', style: TextStyle(fontSize: 16)),
           Row(
             children: [
@@ -215,11 +403,11 @@ _medicineBoxQuantityController.dispose();
                       'Hàm lượng', false, _emptyMedicineBoxController)),
               SizedBox(width: 16),
               Expanded(
-                  child: _buildNumericTextField(
-                      'Số lượng (hộp)', _emptyMedicineBoxQuantityController, false)),
+                  child: _buildNumericTextField('Số lượng (hộp)',
+                      _emptyMedicineBoxQuantityController, false)),
             ],
           ),
-           SizedBox(height: 30),
+          SizedBox(height: 30),
           Text('Thuốc trả lại', style: TextStyle(fontSize: 16)),
           Row(
             children: [
@@ -228,11 +416,11 @@ _medicineBoxQuantityController.dispose();
                       'Hàm lượng', false, _returnedMedicineBoxController)),
               SizedBox(width: 16),
               Expanded(
-                  child: _buildNumericTextField(
-                      'Số lượng (hộp)', _returnedMedicineBoxQuantityController, false)),
+                  child: _buildNumericTextField('Số lượng (hộp)',
+                      _returnedMedicineBoxQuantityController, false)),
             ],
           ),
-           SizedBox(height: 30),
+          SizedBox(height: 30),
           Text('Thuốc thất lạc', style: TextStyle(fontSize: 16)),
           Row(
             children: [
@@ -241,8 +429,8 @@ _medicineBoxQuantityController.dispose();
                       'Hàm lượng', false, _lostMedicineBoxController)),
               SizedBox(width: 16),
               Expanded(
-                  child: _buildNumericTextField(
-                      'Số lượng (hộp)', _lostMedicineBoxQuantityController, false)),
+                  child: _buildNumericTextField('Số lượng (hộp)',
+                      _lostMedicineBoxQuantityController, false)),
             ],
           ),
           // ElevatedButton(
@@ -278,25 +466,100 @@ _medicineBoxQuantityController.dispose();
         focusedBorder: _focusedBorder(),
         contentPadding: EdgeInsets.only(top: 15),
       ),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9\s]+$')),
+      ],
     );
   }
 
+  // Widget _buildTextFieldNameCccd(
+  //     {required TextEditingController controller,
+  //     required String label,
+  //     required bool isRequired}) {
+  //   return TextFormField(
+  //     controller: controller,
+  //     decoration: InputDecoration(
+  //       label: Text(label, style: TextStyle(color: Colors.teal, fontSize: 16)),
+  //       suffixIcon:
+  //           isRequired ? Icon(Icons.star, color: Colors.red, size: 20) : null,
+  //       enabledBorder: _enabledBorder(),
+  //       focusedBorder: _focusedBorder(),
+  //       contentPadding: EdgeInsets.only(top: 15),
+  //     ),
+  //   );
+  // }
   Widget _buildTextFieldNameCccd(
       {required TextEditingController controller,
       required String label,
-      required bool isRequired}) {
+      required bool isRequired,
+      required TextFieldType fieldType}) {
+    List<TextInputFormatter> inputFormatters = [];
+
+    switch (fieldType) {
+      case TextFieldType.text:
+        inputFormatters
+            .add(FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\s]+$')));
+        break;
+      case TextFieldType.phoneNumber:
+        inputFormatters.add(FilteringTextInputFormatter.digitsOnly);
+        break;
+      case TextFieldType.cccd:
+        inputFormatters
+            .add(FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9]+$')));
+        break;
+    }
+
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
-        label: Text(label, style: TextStyle(color: Colors.teal, fontSize: 16)),
-        suffixIcon:
-            isRequired ? Icon(Icons.star, color: Colors.red, size: 20) : null,
+        label: RichText(
+          text: TextSpan(
+            text: label,
+            style: TextStyle(color: Colors.teal, fontSize: 16),
+            children: isRequired
+                ? [
+                    TextSpan(
+                        text: ' *',
+                        style: TextStyle(color: Colors.red, fontSize: 16))
+                  ]
+                : [],
+          ),
+        ),
         enabledBorder: _enabledBorder(),
         focusedBorder: _focusedBorder(),
         contentPadding: EdgeInsets.only(top: 15),
       ),
+      inputFormatters: inputFormatters,
+      keyboardType: fieldType == TextFieldType.phoneNumber
+          ? TextInputType.phone
+          : TextInputType.text,
     );
   }
+//   Widget _buildTextFieldNameCccd(
+//       {required TextEditingController controller,
+//       required String label,
+//       required bool isRequired}){
+//   return TextFormField(
+//     controller: controller,
+//     decoration: InputDecoration(
+//       label: RichText(
+//         text: TextSpan(
+//           text: label,
+//           style: TextStyle(color: Colors.teal, fontSize: 16),
+//           children: isRequired
+//               ? [TextSpan(text: ' *', style: TextStyle(color: Colors.red, fontSize: 16))]
+//               : [],
+//         ),
+//       ),
+//       enabledBorder: _enabledBorder(),
+//       focusedBorder: _focusedBorder(),
+//       contentPadding: EdgeInsets.only(top: 15),
+//     ),
+//     inputFormatters: [
+//       FilteringTextInputFormatter.allow(RegExp("[a-zA-Z\s]")), // Chỉ cho phép nhập chữ cái và khoảng trắng
+//     ],
+//   );
+// }
 
   Widget _buildNumericTextField(
       String label, TextEditingController controller, bool isRequired) {

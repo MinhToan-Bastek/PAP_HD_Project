@@ -7,17 +7,36 @@ class CustomListPatient extends StatelessWidget {
   final String personName;
   final String telephone;
   final String joinDate;
+  final int status;
 
   CustomListPatient({
     required this.card,
     required this.personName,
     required this.telephone,
     required this.joinDate,
+    required this.status
   });
 
   @override
   Widget build(BuildContext context) {
-  
+    String statusIconPath;
+  switch (status) {
+      case 0:
+        statusIconPath = 'assets/adverse_status/status_5.svg';
+        break;
+      case 1:
+        statusIconPath = 'assets/adverse_status/status_3.svg';
+        break;
+      case 2:
+        statusIconPath = 'assets/adverse_status/status_2.svg';
+        break;
+      case 3:
+        statusIconPath = 'assets/adverse_status/status_4.svg';
+        break;
+      default:
+        statusIconPath = 'assets/adverse_status/status_1.svg';
+        break;
+    }
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Column(
@@ -27,9 +46,9 @@ class CustomListPatient extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SvgPicture.asset(
-                'assets/adverse_status/status_2.svg',
-                width: 30, // Kích thước của biểu tượng SVG
-                height: 30,
+                statusIconPath,
+                width: 25, 
+                height: 25,
               ),
 
               SizedBox(width: 24),
@@ -48,8 +67,8 @@ class CustomListPatient extends StatelessWidget {
                       children: [
                         SvgPicture.asset(
                           'assets/adverse_status/id_card.svg',
-                          width: 20, // Thiết lập chiều rộng mong muốn
-                          height: 20, // Thiết lập chiều cao mong muốn
+                          width: 20, 
+                          height: 20, 
                         ),
                         SizedBox(width: 8),
                         Text(

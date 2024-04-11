@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pap_hd/components/ListPatientDetail/ScrollListTotal.dart';
@@ -24,7 +23,6 @@ class Patient {
     required this.soDienThoai,
     this.ngayDuocDuyet,
   });
-  
 
   factory Patient.fromJson(Map<String, dynamic> json) {
     return Patient(
@@ -42,16 +40,22 @@ class Patient {
 
 class ListPatientDetail extends StatefulWidget {
   final String username;
-   final List<Patient> patientsList;
-final PatientSummary summary;
+  final List<Patient> patientsList;
+  final PatientSummary summary;
 
-  const ListPatientDetail({Key? key, required this.username, required this.patientsList, required this.summary}) : super(key: key);
+  const ListPatientDetail(
+      {Key? key,
+      required this.username,
+      required this.patientsList,
+      required this.summary})
+      : super(key: key);
 
   @override
   _ListPatientDetailState createState() => _ListPatientDetailState();
 }
 
 class _ListPatientDetailState extends State<ListPatientDetail> {
+  int _currentStatus = -1;
   int _currentPage = 1;
   bool _isFetching = false;
   final List<Patient> _patients = [];
@@ -63,7 +67,7 @@ class _ListPatientDetailState extends State<ListPatientDetail> {
     super.initState();
     _fetchMorePatients();
     _scrollController.addListener(_onScroll);
-      _filteredPatients = _patients;
+    _filteredPatients = _patients;
   }
 
   @override
@@ -73,21 +77,23 @@ class _ListPatientDetailState extends State<ListPatientDetail> {
   }
 
   void _onScroll() {
-    if (!_isFetching && _scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (!_isFetching &&
+        _scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
       _fetchMorePatients();
     }
   }
-String convertToFormattedDate(String isoDateString) {
-  try {
-   
-    DateTime dateTime = DateTime.parse(isoDateString);
-    
-    return DateFormat('dd/MM/yyyy').format(dateTime);
-  } catch (e) {
-   
-    return isoDateString; 
+
+  String convertToFormattedDate(String isoDateString) {
+    try {
+      DateTime dateTime = DateTime.parse(isoDateString);
+
+      return DateFormat('dd/MM/yyyy').format(dateTime);
+    } catch (e) {
+      return isoDateString;
+    }
   }
-}
+
   Future<void> _fetchMorePatients() async {
     if (_isFetching) return;
     setState(() => _isFetching = true);
@@ -98,16 +104,18 @@ String convertToFormattedDate(String isoDateString) {
     try {
       final response = await apiService.fetchPatients(
         username: widget.username,
-        status: -1, 
+        status: _currentStatus,
         pageIndex: _currentPage,
         pageSize: 5,
         sortColumn: "IdBenhNhan",
         sortDir: "Asc",
       );
 
-      if (response is Map<String, dynamic> && response.containsKey('ListPatients')) {
+      if (response is Map<String, dynamic> &&
+          response.containsKey('ListPatients')) {
         List<dynamic> patientsJson = response['ListPatients'];
-        List<Patient> newPatients = patientsJson.map((json) => Patient.fromJson(json)).toList();
+        List<Patient> newPatients =
+            patientsJson.map((json) => Patient.fromJson(json)).toList();
 
         if (newPatients.isNotEmpty) {
           setState(() {
@@ -125,98 +133,174 @@ String convertToFormattedDate(String isoDateString) {
     }
   }
 
-void filterPatients(String searchText) async {
-  if (searchText.isEmpty) {
-    setState(() {
-      // Trả về trạng thái ban đầu nếu không có tìm kiếm
-      _filteredPatients = _patients;
-    });
-    return;
-  }
-
-  // Gọi API với tham số tìm kiếm
-  try {
-    final response = await ApiService().fetchPatients(
-      username: widget.username,
-      query: searchText, 
-      status: -1, 
-      pageIndex: 1, 
-      pageSize: 5, 
-      sortColumn: "IdBenhNhan",
-      sortDir: "Asc",
-    );
-
-    if (response is Map<String, dynamic> && response.containsKey('ListPatients')) {
-      List<dynamic> patientsJson = response['ListPatients'];
-      List<Patient> newPatients = patientsJson.map((json) => Patient.fromJson(json)).toList();
-
-     
+  void filterPatients(String searchText) async {
+    if (searchText.isEmpty) {
       setState(() {
-        _filteredPatients = newPatients;
+        // Trả về trạng thái ban đầu nếu không có tìm kiếm
+        _filteredPatients = _patients;
+      });
+      return;
+    }
+    // Gọi API với tham số tìm kiếm
+    try {
+      final response = await ApiService().fetchPatients(
+        username: widget.username,
+        query: searchText,
+        status: -1,
+        pageIndex: 1,
+        pageSize: 5,
+        sortColumn: "IdBenhNhan",
+        sortDir: "Asc",
+      );
+
+      if (response is Map<String, dynamic> &&
+          response.containsKey('ListPatients')) {
+        List<dynamic> patientsJson = response['ListPatients'];
+        List<Patient> newPatients =
+            patientsJson.map((json) => Patient.fromJson(json)).toList();
+
+        setState(() {
+          _filteredPatients = newPatients;
+        });
+      }
+    } catch (e) {
+      print("Error searching patients: $e");
+      setState(() {
+        _filteredPatients = [];
       });
     }
-  } catch (e) {
-    print("Error searching patients: $e");
-    setState(() {
-      _filteredPatients = [];
-    });
   }
-}
 
+  void fetchPatientsByStatus(int status) async {
+    _currentStatus = status;
+    setState(() {
+      _isFetching = true; // Bật trạng thái loading
+      _filteredPatients =
+          []; // Làm sạch danh sách hiện tại để chuẩn bị cho dữ liệu mới
+    });
 
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/homeScreen/home_background.png"),
-              fit: BoxFit.cover,
+    try {
+      final response = await ApiService().fetchPatients(
+        username: widget.username,
+        status: status,
+        pageIndex: 1,
+        pageSize: 5,
+        sortColumn: "IdBenhNhan",
+        sortDir: "Asc",
+      );
+
+      if (response is Map<String, dynamic> &&
+          response.containsKey('ListPatients')) {
+        List<dynamic> patientsJson = response['ListPatients'];
+        List<Patient> newPatients =
+            patientsJson.map((json) => Patient.fromJson(json)).toList();
+
+        setState(() {
+          _filteredPatients = newPatients;
+          // Không cần thiết lập _isFetching = false ở đây vì sẽ được xử lý trong finally
+        });
+      }
+    } catch (e) {
+      print("Error fetching patients by status: $e");
+    } finally {
+      setState(() => _isFetching =
+          false); // Tắt trạng thái loading khi hoàn thành hoặc có lỗi
+    }
+
+    // _currentStatus = status;
+    // setState(() {
+    //   _isFetching = true;
+    //   _filteredPatients = [];
+    // });
+
+    // try {
+    //   final response = await ApiService().fetchPatients(
+    //     username: widget.username,
+    //     status: status,
+    //     pageIndex: 1,
+    //     pageSize: 5,
+    //     sortColumn: "IdBenhNhan",
+    //     sortDir: "Asc",
+    //   );
+
+    //   if (response is Map<String, dynamic> && response.containsKey('ListPatients')) {
+    //     List<dynamic> patientsJson = response['ListPatients'];
+    //     List<Patient> newPatients = patientsJson.map((json) => Patient.fromJson(json)).toList();
+
+    //     setState(() {
+    //       _filteredPatients = newPatients;
+    //       _isFetching = false;
+    //     });
+    //   }
+    // } catch (e) {
+    //   print("Error fetching patients by status: $e");
+    //   setState(() {
+    //     _isFetching = false;
+    //   });
+    // }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/homeScreen/home_background.png"),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        Column(
-          children: [
-            TitlePatientDetail(),
-            ScrollPatient(
-              summary: widget.summary,
-              onTap: (index) {
-                
-              },
-            ),
-            SearchListPatients(
-              
+          Column(
+            children: [
+              TitlePatientDetail(),
+              ScrollPatient(
+                summary: widget.summary,
+                onTap: fetchPatientsByStatus,
+              ),
+              SearchListPatients(
                 onSearch: filterPatients,
-              
-            ),
-            Expanded(
-              child:ListView.builder(
-                  controller: _scrollController,
-                  itemCount: _filteredPatients.length + (_isFetching ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index < _filteredPatients.length) {
-                      final patient = _filteredPatients[index];
-                      return CustomListPatient(
-                        personName: '${patient.maBenhNhan} - ${patient.tenBenhNhan}',
-                        card: patient.cccd,
-                        telephone: patient.soDienThoai,
-                       joinDate: convertToFormattedDate(patient.ngayDuocDuyet?.toIso8601String() ?? 'Chưa duyệt'),
-                      );
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
+              ),
+              Expanded(
+                child: _filteredPatients.isEmpty && !_isFetching
+                    ? Center(
+                        child: Text(
+                          'Không có dữ liệu !',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        itemCount:
+                            _filteredPatients.length + (_isFetching ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index < _filteredPatients.length) {
+                            final patient = _filteredPatients[index];
+                            return CustomListPatient(
+                              personName:
+                                  '${patient.maBenhNhan} - ${patient.tenBenhNhan}',
+                              card: patient.cccd,
+                              telephone: patient.soDienThoai,
+                              joinDate: convertToFormattedDate(
+                                  patient.ngayDuocDuyet?.toIso8601String() ??
+                                      'Chưa duyệt'),
+                              status: _currentStatus,
+                            );
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
-
-}
-
-

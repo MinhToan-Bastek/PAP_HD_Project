@@ -366,4 +366,31 @@ class ApiService {
       print('Có lỗi xảy ra khi xử lý phản hồi: $e');
     }
   }
+
+//Lấy danh sách phiếu tái khám
+   Future<List<Map<String, dynamic>>> postReExamData({
+  required String username,
+  required String maChuongTrinh,
+  required String maBenhNhan,
+}) async {
+  final response = await http.post(
+    Uri.parse('$_baseUrl/Values/GetListInforExaminationByPatient'), 
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'username': username,
+      'machuongtrinh': maChuongTrinh,
+      'mabenhnhan': maBenhNhan,
+    }),
+  );
+  if (response.statusCode == 200) {
+    // Chuyển đổi kết quả JSON thành List<Map<String, dynamic>>
+    return List<Map<String, dynamic>>.from(json.decode(response.body));
+  } else {
+    throw Exception('Failed to load data');
+  }
+}
+
+
 }
