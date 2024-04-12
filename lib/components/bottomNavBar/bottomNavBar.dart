@@ -136,7 +136,9 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
           NotificationService().clearNotifications(); 
              Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NotificationsPage()),
+      MaterialPageRoute(builder: (context) => NotificationsPage(username: widget.username, pid: widget.pid,
+                        name: widget.name,
+                        tenChuongTrinh: widget.tenChuongTrinh,)),
     );
             break;
           case 2:

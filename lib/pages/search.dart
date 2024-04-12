@@ -110,7 +110,7 @@ class CustomSearchDelegate extends SearchDelegate {
       final patientDetail = await ApiService().getPatientById(idBenhNhan);
       print('Giá trị TinhTrang: ${patientDetail['TinhTrang']}');
       int tinhTrang = int.parse(patientDetail['TinhTrang']);
-
+      //Trạng thái đang chờ duyệt
       if (tinhTrang == 0) {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PatientSearchScreen(
@@ -121,7 +121,9 @@ class CustomSearchDelegate extends SearchDelegate {
                   name: name,
                   tenChuongTrinh: tenChuongTrinh,
                 )));
-      } else if (tinhTrang > 0) {
+      } 
+      //Trạng thái đã duyệt
+      else if (tinhTrang > 0) {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PatientSearchApprovedScreen(
                   patientDetail: patientDetail,
@@ -147,7 +149,7 @@ class CustomSearchDelegate extends SearchDelegate {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('Có lỗi xảy ra'));
+          return Center(child: Text('Không tìm thấy kết quả'));
         } else {
           final List<dynamic> results = snapshot.data ?? [];
           if (results.isEmpty) {

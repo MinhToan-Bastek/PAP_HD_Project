@@ -58,6 +58,7 @@ class _OptionsGridState extends State<OptionsGrid> {
           context,
           MaterialPageRoute(
             builder: (context) => ListPatientDetail(
+            tenChuongTrinh: widget.tenChuongTrinh,
               patientsList: patientsList,
               summary: summary,
               username: widget.username,
@@ -129,7 +130,7 @@ class _OptionsGridState extends State<OptionsGrid> {
         )
       },
       {
-        'iconData': CupertinoIcons.list_dash,
+        'iconData': CupertinoIcons.book,
         'label': 'Danh sách bệnh nhân',
       },
     ];

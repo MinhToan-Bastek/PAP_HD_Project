@@ -392,5 +392,43 @@ class ApiService {
   }
 }
 
+Future<int> fetchPatientIdd(String patientCode, String username) async {
+  var response = await http.post(
+    Uri.parse("$_baseUrl/Values/GetListPatient"),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'username': username,
+      'query': patientCode,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+  
+    List<dynamic> jsonList = jsonDecode(response.body);
+    
+    
+    if (jsonList.isNotEmpty) {
+     
+      Map<String, dynamic> patientData = jsonList.first;
+      
+      
+      var id = patientData['IdBenhNhan'];
+      if (id is int) {
+        return id;
+      } else {
+        throw Exception('Invalid type for patient ID');
+      }
+    } else {
+      throw Exception('Patient data is empty');
+    }
+  } else {
+    throw Exception('Failed to load patient data');
+  }
+}
+
+
+
 
 }

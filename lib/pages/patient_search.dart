@@ -48,7 +48,7 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> {
           ),
           Column(
             children: [
-              TitlePatientSearch(), // Phần title không cuộn
+              TitlePatientSearch(tenChuongTrinh: widget.tenChuongTrinh,), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title

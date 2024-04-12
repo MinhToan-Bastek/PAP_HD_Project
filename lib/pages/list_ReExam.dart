@@ -14,10 +14,12 @@ import 'package:pap_hd/services/api_service.dart';
 class ListReExam extends StatefulWidget {
   final String username;
   final Map<String, dynamic> patientDetail;
+  final String tenChuongTrinh;
   const ListReExam({
     Key? key,
     required this.username,
     required this.patientDetail,
+    required this.tenChuongTrinh
   }) : super(key: key);
 
   @override
@@ -49,24 +51,6 @@ class _ListReExamState extends State<ListReExam> {
     }
   }
 
-//   void fetchReExamData() async {
-//   try {
-//     List<Map<String, dynamic>> result = await ApiService().postReExamData(
-//       username: widget.username,
-//       maChuongTrinh: widget.patientDetail['MaChuongTrinh'],
-//       maBenhNhan: widget.patientDetail['MaBenhNhan'],
-//     );
-//     setState(() {
-//       reExams = result.map((item) => {
-//         "personName": "${item['TenBenhNhan']} - ${item['MaPhieu']}",
-//         "joinDate": item['NgayKham'],
-//         "appointmentDate": item['NgayHenTaiKham'],
-//       }).toList();
-//     });
-//   } catch (e) {
-//     print("Failed to fetch re-exam data: $e");
-//   }
-// }
   void fetchReExamData() async {
     try {
       List<Map<String, dynamic>> result = await ApiService().postReExamData(
@@ -122,7 +106,7 @@ class _ListReExamState extends State<ListReExam> {
           ),
           Column(
             children: [
-              TitleReExamList(),
+              TitleReExamList(tenChuongTrinh: widget.tenChuongTrinh),
               SearchListReExam(
                 onSearch: _searchReExam,
               ),

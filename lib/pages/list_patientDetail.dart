@@ -42,12 +42,14 @@ class ListPatientDetail extends StatefulWidget {
   final String username;
   final List<Patient> patientsList;
   final PatientSummary summary;
+  final String tenChuongTrinh;
 
   const ListPatientDetail(
       {Key? key,
       required this.username,
       required this.patientsList,
-      required this.summary})
+      required this.summary,
+      required this.tenChuongTrinh})
       : super(key: key);
 
   @override
@@ -172,73 +174,50 @@ class _ListPatientDetailState extends State<ListPatientDetail> {
   }
 
   void fetchPatientsByStatus(int status) async {
-    _currentStatus = status;
-    setState(() {
-      _isFetching = true; // Bật trạng thái loading
-      _filteredPatients =
-          []; // Làm sạch danh sách hiện tại để chuẩn bị cho dữ liệu mới
-    });
+ 
+  if (_currentStatus != status) {
+    _currentPage = 1;  
+    _patients.clear(); 
+  _currentStatus = status;
 
-    try {
-      final response = await ApiService().fetchPatients(
-        username: widget.username,
-        status: status,
-        pageIndex: 1,
-        pageSize: 5,
-        sortColumn: "IdBenhNhan",
-        sortDir: "Asc",
-      );
+  // Làm mới danh sách
+  setState(() {
+    _isFetching = true;
+    _filteredPatients = []; 
+  });
 
-      if (response is Map<String, dynamic> &&
-          response.containsKey('ListPatients')) {
-        List<dynamic> patientsJson = response['ListPatients'];
-        List<Patient> newPatients =
-            patientsJson.map((json) => Patient.fromJson(json)).toList();
+  try {
+    final response = await ApiService().fetchPatients(
+      username: widget.username,
+      status: status,
+      pageIndex: _currentPage,
+      pageSize: 5,
+      sortColumn: "IdBenhNhan",
+      sortDir: "Asc",
+    );
 
-        setState(() {
-          _filteredPatients = newPatients;
-          // Không cần thiết lập _isFetching = false ở đây vì sẽ được xử lý trong finally
-        });
-      }
-    } catch (e) {
-      print("Error fetching patients by status: $e");
-    } finally {
-      setState(() => _isFetching =
-          false); // Tắt trạng thái loading khi hoàn thành hoặc có lỗi
+    if (response is Map<String, dynamic> && response.containsKey('ListPatients')) {
+      List<dynamic> patientsJson = response['ListPatients'];
+      List<Patient> newPatients = patientsJson.map((json) => Patient.fromJson(json)).toList();
+
+      setState(() {
+        _filteredPatients.addAll(newPatients);
+        _patients.addAll(newPatients);  
+        if (newPatients.isNotEmpty) {
+          _currentPage++; 
+        }
+        _isFetching = false; 
+      });
     }
-
-    // _currentStatus = status;
-    // setState(() {
-    //   _isFetching = true;
-    //   _filteredPatients = [];
-    // });
-
-    // try {
-    //   final response = await ApiService().fetchPatients(
-    //     username: widget.username,
-    //     status: status,
-    //     pageIndex: 1,
-    //     pageSize: 5,
-    //     sortColumn: "IdBenhNhan",
-    //     sortDir: "Asc",
-    //   );
-
-    //   if (response is Map<String, dynamic> && response.containsKey('ListPatients')) {
-    //     List<dynamic> patientsJson = response['ListPatients'];
-    //     List<Patient> newPatients = patientsJson.map((json) => Patient.fromJson(json)).toList();
-
-    //     setState(() {
-    //       _filteredPatients = newPatients;
-    //       _isFetching = false;
-    //     });
-    //   }
-    // } catch (e) {
-    //   print("Error fetching patients by status: $e");
-    //   setState(() {
-    //     _isFetching = false;
-    //   });
-    // }
+  } catch (e) {
+    print("Error fetching patients by status: $e");
+    setState(() {
+      _isFetching = false; 
+    });
   }
+}
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -255,7 +234,9 @@ class _ListPatientDetailState extends State<ListPatientDetail> {
           ),
           Column(
             children: [
-              TitlePatientDetail(),
+              TitlePatientDetail(
+                tenChuongTrinh: widget.tenChuongTrinh,
+              ),
               ScrollPatient(
                 summary: widget.summary,
                 onTap: fetchPatientsByStatus,

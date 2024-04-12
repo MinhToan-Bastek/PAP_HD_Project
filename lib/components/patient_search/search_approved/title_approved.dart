@@ -6,7 +6,8 @@ import 'package:pap_hd/pages/search.dart';
 class TitleApprovedSearch extends StatelessWidget {
    final String username; 
    final Map<String, dynamic> patientDetail;
-  const TitleApprovedSearch({Key? key,required this.username,required this.patientDetail}) : super(key: key);
+   final String tenChuongTrinh;
+  const TitleApprovedSearch({Key? key,required this.username,required this.patientDetail, required this.tenChuongTrinh}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class TitleApprovedSearch extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        patientDetail['TenChuongTrinh'],
+                       tenChuongTrinh,
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,

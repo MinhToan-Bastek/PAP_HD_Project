@@ -70,7 +70,7 @@ class CustomBottomNavBarApproved extends StatelessWidget {
           case 2:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ListReExam(username: username,patientDetail: patientDetail)),
+              MaterialPageRoute(builder: (context) => ListReExam(username: username,patientDetail: patientDetail,tenChuongTrinh: tenChuongTrinh)),
             );
             break;
           case 3:

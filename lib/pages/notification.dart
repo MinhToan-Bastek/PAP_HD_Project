@@ -3,14 +3,72 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pap_hd/notifications/NotificationDetail.dart';
 import 'package:pap_hd/notifications/NotificationService.dart';
-import 'package:pap_hd/notifications/TitleNotification.dart'; // Để sử dụng DateFormat
+import 'package:pap_hd/notifications/TitleNotification.dart';
+import 'package:pap_hd/pages/patient_search.dart';
+import 'package:pap_hd/pages/patient_searchApproved.dart';
+import 'package:pap_hd/services/api_service.dart'; // Để sử dụng DateFormat
 
 class NotificationsPage extends StatefulWidget {
+  final String username;
+  final String pid;
+  final String name;
+  final String tenChuongTrinh;
+
+  const NotificationsPage({super.key, required this.username, required this.pid, required this.name, required this.tenChuongTrinh});
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
 
+
 class _NotificationsPageState extends State<NotificationsPage> {
+  @override
+void initState() {
+  super.initState();
+  NotificationService().loadNotifications();
+}
+
+ 
+ final ApiService apiService = ApiService(); // Tạo đối tượng ApiService
+
+ void handleNotificationTap(NotificationDetail notification) async {
+  String patientCode = notification.parsePatientCode();
+  try {
+    int patientId = await apiService.fetchPatientIdd(patientCode, widget.username);
+    final patientDetail = await ApiService().getPatientById(patientId.toString());
+    int tinhTrang = int.parse(patientDetail['TinhTrang']);
+
+    if (tinhTrang == 0) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => PatientSearchScreen(
+          patientDetail: patientDetail,
+          username: widget.username,
+          id: patientId.toString(),
+          pid: widget.pid,
+          name: widget.name,
+          tenChuongTrinh: widget.tenChuongTrinh,
+        ),
+      ));
+    } else if (tinhTrang > 0) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => PatientSearchApprovedScreen(
+          patientDetail: patientDetail,
+          username: widget.username,
+          tenChuongTrinh: widget.tenChuongTrinh,
+        ),
+      ));
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error fetching patient data: $e'),
+      ),
+    );
+  }
+}
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -44,6 +102,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         return Column(
                           children: [
                             ListTile(
+                               onTap: () => handleNotificationTap(notificationList[index]),
                               leading: Padding(
                                 padding: const EdgeInsets.only(right: 2, top: 4),
                                 child: CircleAvatar(

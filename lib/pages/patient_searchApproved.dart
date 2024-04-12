@@ -40,7 +40,7 @@ class _PatientSearchApprovedScreenState extends State<PatientSearchApprovedScree
           ),
           Column(
             children: [
-              TitleApprovedSearch(username: widget.username,patientDetail: widget.patientDetail), // Phần title không cuộn
+              TitleApprovedSearch(username: widget.username,patientDetail: widget.patientDetail,tenChuongTrinh: widget.tenChuongTrinh,), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title

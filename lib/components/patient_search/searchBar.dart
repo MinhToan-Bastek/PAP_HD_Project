@@ -14,7 +14,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     super.initState();
     // Bắt đầu một timer để liên tục thay đổi trạng thái của `_isWaiting`
     Timer.periodic(Duration(milliseconds: 1000), (timer) {
-      setState(() {
+  setState(() {
         _isWaiting = !_isWaiting;
       });
     });
