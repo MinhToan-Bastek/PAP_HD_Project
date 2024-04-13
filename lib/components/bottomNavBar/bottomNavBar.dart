@@ -25,6 +25,47 @@ class CustomBottomNavBar extends StatefulWidget {
 }
 
 class CustomBottomNavBarState extends State<CustomBottomNavBar> {
+  NotificationService notificationService = NotificationService();
+  
+ void onBellIconPressed() async {
+  try {
+    // Step 1: Update notification click status
+    await NotificationService().changeNotificationFlagClick(widget.username);
+
+    // Step 2: Clear and reload notifications
+    NotificationService().clearNotifications();
+    await NotificationService().fetchAndLoadNotifications(widget.username);
+
+    // Step 3: Navigate to notifications page and handle back navigation
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NotificationsPage(
+        username: widget.username,
+        pid: widget.pid,
+        name: widget.name,
+        tenChuongTrinh: widget.tenChuongTrinh,
+      )),
+    ).then((_) {
+      // This is called when coming back to this screen from NotificationsPage
+      // Step 4: Optionally reset notification count or refresh any state here
+      NotificationService().notificationCount.value = 0; // Reset count to ensure UI is updated
+      setState(() {});  // Call setState to refresh the screen if needed
+    });
+    
+  } catch (error) {
+    // Handle errors
+    print("Error handling notification icon press: $error");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error updating notifications: $error')),
+    );
+  }
+}
+
+
+
+
+
+
   void updateNotificationCount(int count) {
     setState(() {
       notificationCount += count;
@@ -132,15 +173,25 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
             //   MaterialPageRoute(builder: (context) => HomeScreen()),
             // );
             break;
-          case 1:
-          NotificationService().clearNotifications(); 
-             Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => NotificationsPage(username: widget.username, pid: widget.pid,
-                        name: widget.name,
-                        tenChuongTrinh: widget.tenChuongTrinh,)),
-    );
-            break;
+         case 1:
+         onBellIconPressed();
+  // NotificationService().clearNotifications();
+  // NotificationService().fetchAndLoadNotifications(widget.username).then((_) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => NotificationsPage(
+  //       username: widget.username,
+  //       pid: widget.pid,
+  //       name: widget.name,
+  //       tenChuongTrinh: widget.tenChuongTrinh,
+  //     )),
+  //   );
+  // }).catchError((error) {
+  //   // Handle any errors here
+  //   print("Error fetching notifications: $error");
+  // });
+  break;
+
           case 2:
             Navigator.push(
               context,

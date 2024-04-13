@@ -13,55 +13,143 @@ import 'package:pap_hd/model/img_provider.dart';
 import 'package:pap_hd/notifications/NotificationService.dart';
 import 'package:pap_hd/pages/login.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 //Nhận thông báo khi màn hình tắt
-Future<void> backgroundMessageHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
-  handleIncomingNotification(message);
-}
-void handleIncomingNotification(RemoteMessage message) {
-  String title = message.notification?.title ?? "Thông báo mới";
-  String body = message.notification?.body ?? "Bạn có một thông báo mới";
+// Future<void> backgroundMessageHandler(RemoteMessage message) async {
+//   print("Handling a background message: ${message.messageId}");
+//   handleIncomingNotification(message);
+// }
+// void handleIncomingNotification(RemoteMessage message, String currentUsername) {
+//   String title = message.notification?.title ?? "Thông báo mới";
+//   String body = message.notification?.body ?? "Bạn có một thông báo mới";
+
+//   // Log the notification or handle it in another way if needed
+//   print("Received notification: $title - $body");
+
+//   // Refresh the notification list from the API using the current username
+//   NotificationService().loadNotifications(currentUsername);
+// }
+
+
+// // Biến global để lưu currentUsername
+// String currentUsername = '';
+
+
+// void main() async {
+    
+//   WidgetsFlutterBinding.ensureInitialized();
+//   // await Firebase.initializeApp();
+//    Platform.isAndroid?
+//   await Firebase.initializeApp(
+//     options: const FirebaseOptions(
+//       apiKey: 'AIzaSyDn0V9cUlfeCZ_PyPO1pmuO2IpjBYfawS8', 
+//       appId: '1:358887818301:android:e363b8faf7053a751c1654', 
+//       messagingSenderId: '358887818301', 
+//       projectId: 'pap-project-9b4ad'  
+//       )
+//   )
+//   : 
+//   await Firebase.initializeApp();
+//    // Khởi tạo Firebase Analytics
+//   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+//   // // Nhận thông báo khi màn hình tắt
+//   // FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
+
+//   // // Nhận thông báo khi màn hình bật
+//   // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+//   //   handleIncomingNotification(message);
+//   //   print("Got a message whilst in the foreground!");
+//   //   print("Message data: ${message.data}");
+//   //   if (message.notification != null) {
+//   //     print("Message also contained a notification: ${message.notification?.title}");
+//   //   }
+//   // });
+//   // Lấy username từ SharedPreferences
   
-  NotificationService().addNotification(title, body);
-}
 
-
+//   runApp(const MyApp());
+// }
 
 void main() async {
-    
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
-   Platform.isAndroid?
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: 'AIzaSyDn0V9cUlfeCZ_PyPO1pmuO2IpjBYfawS8', 
+  await initializeFirebase();
+  final String currentUsername = await getCurrentUsername();
+  setupFirebaseMessagingHandlers(currentUsername);
+  runApp(const MyApp());
+}
+
+Future<void> initializeFirebase() async {
+  if (Platform.isAndroid) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+       apiKey: 'AIzaSyDn0V9cUlfeCZ_PyPO1pmuO2IpjBYfawS8', 
       appId: '1:358887818301:android:e363b8faf7053a751c1654', 
       messagingSenderId: '358887818301', 
       projectId: 'pap-project-9b4ad'  
       )
-  )
-  : 
-  await Firebase.initializeApp();
-   // Khởi tạo Firebase Analytics
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-  // Nhận thông báo khi màn hình tắt
-  FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
-
-  // Nhận thông báo khi màn hình bật
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    handleIncomingNotification(message);
-    print("Got a message whilst in the foreground!");
-    print("Message data: ${message.data}");
-    if (message.notification != null) {
-      print("Message also contained a notification: ${message.notification?.title}");
-    }
-  });
-
-
-  runApp(const MyApp());
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
+  FirebaseAnalytics.instance; // Instance for analytics
 }
+
+Future<String> getCurrentUsername() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('username') ?? '';
+}
+
+void setupFirebaseMessagingHandlers(String username) {
+  FirebaseMessaging.onBackgroundMessage((message) => backgroundMessageHandler(message, username));
+  FirebaseMessaging.onMessage.listen((message) => onMessageHandler(message, username));
+}
+
+Future<void> backgroundMessageHandler(RemoteMessage message, String username) async {
+  print("Handling a background message: ${message.messageId}");
+  handleIncomingNotification(message, username);
+}
+
+// void onMessageHandler(RemoteMessage message, String username) {
+//   print("Handling a foreground message: ${message.messageId}");
+//   handleIncomingNotification(message, username);
+//   if (message.notification != null) {
+//     print("Message also contained a notification: ${message.notification?.title}");
+//     // Có thể ở đây bạn đã gọi fetchAndLoadNotifications
+//   }
+// }
+
+// void handleIncomingNotification(RemoteMessage message, String username) {
+//   String title = message.notification?.title ?? "Thông báo mới";
+//   String body = message.notification?.body ?? "Bạn có một thông báo mới";
+//   print("Received notification: $title - $body");
+//   NotificationService().fetchAndLoadNotifications(username);  // Làm mới dữ liệu
+// }
+
+void onMessageHandler(RemoteMessage message, String username) {
+  print("Handling a foreground message: ${message.messageId}");
+  if (message.notification != null) {
+    print("Message also contained a notification: ${message.notification?.title}");
+    // Cập nhật UI hoặc trạng thái ứng dụng tại đây nếu cần
+    handleIncomingNotification(message, username);
+  }
+}
+
+void handleIncomingNotification(RemoteMessage message, String username) {
+  String title = message.notification?.title ?? "Thông báo mới";
+  String body = message.notification?.body ?? "Bạn có một thông báo mới";
+  print("Received notification: $title - $body");
+
+  // Làm mới số lượng thông báo và dữ liệu
+  NotificationService().incrementNotificationCount();
+  NotificationService().fetchAndLoadNotifications(username);
+}
+
+
+
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
