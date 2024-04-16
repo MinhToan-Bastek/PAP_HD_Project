@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:another_flushbar/flushbar.dart';
 
-void showNotificationFlushbar(BuildContext context, String title, String body) {
+void showNotificationFlushbar(BuildContext context, String title, String body, String id, String data2) {
   Flushbar(
     flushbarPosition: FlushbarPosition.TOP, // Hiển thị ở đầu trang
     titleText: Text(

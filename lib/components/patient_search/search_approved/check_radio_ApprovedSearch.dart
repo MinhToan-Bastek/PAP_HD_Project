@@ -101,13 +101,15 @@ class _AttachmentChecklistState extends State<AttachmentChecklist> {
       double width, String title, bool isChecked, Function(bool) onChanged) {
     return Container(
       width: width,
-      child: CheckboxListTile(
-        title: Text(title),
-        value: isChecked,
-        onChanged: (value) => setState(() => onChanged(value!)),
-        controlAffinity: ListTileControlAffinity.leading,
-        contentPadding: EdgeInsets.zero,
-        activeColor: Colors.teal,
+      child: IgnorePointer(
+        child: CheckboxListTile(
+          title: Text(title),
+          value: isChecked,
+          onChanged: (value) => setState(() => onChanged(value!)),
+          controlAffinity: ListTileControlAffinity.leading,
+          contentPadding: EdgeInsets.zero,
+          activeColor: Colors.teal,
+        ),
       ),
     );
   }
@@ -116,13 +118,15 @@ class _AttachmentChecklistState extends State<AttachmentChecklist> {
       Function(bool) onChanged) {
     return Container(
       width: width,
-      child: RadioListTile<bool>(
-        title: Text(title),
-        value: value,
-        groupValue: groupValue,
-        onChanged: (value) => setState(() => onChanged(value!)),
-        activeColor: Colors.teal,
-        contentPadding: EdgeInsets.symmetric(horizontal: 4),
+      child: IgnorePointer(
+        child: RadioListTile<bool>(
+          title: Text(title),
+          value: value,
+          groupValue: groupValue,
+          onChanged: (value) => setState(() => onChanged(value!)),
+          activeColor: Colors.teal,
+          contentPadding: EdgeInsets.symmetric(horizontal: 4),
+        ),
       ),
     );
   }

@@ -27,28 +27,29 @@ class _SearchBarReExamState extends State<SearchBarReExam> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Tìm theo mã, tên, CCCD',
-                hintStyle: TextStyle(fontSize: 14.0),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.teal),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.teal, width: 2),
-                ),
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(
-                      top: 12.0), // Adjust the padding to move the icon down
-                  child: Icon(Icons.search),
-                ),
-                contentPadding: EdgeInsets.only(top: 17),
-              ),
-              onSubmitted: (value) {
-                // Hành động tìm kiếm khi bàn phím ấn "submit"
-                print('User searched for: $value');
-              },
-            ),
+            child: Text(''),
+            // child: TextField(
+            //   decoration: InputDecoration(
+            //     hintText: 'Tìm theo mã, tên, CCCD',
+            //     hintStyle: TextStyle(fontSize: 14.0),
+            //     enabledBorder: UnderlineInputBorder(
+            //       borderSide: BorderSide(color: Colors.teal),
+            //     ),
+            //     focusedBorder: UnderlineInputBorder(
+            //       borderSide: BorderSide(color: Colors.teal, width: 2),
+            //     ),
+            //     suffixIcon: Padding(
+            //       padding: EdgeInsets.only(
+            //           top: 12.0), // Adjust the padding to move the icon down
+            //       child: Icon(Icons.search),
+            //     ),
+            //     contentPadding: EdgeInsets.only(top: 17),
+            //   ),
+            //   onSubmitted: (value) {
+            //     // Hành động tìm kiếm khi bàn phím ấn "submit"
+            //     print('User searched for: $value');
+            //   },
+            // ),
           ),
           AnimatedDefaultTextStyle(
             duration: Duration(milliseconds: 500), // Thời gian animation

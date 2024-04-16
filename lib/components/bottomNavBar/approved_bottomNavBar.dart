@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pap_hd/pages/home.dart';
+import 'package:pap_hd/pages/info_ReExam_Pending.dart';
 import 'package:pap_hd/pages/list_ReExam.dart';
 import 'package:pap_hd/pages/patient_registration.dart';
 import 'package:pap_hd/pages/update_info_patient.dart';
@@ -65,7 +66,10 @@ class CustomBottomNavBarApproved extends StatelessWidget {
             // );
             break;
           case 1:
-            // Điều hướng đến trang 
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => InfoReExamPending()),
+            // );
             break;
           case 2:
             Navigator.push(

@@ -142,6 +142,7 @@ class Project {
   final DateTime? dateStart;
   final DateTime? dateFinish;
   final String patientCount;
+  final String tenChuongTrinh;
 
   Project({
     required this.pid,
@@ -149,6 +150,7 @@ class Project {
     this.dateStart,
     this.dateFinish,
     required this.patientCount,
+    required this.tenChuongTrinh
   });
 
   static DateTime? tryParseDate(String? dateString) {
@@ -173,6 +175,8 @@ class Project {
       dateStart: tryParseDate(json['NgayBatDau']),
       dateFinish: tryParseDate(json['NgayKetThuc']),
       patientCount: json['SoLuongBenhNhan'],
+      tenChuongTrinh : json['TenChuongTrinh'],
+      //patientCount: json['SoLuongBenhNhan'],
     );
   }
 }
@@ -181,14 +185,14 @@ class ProjectCard extends StatelessWidget {
   final Project project;
   final String username;
   final String name;
-  final String TenChuongTrinh;
+  
   //final VoidCallback? onPressed;
   const ProjectCard(
       {Key? key,
       required this.project,
       required this.username,
       required this.name,
-      required this.TenChuongTrinh})
+      })
       : super(key: key);
 
   @override
@@ -206,6 +210,7 @@ class ProjectCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         print('Pid Details: ${project.pid}');
+        print('Pid Details: ${project.name}');
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -213,7 +218,7 @@ class ProjectCard extends StatelessWidget {
                 pid: project.pid!,
                 username: username,
                 name: name,
-                tenChuongTrinh: TenChuongTrinh,
+                tenChuongTrinh: project.tenChuongTrinh,
               ),
             ));
       },
@@ -367,7 +372,7 @@ class _ProjectsGridState extends State<ProjectsGrid> {
           project: projects[index],
           username: widget.username,
           name: widget.name,
-          TenChuongTrinh: widget.TenChuongTrinh,
+          //TenChuongTrinh: projects.tenChuongTrinh,
         );
       },
     );

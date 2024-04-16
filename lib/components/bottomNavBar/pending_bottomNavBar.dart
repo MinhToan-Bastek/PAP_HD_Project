@@ -75,14 +75,14 @@ class _CustomBottomNavBarPendingState extends State<CustomBottomNavBarPending> {
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_home.svg',
-            height: 35,
+            height: 30,
           ),
           label: 'Trang chủ',
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_check.svg',
-            height: 35,
+            height: 30,
           ),
           label: 'Duyệt bệnh nhân',
         ),

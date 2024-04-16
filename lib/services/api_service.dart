@@ -427,7 +427,19 @@ Future<int> fetchPatientIdd(String patientCode, String username) async {
     throw Exception('Failed to load patient data');
   }
 }
+//Lấy danh sách thông tin phiếu tái khám
+Future<Map<String, dynamic>> getInforExaminationById(String username, int id,) async {
+        final url = Uri.parse("$_baseUrl/Values/GetInforExaminationById");
+        var response = await http.post(url,
+            headers: {"Content-Type": "application/json"},
+            body: json.encode({"username": username, "id": id}));
 
+        if (response.statusCode == 200) {
+            return json.decode(response.body);
+        } else {
+            throw Exception('Failed to load examination info');
+        }
+    }
 
 
 

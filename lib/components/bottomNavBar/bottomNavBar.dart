@@ -8,74 +8,84 @@ import 'package:pap_hd/pages/patient_registration.dart';
 import 'package:pap_hd/pages/patient_search.dart';
 import 'package:pap_hd/pages/search.dart';
 
-
 class CustomBottomNavBar extends StatefulWidget {
   final String username;
   final String pid;
   final String name;
   final String tenChuongTrinh;
-  const CustomBottomNavBar(
-      {Key? key,
-      required this.username,
-      required this.pid,
-      required this.name,
-      required this.tenChuongTrinh}): super(key: key);
+  //final String maChuongTrinh;
+  const CustomBottomNavBar({
+    Key? key,
+    required this.username,
+    required this.pid,
+    required this.name,
+    required this.tenChuongTrinh, //required this.maChuongTrinh
+  }) : super(key: key);
   @override
   CustomBottomNavBarState createState() => CustomBottomNavBarState();
 }
 
 class CustomBottomNavBarState extends State<CustomBottomNavBar> {
+  @override
+  void initState() {
+    super.initState();
+    // Start fetching notification count when the widget is loaded
+    NotificationService().startFetchingNotificationCount(widget.username);
+  }
+
   NotificationService notificationService = NotificationService();
-  
- void onBellIconPressed() async {
-  try {
-    // Step 1: Update notification click status
-    await NotificationService().changeNotificationFlagClick(widget.username);
 
-    // Step 2: Clear and reload notifications
-    NotificationService().clearNotifications();
-    await NotificationService().fetchAndLoadNotifications(widget.username);
+  void onBellIconPressed() async {
+    try {
+      // Step 1: Update notification click status
+      await NotificationService().changeNotificationFlagClick(widget.username);
 
-    // Step 3: Navigate to notifications page and handle back navigation
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => NotificationsPage(
-        username: widget.username,
-        pid: widget.pid,
-        name: widget.name,
-        tenChuongTrinh: widget.tenChuongTrinh,
-      )),
-    ).then((_) {
-      // This is called when coming back to this screen from NotificationsPage
-      // Step 4: Optionally reset notification count or refresh any state here
-      NotificationService().notificationCount.value = 0; // Reset count to ensure UI is updated
-      setState(() {});  // Call setState to refresh the screen if needed
-    });
-    
-  } catch (error) {
-    // Handle errors
-    print("Error handling notification icon press: $error");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error updating notifications: $error')),
-    );
+      // Step 2: Clear and reload notifications
+      NotificationService().clearNotifications();
+      await NotificationService().fetchAndLoadNotifications(widget.username);
+
+      // Step 3: Navigate to notifications page and handle back navigation
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NotificationsPage(
+                  username: widget.username,
+                  pid: widget.pid,
+                  name: widget.name,
+                  tenChuongTrinh: widget.tenChuongTrinh,
+                )),
+      ).then((_) {
+        // This is called when coming back to this screen from NotificationsPage
+        // Step 4: Optionally reset notification count or refresh any state here
+        NotificationService().notificationCount.value =
+            0; // Reset count to ensure UI is updated
+        // setState(() {});  // Call setState to refresh the screen if needed
+        // Đặt lại số lượng thông báo sau khi quay trở lại màn hình này
+        //NotificationService().notificationCount.value = NotificationService().notificationDetails.value.where((n) => !n.flagClick).length;
+        setState(() {});
+      });
+    } catch (error) {
+      // Handle errors
+      print("Error handling notification icon press: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating notifications: $error')),
+      );
+    }
   }
-}
 
+  final ValueNotifier<int> notificationCount = ValueNotifier<int>(0);
 
-
-
-
-
-  void updateNotificationCount(int count) {
-    setState(() {
-      notificationCount += count;
-    });
+  // Call this method to update notification count
+  void updateNotificationCount(int newCount) {
+    notificationCount.value =
+        newCount; // This will automatically notify listeners
   }
-  int notificationCount = 0;
+
+  //int notificationCount = 0;
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(
@@ -85,35 +95,40 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
           ),
           label: 'Trang chủ',
         ),
-          BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Stack(
             children: <Widget>[
               Icon(CupertinoIcons.bell, size: 30),
               Positioned(
                 right: 0,
                 child: ValueListenableBuilder<int>(
-                  valueListenable: NotificationService().notificationCount,
-                  builder: (_, count, __) => count > 0
-                      ? Container(
-                          padding: EdgeInsets.all(1),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          constraints: BoxConstraints(
-                            minWidth: 12,
-                            minHeight: 12,
-                          ),
-                          child: Text(
-                            '$count',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
+                  valueListenable:
+                      NotificationService.instance.notificationCount,
+                  builder: (_, count, __) {
+                    print(
+                        "Số lượng thông báo hiện tại: $count"); // Thêm để debug
+                    return count > 0
+                        ? Container(
+                            padding: EdgeInsets.all(1),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      : Container(), // Không hiển thị gì nếu không có thông báo
+                            constraints: BoxConstraints(
+                              minWidth: 12,
+                              minHeight: 12,
+                            ),
+                            child: Text(
+                              '$count',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : Container(); // Trường hợp không có thông báo
+                  },
                 ),
               ),
             ],
@@ -163,34 +178,38 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
       unselectedItemColor: Colors.black,
       selectedLabelStyle: TextStyle(fontSize: 8),
       unselectedLabelStyle: TextStyle(fontSize: 8),
-      
-      currentIndex: 0, 
+      currentIndex: 0,
       onTap: (index) {
         switch (index) {
           case 0:
-            //  Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => HomeScreen()),
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(
+                        username: widget.username,
+                        name: widget.name,
+                        tenChuongTrinh: widget.tenChuongTrinh,
+                      )),
+            );
             break;
-         case 1:
-         onBellIconPressed();
-  // NotificationService().clearNotifications();
-  // NotificationService().fetchAndLoadNotifications(widget.username).then((_) {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => NotificationsPage(
-  //       username: widget.username,
-  //       pid: widget.pid,
-  //       name: widget.name,
-  //       tenChuongTrinh: widget.tenChuongTrinh,
-  //     )),
-  //   );
-  // }).catchError((error) {
-  //   // Handle any errors here
-  //   print("Error fetching notifications: $error");
-  // });
-  break;
+          case 1:
+            onBellIconPressed();
+            // NotificationService().clearNotifications();
+            // NotificationService().fetchAndLoadNotifications(widget.username).then((_) {
+            //   Navigator.push(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => NotificationsPage(
+            //       username: widget.username,
+            //       pid: widget.pid,
+            //       name: widget.name,
+            //       tenChuongTrinh: widget.tenChuongTrinh,
+            //     )),
+            //   );
+            // }).catchError((error) {
+            //   // Handle any errors here
+            //   print("Error fetching notifications: $error");
+            // });
+            break;
 
           case 2:
             Navigator.push(
@@ -222,5 +241,4 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
       },
     );
   }
- 
 }

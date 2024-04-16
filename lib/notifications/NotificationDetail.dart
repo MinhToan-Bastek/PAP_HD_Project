@@ -48,10 +48,11 @@ class NotificationDetail {
   final String body;         // Nội dung thông báo
   final DateTime receivedTime; // Thời gian nhận thông báo
    bool flagRead; 
-  bool flagClick;  
+  bool flagClick; 
+  int id; 
 
   NotificationDetail({required this.title, required this.body, required this.receivedTime, this.flagRead = false,  
-    this.flagClick = false, 
+    this.flagClick = false,  required this.id,
      });
 
   // Phương thức khởi tạo từ JSON
@@ -62,6 +63,7 @@ class NotificationDetail {
       receivedTime: DateTime.parse(json['SendDate']), 
        flagRead: json['FlagRead'] == 0 ? false : true,  // Giả sử 0 là chưa đọc, 1 là đã đọc
       flagClick: json['FlagClick'] == 0 ? false : true,
+       id: json['Id'],
     );
   }
 
@@ -73,6 +75,7 @@ class NotificationDetail {
       'receivedTime': receivedTime.toIso8601String(),
        'FlagRead': flagRead ? 1 : 0,
       'FlagClick': flagClick ? 1 : 0,
+       'Id': id,
     };
   }
 

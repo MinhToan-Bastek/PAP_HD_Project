@@ -8,6 +8,8 @@ import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/pages/details.dart';
 import 'package:pap_hd/services/api_service.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 
 class Hospital {
   final String maBenhVien;
@@ -177,20 +179,55 @@ void showSearchHospitalModal(BuildContext context, List<Hospital> hospitals, voi
     super.dispose();
   }
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2101),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        controller.text = DateFormat('MM/dd/yyyy').format(pickedDate);
-      });
+  // Future<void> _selectDate(
+  //     BuildContext context, TextEditingController controller) async {
+  //   final DateTime? pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime(1900),
+  //     lastDate: DateTime(2101),
+  //   );
+  //   if (pickedDate != null) {
+  //     setState(() {
+  //       controller.text = DateFormat('MM/dd/yyyy').format(pickedDate);
+  //     });
+  //   }
+  // }
+
+  void _selectDate(BuildContext context, TextEditingController controller) async {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      DateTime selectedDate = DateTime.now();
+      return Column(
+        children: [
+          TableCalendar(
+            firstDay: DateTime.utc(2010, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
+            focusedDay: DateTime.now(),
+            currentDay: DateTime.now(),
+            selectedDayPredicate: (day) {
+              return isSameDay(selectedDate, day);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              selectedDate = selectedDay;
+            },
+            onPageChanged: (focusedDay) {
+              // No need to call setState() here
+            },
+          ),
+          ElevatedButton(
+            child: Text('OK'),
+            onPressed: () {
+              controller.text = DateFormat('MM/dd/yyyy').format(selectedDate);
+              Navigator.pop(context);
+            },
+          )
+        ],
+      );
     }
-  }
+  );
+}
 
   void submitPatientInfo() async {
     // Kiểm tra xem các trường đã được nhập hay chưa

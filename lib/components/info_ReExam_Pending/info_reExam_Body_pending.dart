@@ -9,26 +9,18 @@ import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/services/api_service.dart';
 import 'package:provider/provider.dart';
 
-class UpdateInfoBody extends StatefulWidget {
-  final Map<String, dynamic> patientDetail;
+class InfoReExamBodyPen extends StatefulWidget {
+  final int idPhieuTaiKham;
   final String username;
-  const UpdateInfoBody(
-      {Key? key, required this.patientDetail, required this.username})
+  const InfoReExamBodyPen(
+      {Key? key, required this.username, required this.idPhieuTaiKham})
       : super(key: key);
 
   @override
-  UpdateInfoBodyState createState() => UpdateInfoBodyState();
+  InfoReExamBodyPenState createState() => InfoReExamBodyPenState();
 }
 
-class UpdateInfoBodyState extends State<UpdateInfoBody> {
-  bool _isFormValid = true;
-  bool _medicineBoxValid = false;
-  bool _medicineBoxQuantityValid = false;
-  bool _appointmentDateValid = false;
-  bool _isJoiningDateValid = false;
-  bool _supportiveMedicineBoxValid = false;
-  bool _supportiveMedicineBoxQuantityValid = false;
-
+class InfoReExamBodyPenState extends State<InfoReExamBodyPen> {
   final TextEditingController _joiningDateController = TextEditingController();
   final TextEditingController _appointmentDateController =
       TextEditingController();
@@ -53,225 +45,103 @@ class UpdateInfoBodyState extends State<UpdateInfoBody> {
   final TextEditingController _lostMedicineBoxQuantityController =
       TextEditingController();
 
-  final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  final RegExp _numericRegex = RegExp(r'^[0-9]*$');
+  // final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
+  // final RegExp _numericRegex = RegExp(r'^[0-9]*$');
 
   final TextEditingController _cccdController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-
-  // @override
-  // void dispose() {
-  //   _nameController.dispose();
-  //   _cccdController.dispose();
-  //   _joiningDateController.dispose();
-  //   _appointmentDateController.dispose();
-  //   _medicineBoxController.dispose();
-  //   _supportiveMedicineBoxController.dispose();
-  //   _emptyMedicineBoxController.dispose();
-  //   _returnedMedicineBoxController.dispose();
-  //   _lostMedicineBoxController.dispose();
-
-  //   _medicineBoxQuantityController.dispose();
-  //   _supportiveMedicineBoxQuantityController.dispose();
-  //   _emptyMedicineBoxQuantityController.dispose();
-  //   _returnedMedicineBoxQuantityController.dispose();
-  //   _lostMedicineBoxQuantityController.dispose();
-  //   super.dispose();
-  // }
-
-  @override
-void dispose() {
-  // Remove listeners before disposing
-  _medicineBoxController.removeListener(_onMedicineBoxChanged);
-  _medicineBoxQuantityController.removeListener(_onMedicineBoxQuantityChanged);
-  _appointmentDateController.removeListener(_onAppointmentDateChanged);
-  _joiningDateController.removeListener(_onJoiningDateChanged);
-  _supportiveMedicineBoxController.removeListener(_onSupportiveMedicineBoxChanged);
-  _supportiveMedicineBoxQuantityController.removeListener(_onSupportiveMedicineBoxQuantityChanged);
-  // Dispose text controllers
-  _nameController.dispose();
-  _cccdController.dispose();
-  _joiningDateController.dispose();
-  _appointmentDateController.dispose();
-  _medicineBoxController.dispose();
-  _supportiveMedicineBoxController.dispose();
-  _emptyMedicineBoxController.dispose();
-  _returnedMedicineBoxController.dispose();
-  _lostMedicineBoxController.dispose();
-  _medicineBoxQuantityController.dispose();
-  _supportiveMedicineBoxQuantityController.dispose();
-  _emptyMedicineBoxQuantityController.dispose();
-  _returnedMedicineBoxQuantityController.dispose();
-  _lostMedicineBoxQuantityController.dispose();
-  super.dispose();
-}
-
-void _onMedicineBoxChanged() {
-  if (_medicineBoxController.text.isNotEmpty) {
-    setState(() => _medicineBoxValid = true);
-  }
-}
-
-void _onMedicineBoxQuantityChanged() {
-  if (_medicineBoxQuantityController.text.isNotEmpty) {
-    setState(() => _medicineBoxQuantityValid = true);
-  }
-}
-
-void _onAppointmentDateChanged() {
-  if (_appointmentDateController.text.isNotEmpty) {
-    setState(() => _appointmentDateValid = true);
-  }
-}
-
-void _onJoiningDateChanged() {
-  if (_joiningDateController.text.isNotEmpty) {
-    setState(() => _isJoiningDateValid = true);
-  }
-}
-
-void _onSupportiveMedicineBoxChanged() {
-  if (_supportiveMedicineBoxController.text.isNotEmpty) {
-    setState(() => _supportiveMedicineBoxValid = true);
-  }
-}
-
-void _onSupportiveMedicineBoxQuantityChanged() {
-  if (_supportiveMedicineBoxQuantityController.text.isNotEmpty) {
-    setState(() => _supportiveMedicineBoxQuantityValid = true);
-  }
-}
-
-
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.patientDetail['TenBenhNhan'] ?? '';
-    _cccdController.text = widget.patientDetail['CCCD'] ?? '';
-
-     _medicineBoxController.addListener(() {
-    if (_medicineBoxController.text.isNotEmpty) {
-      setState(() => _medicineBoxValid = true);
-    }
-  });
-    _medicineBoxQuantityController.addListener(() {
-    if (_medicineBoxQuantityController.text.isNotEmpty) {
-      setState(() => _medicineBoxQuantityValid = true);
-    }
-  });
-   _appointmentDateController.addListener(() {
-    if (_appointmentDateController.text.isNotEmpty) {
-      setState(() => _appointmentDateValid = true);
-    }
-  });
-  _joiningDateController.addListener(() {
-    if (_joiningDateController.text.isNotEmpty) {
-      setState(() => _isJoiningDateValid = true);
-    }
-  });
-  _supportiveMedicineBoxController.addListener(() {
-    if (_supportiveMedicineBoxController.text.isNotEmpty) {
-      setState(() => _supportiveMedicineBoxValid = true);
-    }
-  });
-  _supportiveMedicineBoxQuantityController.addListener(() {
-    if (_supportiveMedicineBoxQuantityController.text.isNotEmpty) {
-      setState(() => _supportiveMedicineBoxQuantityValid = true);
-    }
-  });
+    fetchExaminationInfo();
   }
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2101),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        controller.text = DateFormat('MM/dd/yyyy').format(pickedDate);
-      });
-    }
-  }
-
-  void updateReExamInfo() async {
-    // Kiểm tra xem các trường đã được nhập hay chưa
-    _medicineBoxValid = _medicineBoxController.text.isNotEmpty;
-    _medicineBoxQuantityValid = _medicineBoxQuantityController.text.isNotEmpty;
-    _appointmentDateValid = _appointmentDateController.text.isNotEmpty;
-    _isJoiningDateValid = _joiningDateController.text.isNotEmpty;
-    _supportiveMedicineBoxValid =
-        _supportiveMedicineBoxController.text.isNotEmpty;
-    _supportiveMedicineBoxQuantityValid =
-        _supportiveMedicineBoxQuantityController.text.isNotEmpty;
-
-    _isFormValid = _medicineBoxValid &&
-        _medicineBoxQuantityValid &&
-        _appointmentDateValid &&
-        _isJoiningDateValid &&
-        _supportiveMedicineBoxValid &&
-        _supportiveMedicineBoxQuantityValid;
-
-    if (!_isFormValid) {
-      setState(() {}); // Cập nhật UI để hiển thị thông báo lỗi
-      return;
-    }
-
-    // Lấy dữ liệu từ Provider hoặc từ nguồn dữ liệu khác
-    final documentsData =
-        Provider.of<DocumentsDataUpdate>(context, listen: false);
-    final documentImagesProvider =
-        Provider.of<DocumentImagesProvider>(context, listen: false);
-    List<XFile?> documentImages = documentImagesProvider.documentImages;
-
-    // Tạo Map chứa dữ liệu tái khám
-    final Map<String, dynamic> patientDataUpdate = {
-      "MaChuongTrinh": widget.patientDetail['MaChuongTrinh'],
-      "MaBenhVien": widget.patientDetail['MaBenhVien'],
-      "MaBenhNhan": widget.patientDetail['MaBenhNhan'],
-      "NgayKham": _joiningDateController.text.trim(),
-      "NgayHenTaiKham": _appointmentDateController.text.trim(),
-      "ThuocThuongMaiHamLuong": _medicineBoxController.text.trim(),
-      "ThuocThuongMaiSoLuong":
-          int.tryParse(_medicineBoxQuantityController.text.trim()) ?? 0,
-      "ThuocHoTroHamLuong": _supportiveMedicineBoxController.text.trim(),
-      "ThuocHoTroSoLuong":
-          int.tryParse(_supportiveMedicineBoxQuantityController.text.trim()) ??
-              0,
-      "VoThuocRongHamLuong": _emptyMedicineBoxController.text.trim(),
-      "VoThuocRongSoLuong":
-          double.tryParse(_emptyMedicineBoxQuantityController.text.trim()) ?? 0,
-      "ThuocTraLaiHamLuong": _returnedMedicineBoxController.text.trim(),
-      "ThuocTraLaiSoLuong":
-          int.tryParse(_returnedMedicineBoxQuantityController.text.trim()) ?? 0,
-      "ThuocThatLacHamLuong": _lostMedicineBoxController.text.trim(),
-      "ThuocThatLacSoLuong":
-          int.tryParse(_lostMedicineBoxQuantityController.text.trim()) ?? 0,
-      "Check_M7": documentsData.checkedItems['M7']! ? "1" : "0",
-      "Check_ToaThuocHoTro":
-          documentsData.checkedItems['Toa thuốc hỗ trợ']! ? "1" : "0",
-      "Check_HoaDonMuaNgoai":
-          documentsData.checkedItems['Hóa đơn mua ngoài']! ? "1" : "0",
-      "Check_ContactLog": documentsData.selectedContactLog == 0 ? "1" : "0",
-      "Check_ADR": documentsData.selectedADR == 0 ? "1" : "0",
-      "Username": widget.username,
-    };
-
-    // Thực hiện việc gửi dữ liệu cập nhật
+  void fetchExaminationInfo() async {
     try {
-      await ApiService().updateReExam(patientDataUpdate, documentImages);
-      Provider.of<DocumentsDataUpdate>(context, listen: false).reset();
-      Provider.of<DocumentImagesProvider>(context, listen: false).reset();
-      Navigator.pop(context);
+      var apiResponse = await ApiService()
+          .getInforExaminationById(widget.username, widget.idPhieuTaiKham);
+      if (apiResponse != null) {
+        // Định dạng ngày nhận được từ API
+        DateFormat inputFormat = DateFormat("M/d/yyyy hh:mm:ss a");
+        // Định dạng ngày để hiển thị
+        DateFormat outputFormat = DateFormat("dd/MM/yyyy");
+
+        DateTime ngayKham = inputFormat.parse(apiResponse['NgayKham']);
+        DateTime ngayHenTaiKham =
+            inputFormat.parse(apiResponse['NgayHenTaiKham']);
+
+        setState(() {
+          _nameController.text = apiResponse['TenBenhNhan'] ?? '';
+          _cccdController.text = apiResponse['CCCD'] ?? '';
+          _joiningDateController.text = outputFormat.format(ngayKham);
+          _appointmentDateController.text = outputFormat.format(ngayHenTaiKham);
+          _medicineBoxController.text =
+              apiResponse['ThuocThuongMaiHamLuong'] ?? '';
+          _medicineBoxQuantityController.text =
+              (double.parse(apiResponse['ThuocThuongMaiSoLuong'].toString()))
+                  .toInt()
+                  .toString();
+          _supportiveMedicineBoxController.text =
+              apiResponse['ThuocHoTroHamLuong'] ?? '';
+          _supportiveMedicineBoxQuantityController.text =
+              (double.parse(apiResponse['ThuocHoTroSoLuong'].toString()))
+                  .toInt()
+                  .toString();
+
+          _emptyMedicineBoxController.text =
+              apiResponse['VoThuocRongHamLuong'] ?? '';
+          _emptyMedicineBoxQuantityController.text =
+              (double.parse(apiResponse['VoThuocRongSoLuong'].toString()))
+                  .toInt()
+                  .toString();
+
+          _returnedMedicineBoxController.text =
+              apiResponse['ThuocTraLaiHamLuong'] ?? '';
+          _returnedMedicineBoxQuantityController.text =
+              (double.parse(apiResponse['ThuocTraLaiSoLuong'].toString()))
+                  .toInt()
+                  .toString();
+
+          _lostMedicineBoxController.text =
+              apiResponse['ThuocThatLacHamLuong'] ?? '';
+          _lostMedicineBoxQuantityController.text =
+              (double.parse(apiResponse['ThuocThatLacSoLuong'].toString()))
+                  .toInt()
+                  .toString();
+        });
+      }
     } catch (e) {
-      // Hiển thị thông báo lỗi
+      print("Không thể lấy thông tin khám: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi khi cập nhật thông tin tái khám: $e')),
-      );
+          SnackBar(content: Text('Lỗi khi lấy thông tin khám: $e')));
     }
   }
+
+// void fetchExaminationInfo() async {
+//     try {
+//         var apiResponse = await ApiService().getInforExaminationById(widget.username, widget.idPhieuTaiKham);
+//         // Assuming apiResponse is a Map<String, dynamic> that contains all the keys you'll use
+//         _nameController.text = apiResponse['TenBenhNhan'] ?? '';
+//         _cccdController.text = apiResponse['CCCD'] ?? '';
+//         _joiningDateController.text = _dateFormat.format(DateTime.parse(apiResponse['NgayKham'])) ?? '';
+//         _appointmentDateController.text = _dateFormat.format(DateTime.parse(apiResponse['NgayHenTaiKham'])) ?? '';
+//         _medicineBoxController.text = apiResponse['ThuocThuongMaiHamLuong'] ?? '';
+//         _medicineBoxQuantityController.text = apiResponse['ThuocThuongMaiSoLuong'].toString() ?? '';
+//         _supportiveMedicineBoxController.text = apiResponse['ThuocHoTroHamLuong'] ?? '';
+//         _supportiveMedicineBoxQuantityController.text = apiResponse['ThuocHoTroSoLuong'].toString() ?? '';
+//         _emptyMedicineBoxController.text = apiResponse['VoThuocRongHamLuong'] ?? '';
+//         _emptyMedicineBoxQuantityController.text = apiResponse['VoThuocRongSoLuong'].toString() ?? '';
+//         _returnedMedicineBoxController.text = apiResponse['ThuocTraLaiHamLuong'] ?? '';
+//         _returnedMedicineBoxQuantityController.text = apiResponse['ThuocTraLaiSoLuong'].toString() ?? '';
+//         _lostMedicineBoxController.text = apiResponse['ThuocThatLacHamLuong'] ?? '';
+//         _lostMedicineBoxQuantityController.text = apiResponse['ThuocThatLacSoLuong'].toString() ?? '';
+//     } catch (e) {
+//         print("Failed to fetch examination info: $e");
+//         ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(content: Text('Error fetching examination info: $e'))
+//         );
+//     }
+// }
 
   @override
   Widget build(BuildContext context) {
@@ -295,19 +165,11 @@ void _onSupportiveMedicineBoxQuantityChanged() {
           ),
           SizedBox(height: 5),
           _buildDateField('Ngày khám', _joiningDateController, true),
-          if (!_isFormValid && !_isJoiningDateValid)
-            Text(
-              'Vui lòng nhập ngày khám',
-              style: TextStyle(color: Colors.red,fontSize: 12),
-            ),
+
           SizedBox(height: 5),
           _buildDateField(
               'Ngày hẹn tái khám', _appointmentDateController, true),
-          if (!_isFormValid && !_appointmentDateValid)
-            Text(
-              'Vui lòng nhập ngày hẹn tái khám',
-              style: TextStyle(color: Colors.red,fontSize: 12),
-            ),
+
           SizedBox(height: 30),
           Text('Thuốc thương mại', style: TextStyle(fontSize: 16)),
           Row(
@@ -317,34 +179,16 @@ void _onSupportiveMedicineBoxQuantityChanged() {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildTextField('Hàm lượng', true, _medicineBoxController),
-                    if (!_isFormValid && !_medicineBoxValid)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 8.0), // Điều chỉnh padding nếu cần
-                        child: Text(
-                          'Nhập hàm lượng',
-                          style: TextStyle(color: Colors.red, fontSize: 12),
-                        ),
-                      ),
                   ],
                 ),
               ),
               SizedBox(width: 16),
               Expanded(
                 child: Column(
-                   crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildNumericTextField(
                         'Số lượng (hộp)', _medicineBoxQuantityController, true),
-                    if (!_isFormValid && !_medicineBoxQuantityValid)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 8.0), // Điều chỉnh padding nếu cần
-                        child: Text(
-                          'Nhập số lượng',
-                          style: TextStyle(color: Colors.red, fontSize: 12),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -360,15 +204,6 @@ void _onSupportiveMedicineBoxQuantityChanged() {
                   children: [
                     _buildTextField(
                         'Hàm lượng', true, _supportiveMedicineBoxController),
-                    if (!_isFormValid && !_supportiveMedicineBoxValid)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 8.0), // Điều chỉnh padding nếu cần
-                        child: Text(
-                          'Nhập hàm lượng',
-                          style: TextStyle(color: Colors.red, fontSize: 12),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -379,15 +214,6 @@ void _onSupportiveMedicineBoxQuantityChanged() {
                   children: [
                     _buildNumericTextField('Số lượng (hộp)',
                         _supportiveMedicineBoxQuantityController, true),
-                    if (!_isFormValid && !_supportiveMedicineBoxQuantityValid)
-                       Padding(
-                        padding: const EdgeInsets.only(
-                            top: 8.0), // Điều chỉnh padding nếu cần
-                        child: Text(
-                          'Nhập số lượng',
-                          style: TextStyle(color: Colors.red, fontSize: 12),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -448,6 +274,7 @@ void _onSupportiveMedicineBoxQuantityChanged() {
       String label, bool isRequired, TextEditingController? controller) {
     return TextFormField(
       controller: controller,
+       readOnly: true,
       decoration: InputDecoration(
         label: RichText(
           text: TextSpan(
@@ -511,6 +338,7 @@ void _onSupportiveMedicineBoxQuantityChanged() {
 
     return TextFormField(
       controller: controller,
+       readOnly: true,
       decoration: InputDecoration(
         label: RichText(
           text: TextSpan(
@@ -565,6 +393,7 @@ void _onSupportiveMedicineBoxQuantityChanged() {
       String label, TextEditingController controller, bool isRequired) {
     return TextFormField(
       controller: controller,
+       readOnly: true,
       decoration: InputDecoration(
         label: RichText(
           text: TextSpan(
@@ -592,6 +421,7 @@ void _onSupportiveMedicineBoxQuantityChanged() {
       String label, TextEditingController controller, bool isRequired) {
     return TextFormField(
       controller: controller,
+       readOnly: true,
       decoration: InputDecoration(
         label: RichText(
           text: TextSpan(
@@ -611,7 +441,7 @@ void _onSupportiveMedicineBoxQuantityChanged() {
           child: IconButton(
             icon: Icon(Icons.calendar_month, color: Colors.teal),
             onPressed: () {
-              _selectDate(context, controller);
+              //_selectDate(context, controller);
             },
           ),
         ),
@@ -620,7 +450,7 @@ void _onSupportiveMedicineBoxQuantityChanged() {
         contentPadding: EdgeInsets.only(top: 15),
       ),
       onTap: () {
-        _selectDate(context, controller);
+        //_selectDate(context, controller);
       },
     );
   }

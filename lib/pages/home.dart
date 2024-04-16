@@ -47,7 +47,9 @@ import 'package:pap_hd/components/homeScreen/body.dart';
 import 'package:pap_hd/components/homeScreen/header_home.dart';
 import 'package:pap_hd/components/homeScreen/title_body.dart';
 import 'package:pap_hd/components/homeScreen/weather_home.dart';
+import 'package:pap_hd/notifications/NotificationService.dart';
 import 'package:pap_hd/notifications/flushBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
    final String username;
@@ -61,16 +63,26 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _seeAll = false;
+  final NotificationService notificationService = NotificationService();  
   //Test thông báo
    @override
   void initState() {
     super.initState();
-
-     FirebaseApi().initNotifications((String title, String body) {
-      showNotificationFlushbar(context, title, body); // Cập nhật để sử dụng Flushbar
-    });
+    loadNotifications();
+        // FirebaseApi().initNotifications(context);
+        // loadNotificationCount();
   }
+  void loadNotifications() async {
+    try {
+      await notificationService.fetchNotificationCount(widget.username);
+      print("Notifications loaded successfully");
+    } catch (e) {
+      print("Failed to load notifications: $e");
+    }
+  }
+ 
 
+ 
 
 
 

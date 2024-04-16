@@ -1,0 +1,536 @@
+// Code snippets are only available for the latest version. Current version is 5.x
+
+// Dependencies
+using Microsoft.Graph.Models;
+
+var requestBody = new AadUserConversationMember
+{
+	OdataType = "#microsoft.graph.aadUserConversationMember",
+	Roles = new List<string>
+	{
+		"owner",
+	},
+	AdditionalData = new Dictionary<string, object>
+	{
+		{
+			"user@odata.bind" , "https://graph.microsoft.com/v1.0/users('8b081ef6-4792-4def-b2c9-c363a1bf41d5')"
+		},
+	},
+};
+
+// To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
+var result = await graphClient.Teams["{team-id}"].Members.PostAsync(requestBody);
+
+
+HTTP/1.1 201 Created
+Content-type: application/json
+
+{
+    "@odata.type": "#microsoft.graph.aadUserConversationMember",
+    "id": "ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=",
+    "roles": [
+        "owner"
+    ],
+    "userId": "50dffbae-ad0f-428e-a86f-f53b0acfc641",
+    "displayName": "Cameron White",
+    "email": "CameronW@contoso.com"
+}
+
+HTTP/1.1 201 Created
+Content-type: application/json
+
+{
+    "@odata.type": "#microsoft.graph.aadUserConversationMember",
+    "id": "ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=",
+    "roles": [
+        "owner"
+    ],
+    "userId": "50dffbae-ad0f-428e-a86f-f53b0acfc641",
+    "displayName": "Jacob Hancock",
+    "email": "jacob@contoso.com"
+}
+
+// Code snippets are only available for the latest version. Current version is 5.x
+
+// To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
+await graphClient.Teams["{team-id}"].Members["{conversationMember-id}"].DeleteAsync();
+
+HTTP/1.1 204 No Content
+
+
+// Code snippets are only available for the latest version. Current version is 5.x
+
+// Dependencies
+using Microsoft.Graph.Models;
+
+var requestBody = new AadUserConversationMember
+{
+	OdataType = "#microsoft.graph.aadUserConversationMember",
+	Roles = new List<string>
+	{
+		"owner",
+	},
+};
+
+// To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
+var result = await graphClient.Teams["{team-id}"].Members["{conversationMember-id}"].PatchAsync(requestBody);
+
+
+HTTP/1.1 200 OK
+Content-type: application/json
+
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#teams('ece6f0a1-7ca4-498b-be79-edf6c8fc4d82')/members/microsoft.graph.aadUserConversationMember/$entity",
+  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+  "id": "ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=",
+  "roles": ["owner"],
+  "displayName": "John Doe",
+  "userId": "8b081ef6-4792-4def-b2c9-c363a1bf41d5",
+  "email": null
+}
+
+// Code snippets are only available for the latest version. Current version is 5.x
+
+// Dependencies
+using Microsoft.Graph.Models;
+
+var requestBody = new Team
+{
+	MemberSettings = new TeamMemberSettings
+	{
+		AllowCreateUpdateChannels = true,
+	},
+	MessagingSettings = new TeamMessagingSettings
+	{
+		AllowUserEditMessages = true,
+		AllowUserDeleteMessages = true,
+	},
+	FunSettings = new TeamFunSettings
+	{
+		AllowGiphy = true,
+		GiphyContentRating = GiphyRatingType.Strict,
+	},
+};
+
+// To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
+var result = await graphClient.Teams["{team-id}"].PatchAsync(requestBody);
+
+
+HTTP/1.1 204 No Content
+
+POST /me/events
+POST /users/{id | userPrincipalName}/events
+
+POST /me/calendar/events
+POST /users/{id | userPrincipalName}/calendar/events
+
+POST /me/calendars/{id}/events
+POST /users/{id | userPrincipalName}/calendars/{id}/events
+
+// Code snippets are only available for the latest version. Current version is 5.x
+
+// Dependencies
+using Microsoft.Graph.Models;
+
+var requestBody = new Event
+{
+	Subject = "Let's go for lunch",
+	Body = new ItemBody
+	{
+		ContentType = BodyType.Html,
+		Content = "Does noon work for you?",
+	},
+	Start = new DateTimeTimeZone
+	{
+		DateTime = "2017-04-15T12:00:00",
+		TimeZone = "Pacific Standard Time",
+	},
+	End = new DateTimeTimeZone
+	{
+		DateTime = "2017-04-15T14:00:00",
+		TimeZone = "Pacific Standard Time",
+	},
+	Location = new Location
+	{
+		DisplayName = "Harry's Bar",
+	},
+	Attendees = new List<Attendee>
+	{
+		new Attendee
+		{
+			EmailAddress = new EmailAddress
+			{
+				Address = "samanthab@contoso.com",
+				Name = "Samantha Booth",
+			},
+			Type = AttendeeType.Required,
+		},
+	},
+	AllowNewTimeProposals = true,
+	TransactionId = "7E163156-7762-4BEB-A1C6-729EA81755A7",
+};
+
+// To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
+var result = await graphClient.Me.Events.PostAsync(requestBody, (requestConfiguration) =>
+{
+	requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"Pacific Standard Time\"");
+});
+
+
+HTTP/1.1 201 Created
+Content-type: application/json
+
+{
+    "@odata.context":"https://graph.microsoft.com/v1.0/$metadata#users('cd209b0b-3f83-4c35-82d2-d88a61820480')/events/$entity",
+    "@odata.etag":"W/\"ZlnW4RIAV06KYYwlrfNZvQAALfZeRQ==\"",
+    "id":"AAMkAGI1AAAt9AHjAAA=",
+    "createdDateTime":"2017-04-15T03:00:50.7579581Z",
+    "lastModifiedDateTime":"2017-04-15T03:00:51.245372Z",
+    "changeKey":"ZlnW4RIAV06KYYwlrfNZvQAALfZeRQ==",
+    "categories":[
+
+    ],
+    "originalStartTimeZone":"Pacific Standard Time",
+    "originalEndTimeZone":"Pacific Standard Time",
+    "iCalUId":"040000008200E00074C5B7101A82E00800000000DA2B357D94B5D201000000000000000010000000EC4597557F0CB34EA4CC2887EA7B17C3",
+    "reminderMinutesBeforeStart":15,
+    "isReminderOn":true,
+    "hasAttachments":false,
+    "hideAttendees": false,
+    "subject":"Let's go brunch",
+    "bodyPreview":"Does noon work for you?",
+    "importance":"normal",
+    "sensitivity":"normal",
+    "isAllDay":false,
+    "isCancelled":false,
+    "isDraft": false,
+    "isOrganizer":true,
+    "responseRequested":true,
+    "seriesMasterId":null,
+    "transactionId":"7E163156-7762-4BEB-A1C6-729EA81755A7",
+    "showAs":"busy",
+    "type":"singleInstance",
+    "webLink":"https://outlook.office365.com/owa/?itemid=AAMkAGI1AAAt9AHjAAA%3D&exvsurl=1&path=/calendar/item",
+    "onlineMeetingUrl":null,
+    "isOnlineMeeting":false,
+    "onlineMeetingProvider":"unknown",
+    "onlineMeeting":null,
+    "allowNewTimeProposals": true,
+    "responseStatus":{
+        "response":"organizer",
+        "time":"0001-01-01T00:00:00Z"
+    },
+    "body":{
+        "contentType":"html",
+        "content":"<html><head></head><body>Does late morning work for you?</body></html>"
+    },
+    "start":{
+        "dateTime":"2017-04-15T11:00:00.0000000",
+        "timeZone":"Pacific Standard Time"
+    },
+    "end":{
+        "dateTime":"2017-04-15T12:00:00.0000000",
+        "timeZone":"Pacific Standard Time"
+    },
+    "location": {
+        "displayName": "Harry's Bar",
+        "locationType": "default",
+        "uniqueId": "Harry's Bar",
+        "uniqueIdType": "private"
+    },
+    "locations": [
+        {
+            "displayName": "Harry's Bar",
+            "locationType": "default",
+            "uniqueIdType": "unknown"
+        }
+    ],
+    "recurrence":null,
+    "attendees":[
+        {
+            "type":"required",
+            "status":{
+                "response":"none",
+                "time":"0001-01-01T00:00:00Z"
+            },
+            "emailAddress":{
+                "name":"Samantha Booth",
+                "address":"samanthab@contoso.com"
+            }
+        }
+    ],
+    "organizer":{
+        "emailAddress":{
+            "name":"Dana Swope",
+            "address":"danas@contoso.com"
+        }
+    }
+}
+
+
+
+// Code snippets are only available for the latest version. Current version is 5.x
+
+// Dependencies
+using Microsoft.Graph.Models;
+
+var requestBody = new Event
+{
+	Subject = "Let's go for lunch",
+	Body = new ItemBody
+	{
+		ContentType = BodyType.Html,
+		Content = "Does noon work for you?",
+	},
+	Start = new DateTimeTimeZone
+	{
+		DateTime = "2017-04-15T12:00:00",
+		TimeZone = "Pacific Standard Time",
+	},
+	End = new DateTimeTimeZone
+	{
+		DateTime = "2017-04-15T14:00:00",
+		TimeZone = "Pacific Standard Time",
+	},
+	Location = new Location
+	{
+		DisplayName = "Harry's Bar",
+	},
+	Attendees = new List<Attendee>
+	{
+		new Attendee
+		{
+			EmailAddress = new EmailAddress
+			{
+				Address = "samanthab@contoso.com",
+				Name = "Samantha Booth",
+			},
+			Type = AttendeeType.Required,
+		},
+	},
+	AllowNewTimeProposals = true,
+	IsOnlineMeeting = true,
+	OnlineMeetingProvider = OnlineMeetingProviderType.TeamsForBusiness,
+};
+
+// To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
+var result = await graphClient.Me.Events.PostAsync(requestBody, (requestConfiguration) =>
+{
+	requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"Pacific Standard Time\"");
+});
+
+
+
+HTTP/1.1 201 Created
+Content-type: application/json
+
+{
+    "@odata.context":"https://graph.microsoft.com/v1.0/$metadata#users('cd209b0b-3f83-4c35-82d2-d88a61820480')/events/$entity",
+    "@odata.etag":"W/\"ZlnW4RIAV06KYYwlrfNZvQAALfZeRQ==\"",
+    "id":"AAMkAGI1AAAt8AHjAAA=",
+    "createdDateTime":"2017-04-15T03:00:50.7579581Z",
+    "lastModifiedDateTime":"2017-04-15T03:00:51.245372Z",
+    "changeKey":"ZlnW4RIAV06KYYwlrfNZvQAALfZeRQ==",
+    "categories":[
+    ],
+    "originalStartTimeZone":"Pacific Standard Time",
+    "originalEndTimeZone":"Pacific Standard Time",
+    "iCalUId":"040000008200E00074C5B7101A82E00800000000DA2B357D94B5D201000000000000000010000000EC4597557F0CB34EA4CC2887EA7B17C3",
+    "reminderMinutesBeforeStart":15,
+    "isReminderOn":true,
+    "hasAttachments":false,
+    "hideAttendees": false,
+    "subject":"Let's go brunch",
+    "bodyPreview":"Does noon work for you?",
+    "importance":"normal",
+    "sensitivity":"normal",
+    "isAllDay":false,
+    "isCancelled":false,
+    "isDraft": false,
+    "isOrganizer":true,
+    "responseRequested":true,
+    "seriesMasterId":null,
+    "showAs":"busy",
+    "type":"singleInstance",
+    "webLink":"https://outlook.office365.com/owa/?itemid=AAMkAGI1AAAt9AHjAAA%3D&exvsurl=1&path=/calendar/item",
+    "onlineMeetingUrl":null,
+    "isOnlineMeeting": true,
+    "onlineMeetingProvider": "teamsForBusiness",
+    "allowNewTimeProposals": true,
+    "responseStatus":{
+        "response":"organizer",
+        "time":"0001-01-01T00:00:00Z"
+    },
+    "body":{
+        "contentType":"html",
+        "content":"<html><head></head><body>Does late morning work for you?</body></html>"
+    },
+    "start":{
+        "dateTime":"2017-04-15T11:00:00.0000000",
+        "timeZone":"Pacific Standard Time"
+    },
+    "end":{
+        "dateTime":"2017-04-15T12:00:00.0000000",
+        "timeZone":"Pacific Standard Time"
+    },
+    "location": {
+        "displayName": "Harry's Bar",
+        "locationType": "default",
+        "uniqueId": "Harry's Bar",
+        "uniqueIdType": "private"
+    },
+    "locations": [
+        {
+            "displayName": "Harry's Bar",
+            "locationType": "default",
+            "uniqueIdType": "unknown"
+        }
+    ],
+    "recurrence":null,
+    "attendees":[
+        {
+            "type":"required",
+            "status":{
+                "response":"none",
+                "time":"0001-01-01T00:00:00Z"
+            },
+            "emailAddress":{
+                "name":"Samantha Booth",
+                "address":"samanthab@contoso.com"
+            }
+        }
+    ],
+    "organizer":{
+        "emailAddress":{
+            "name":"Dana Swope",
+            "address":"danas@contoso.com"
+        }
+    },
+    "onlineMeeting": {
+        "joinUrl": "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NzIyNzhlMGEtM2YyZC00ZmY0LTlhNzUtZmZjNWFmZGNlNzE2%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%22bc55b173-cff6-457d-b7a1-64bda7d7581a%22%7d",
+        "conferenceId": "177513992",
+        "tollNumber": "+1 425 555 0123"
+    }
+}
+
+
+
+import requests
+
+def create_online_meeting(access_token, subject, start_time, end_time, attendees_emails):
+    url = "https://graph.microsoft.com/v1.0/me/onlineMeetings"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    body = {
+        "startDateTime": start_time,
+        "endDateTime": end_time,
+        "subject": subject,
+        "participants": {
+            "attendees": [{"emailAddress": {"address": email}, "type": "required"} for email in attendees_emails],
+        }
+    }
+    response = requests.post(url, headers=headers, json=body)
+    if response.status_code == 201:
+        return response.json()
+    else:
+        raise Exception(f"Failed to create meeting: {response.text}")
+
+# Example usage
+access_token = "your_access_token_here"
+meeting_info = create_online_meeting(access_token, "Project Discussion", "2021-09-21T10:00:00", "2021-09-21T11:00:00", ["example@example.com"])
+print(meeting_info)
+
+
+public static async Task<string> CreateOnlineMeetingAsync(string accessToken, string subject, DateTime startTime, DateTime endTime, string[] attendeesEmails)
+{
+    using (HttpClient client = new HttpClient())
+    {
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        
+        var meeting = new
+        {
+            subject = subject,
+            start = new { dateTime = startTime.ToString("o"), timeZone = "UTC" },
+            end = new { dateTime = endTime.ToString("o"), timeZone = "UTC" },
+            attendees = Array.ConvertAll(attendeesEmails, email => new { emailAddress = new { address = email }, type = "required" })
+        };
+
+        string json = JsonConvert.SerializeObject(meeting);
+        StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await client.PostAsync("https://graph.microsoft.com/v1.0/me/onlineMeetings", content);
+        if (response.IsSuccessStatusCode)
+        {
+            string responseContent = await response.Content.ReadAsStringAsync();
+            return responseContent;
+        }
+        else
+        {
+            throw new Exception(await response.Content.ReadAsStringAsync());
+        }
+    }
+}
+
+//Nhận cuộc họp
+public static async Task<string> GetMeetingAsync(string accessToken, string meetingId)
+{
+    using (HttpClient client = new HttpClient())
+    {
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+        HttpResponseMessage response = await client.GetAsync($"https://graph.microsoft.com/v1.0/me/onlineMeetings/{meetingId}");
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            throw new Exception(await response.Content.ReadAsStringAsync());
+        }
+    }
+}
+
+//Cập nhật cuộc họp
+public static async Task<string> UpdateMeetingAsync(string accessToken, string meetingId, string newSubject)
+{
+    using (HttpClient client = new HttpClient())
+    {
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+        var updateBody = new
+        {
+            subject = newSubject
+        };
+
+        StringContent content = new StringContent(JsonConvert.SerializeObject(updateBody), Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await client.PatchAsync($"https://graph.microsoft.com/v1.0/me/onlineMeetings/{meetingId}", content);
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            throw new Exception(await response.Content.ReadAsStringAsync());
+        }
+    }
+}
+
+//Xóa cuộc họp 
+public static async Task<bool> DeleteMeetingAsync(string accessToken, string meetingId)
+{
+    using (HttpClient client = new HttpClient())
+    {
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+        HttpResponseMessage response = await client.DeleteAsync($"https://graph.microsoft.com/v1.0/me/onlineMeetings/{meetingId}");
+        return response.IsSuccessStatusCode;
+    }
+}
+
+
+
+
+

@@ -5,6 +5,7 @@ import 'package:pap_hd/components/detailScreen/medicine_detail.dart';
 import 'package:pap_hd/components/detailScreen/options_detail.dart';
 import 'package:pap_hd/components/header_all.dart';
 import 'package:pap_hd/main.dart';
+import 'package:pap_hd/notifications/NotificationService.dart';
 import 'package:pap_hd/services/api_service.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -25,14 +26,27 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   late Future<Map<String, dynamic>> projectDetails;
 
+  final NotificationService notificationService = NotificationService();  // Thêm dòng này nếu NotificationService không phải là singleton
+
   @override
   void initState() {
     super.initState();
     projectDetails = ApiService().fetchProjectDetails(widget.pid);
+    loadNotifications();  // Gọi hàm load thông báo
+  }
+
+  void loadNotifications() async {
+    try {
+      await notificationService.fetchNotificationCount(widget.username);
+      print("Notifications loaded successfully");
+    } catch (e) {
+      print("Failed to load notifications: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print("Build - Program Name: ${widget.tenChuongTrinh}");
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Stack(
@@ -102,7 +116,8 @@ class _DetailScreenState extends State<DetailScreen> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: CustomBottomNavBar(          
+            child: CustomBottomNavBar(  
+                      
               username: widget.username,
               pid: widget.pid,
               name: widget.name,

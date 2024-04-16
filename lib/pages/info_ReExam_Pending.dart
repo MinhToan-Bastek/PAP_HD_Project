@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pap_hd/components/bottomNavBar/approved_ReExamBottomNav.dart';
+import 'package:pap_hd/components/info_ReExam_Pending/attachedReExam_pending.dart';
+import 'package:pap_hd/components/info_ReExam_Pending/attachmentSection_pending.dart';
+import 'package:pap_hd/components/info_ReExam_Pending/info_reExam_Body_pending.dart';
 import 'package:pap_hd/components/info_ReExam_Pending/searchBar_ReExam.dart';
 import 'package:pap_hd/components/info_ReExam_Pending/title_ReExam.dart';
 import 'package:pap_hd/components/patient_registration/attachment_section.dart';
@@ -7,12 +10,21 @@ import 'package:pap_hd/components/update_info/attached_update.dart';
 import 'package:pap_hd/components/update_info/update_info_body.dart';
 
 class InfoReExamPending extends StatefulWidget {
-  
+   final int idPhieuTaiKham;  
+  final String username;
+
+  const InfoReExamPending({super.key, required this.idPhieuTaiKham, required this.username});  
   @override
   State<InfoReExamPending> createState() => _InfoReExamPendingState();
 }
 
 class _InfoReExamPendingState extends State<InfoReExamPending> {
+  @override
+void initState() {
+    super.initState();
+    print("Id Phiếu tái khám : ${widget.idPhieuTaiKham} và username: ${widget.username}");
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,13 +53,10 @@ class _InfoReExamPendingState extends State<InfoReExamPending> {
                         
                         //SizedBox(height: 5),
                         SearchBarReExam(),
-                        //UpdateInfoBody(),                      
-                        AttachmentSection(),
-                        AttachedUpdate(),
-                        AttachmentSection(),
-                        //AttachedDocumentsSection(),
-                         //AttachmentSection(),
-                        // Thêm các widget khác nếu cần
+                        InfoReExamBodyPen(username: widget.username, idPhieuTaiKham: widget.idPhieuTaiKham,),                      
+                       AttachedPendingReExam(username: widget.username, idPhieuTaiKham: widget.idPhieuTaiKham,),
+                       AttachmentSectionReExamPen(username: widget.username, idPhieuTaiKham: widget.idPhieuTaiKham,),
+                        
                       ],
                     ),
                   ),

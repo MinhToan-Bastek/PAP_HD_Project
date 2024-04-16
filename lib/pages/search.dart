@@ -23,6 +23,18 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      showSearch(
+        context: context,
+        delegate: CustomSearchDelegate(
+            widget.username, widget.pid, widget.name, widget.tenChuongTrinh),
+      );
+    });
+  }
+  
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -69,7 +81,8 @@ class CustomSearchDelegate extends SearchDelegate {
   CustomSearchDelegate(this.username, this.pid, this.name, this.tenChuongTrinh)
       : super(
           searchFieldLabel:
-              "Tìm theo mã, tên, CCCD", // Đặt placeholder cho search bar
+              "Tìm theo mã, tên, CCCD", 
+              searchFieldStyle: TextStyle(fontSize: 18,fontWeight: FontWeight.normal),
         );
 
   @override
