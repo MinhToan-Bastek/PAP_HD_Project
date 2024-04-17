@@ -13,17 +13,18 @@ class MedicineDetails {
   final String inStock;
   final String expected;
   final String available;
+  final String imageUrl;
 
-  MedicineDetails({
-    required this.patientCount,
-    required this.participationCount,
-    required this.participationStopCount,
-    this.dateStart,
-    this.dateFinish,
-    required this.inStock,
-    required this.expected,
-    required this.available,
-  });
+  MedicineDetails(
+      {required this.patientCount,
+      required this.participationCount,
+      required this.participationStopCount,
+      this.dateStart,
+      this.dateFinish,
+      required this.inStock,
+      required this.expected,
+      required this.available,
+      required this.imageUrl});
 
   //FormatDate từ API
   static DateTime? tryParseDate(String? dateString) {
@@ -51,6 +52,7 @@ class MedicineDetails {
       inStock: json['TongSoLuongTon'],
       expected: json['SoLuongDuocHoTro'],
       available: json['SoLuongConLai'],
+      imageUrl: json['UrlImage'],
     );
   }
 }
@@ -80,7 +82,7 @@ class _MedicineInfoState extends State<MedicineInfo> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(            
+          Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: [
@@ -88,15 +90,20 @@ class _MedicineInfoState extends State<MedicineInfo> {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 5,
                   blurRadius: 7,
-                  offset: Offset(0, 3), 
+                  offset: Offset(0, 3),
                 ),
               ],
             ),
             child: CircleAvatar(
               radius: 70,
-              backgroundColor: Colors.white, 
-              backgroundImage:
-                  AssetImage('assets/detailScreen/img_medicine.png'),
+              backgroundColor: Colors.white,
+              child: ClipOval(
+                child: Image.network(
+                  widget.details.imageUrl,
+                  fit: BoxFit.cover,
+                  
+                ),
+              ),
             ),
           ),
           SizedBox(width: 10),

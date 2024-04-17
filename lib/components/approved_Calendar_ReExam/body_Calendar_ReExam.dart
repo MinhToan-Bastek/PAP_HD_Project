@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CalendarReExamBody extends StatefulWidget {
     final ValueChanged<bool> onToggle;
@@ -25,19 +27,107 @@ class _CalendarReExamBodyState extends State<CalendarReExamBody> {
     super.dispose();
   }
 
-  Future<void> _selectDate(
+  // Future<void> _selectDate(
+  //     BuildContext context, TextEditingController controller) async {
+  //   final DateTime? pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime(1900),
+  //     lastDate: DateTime(2101),
+  //   );
+  //   if (pickedDate != null) {
+  //     setState(() {
+  //       controller.text = _dateFormat.format(pickedDate);
+  //     });
+  //   }
+  // }
+  void _selectDate(
       BuildContext context, TextEditingController controller) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2101),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        controller.text = _dateFormat.format(pickedDate);
-      });
-    }
+    DateTime selectedDate = DateTime.now();
+
+    // showModalBottomSheet returns a Future that completes when the bottom sheet is closed.
+    await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setModalState) {
+              return Container(
+                height: MediaQuery.of(context).size.height / 2,
+                child: Column(
+                  children: [
+                    TableCalendar(
+                       locale: 'vi_VN',
+                      //rowHeight: 40,
+                      headerStyle: HeaderStyle(
+                          formatButtonVisible: false, titleCentered: true),
+                      firstDay: DateTime.utc(2010, 10, 16),
+                      lastDay: DateTime.utc(2030, 3, 14),
+                      focusedDay: DateTime.now(),
+                      currentDay: DateTime.now(),
+                      selectedDayPredicate: (day) {
+                        return isSameDay(selectedDate, day);
+                      },
+                      calendarBuilders: CalendarBuilders(
+                        dowBuilder: (context, day) {
+                          if (day.weekday == DateTime.sunday) {
+                            return Center(
+                              child: Text(
+                                'Ch nhật',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            );
+                          }
+                        },
+                        defaultBuilder: (context, day, focusedDay) {
+                          if (day.weekday == DateTime.sunday) {
+                            // Đối với các ngày Chủ nhật
+                            return Center(
+                              child: Text(
+                                DateFormat('d').format(day),
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            );
+                          } else {
+                            // Đối với các ngày khác trong tuần
+                            return Center(
+                              child: Text(
+                                DateFormat('d').format(day),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setModalState(() {
+                          selectedDate = selectedDay;
+                          //focusedDay = focusedDay;
+                        });
+                        // Directly set the date and close the modal when a day is selected
+                        controller.text =
+                            DateFormat('MM/dd/yyyy').format(selectedDate);
+                        Navigator.pop(context); // Close the modal bottom sheet
+                      },
+                      onPageChanged: (focusedDay) {
+                        // No need to call setState() here
+                      },
+                      calendarStyle: CalendarStyle(
+                        weekendTextStyle: TextStyle(color: Colors.red),
+                        selectedDecoration: BoxDecoration(
+                          color: Colors.teal,
+                          shape: BoxShape.circle,
+                        ),
+                        todayDecoration: BoxDecoration(
+                          color: Colors.teal,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        });
   }
 
   @override
@@ -192,6 +282,7 @@ class _CalendarReExamBodyState extends State<CalendarReExamBody> {
           child: Transform.scale(
             scale: 0.6, // Điều chỉnh tỉ lệ để làm cho LiteRollingSwitch nhỏ hơn
             child: LiteRollingSwitch(
+              animationDuration: Duration(milliseconds: 300), // Tốc độ của Toggle
               onTap: () {},
               onDoubleTap: () {},
               onSwipe: () {},
@@ -202,13 +293,13 @@ class _CalendarReExamBodyState extends State<CalendarReExamBody> {
                 });
               },
               value: _isReminderOn,
-              textOn: "On",
+              textOn: "",
               textOnColor: Colors.white,
-              textOff: "Off",
+              textOff: "",
               colorOn: Colors.teal,
               colorOff: Colors.redAccent,
               iconOn: Icons.done,
-              iconOff: Icons.alarm_off,
+              iconOff: CupertinoIcons.power, 
               textSize: 16,
               width: 110,
             ),

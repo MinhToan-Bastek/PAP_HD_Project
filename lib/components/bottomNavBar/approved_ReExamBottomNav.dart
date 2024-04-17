@@ -18,6 +18,13 @@ class BottomNavBarReExam extends StatelessWidget {
           ),
           label: 'Trang chủ',
         ),
+         BottomNavigationBarItem(
+          icon: SvgPicture.asset(
+            'assets/bottomNavBar/icon_alarm.svg',
+            height: 30,
+          ),
+          label: 'Xác nhận lịch tái khám',
+        ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'assets/bottomNavBar/icon_check.svg',
@@ -42,6 +49,12 @@ class BottomNavBarReExam extends StatelessWidget {
             // );
             break;
           case 1:
+            //  Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen()),
+            // );
+            break;
+             case 2:
             //  Navigator.push(
             //   context,
             //   MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen()),

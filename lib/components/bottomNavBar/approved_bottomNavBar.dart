@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pap_hd/pages/adverse_reporting.dart';
 import 'package:pap_hd/pages/home.dart';
 import 'package:pap_hd/pages/info_ReExam_Pending.dart';
 import 'package:pap_hd/pages/list_ReExam.dart';
@@ -84,7 +85,10 @@ class CustomBottomNavBarApproved extends StatelessWidget {
             );
             break;
              case 4:
-            // Điều hướng đến trang 
+             Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AdverseReporting(tenChuongTrinh: tenChuongTrinh)),
+            );
             break;
         }
       },

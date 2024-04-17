@@ -143,6 +143,7 @@ class Project {
   final DateTime? dateFinish;
   final String patientCount;
   final String tenChuongTrinh;
+  final String imageUrl;
 
   Project({
     required this.pid,
@@ -150,7 +151,8 @@ class Project {
     this.dateStart,
     this.dateFinish,
     required this.patientCount,
-    required this.tenChuongTrinh
+    required this.tenChuongTrinh,
+    required this.imageUrl
   });
 
   static DateTime? tryParseDate(String? dateString) {
@@ -176,6 +178,7 @@ class Project {
       dateFinish: tryParseDate(json['NgayKetThuc']),
       patientCount: json['SoLuongBenhNhan'],
       tenChuongTrinh : json['TenChuongTrinh'],
+      imageUrl: json['UrlImage'],
       //patientCount: json['SoLuongBenhNhan'],
     );
   }
@@ -256,10 +259,14 @@ class ProjectCard extends StatelessWidget {
                     ],
                   ),
                   child: ClipOval(
-                    child: Image.asset(
-                      'assets/homeScreen/Grid1.png',
+                    child: Image.network(
+                      project.imageUrl,
                       fit: BoxFit.cover,
                     ),
+                    // child: Image.asset(
+                    //   'assets/homeScreen/Grid1.png',
+                    //   fit: BoxFit.cover,
+                    // ),
                   ),
                 ),
               ),
@@ -343,7 +350,7 @@ class _ProjectsGridState extends State<ProjectsGrid> {
           }
           return _buildGridView(snapshot.data!);
         } else {
-          return Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),));
         }
       },
     );

@@ -15,12 +15,9 @@ class AttachmentSection extends StatefulWidget {
 
 class _AttachmentSectionState extends State<AttachmentSection> {
   final List<String> titles = [
-    "M1",
-    "M2",
-    "CCCD",
-    "Hồ sơ bệnh án",
-    "ContactLog",
-    "ADR"
+    "ADR",
+    "ContactLog"
+    
   ];
 
   void _pickImage(int index) async {

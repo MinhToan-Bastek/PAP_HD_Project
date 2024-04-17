@@ -88,6 +88,27 @@ class CustomListItemWidget extends StatelessWidget {
                           personName,
                           style: TextStyle(color: Colors.grey, fontSize: 12),
                         ),
+                        SizedBox(width: 8),
+                         SvgPicture.asset(
+                          'assets/adverse_status/status_5.svg',
+                          width: 20, // Thiết lập chiều rộng mong muốn
+                          height: 20, // Thiết lập chiều cao mong muốn
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 5),
+                    Row(
+                      children: [
+                         Icon(
+                          Icons.calendar_month,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "06/04/2024",
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
                       ],
                     ),
                     SizedBox(height: 5),

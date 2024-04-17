@@ -52,6 +52,8 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_local_notifications: ^17.0.1
   table_calendar: ^3.0.9
+  popover: ^0.2.8+2
+  # cupertino_date_textbox: ^1.0.3
 
 dev_dependencies:
   flutter_test:

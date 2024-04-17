@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
@@ -183,6 +184,7 @@ class _AdverseReportingBodyState extends State<AdverseReportingBody> {
           child: Transform.scale(
             scale: 0.6, // Điều chỉnh tỉ lệ để làm cho LiteRollingSwitch nhỏ hơn
             child: LiteRollingSwitch(
+              animationDuration: Duration(milliseconds: 300), // Tốc độ của Toggle
               onTap: () {},
               onDoubleTap: () {},
               onSwipe: () {},
@@ -193,13 +195,13 @@ class _AdverseReportingBodyState extends State<AdverseReportingBody> {
                 });
               },
               value: _isReminderOn,
-              textOn: "On",
+              textOn: "",
               textOnColor: Colors.white,
-              textOff: "Off",
+              textOff: "",
               colorOn: Colors.teal,
               colorOff: Colors.redAccent,
               iconOn: Icons.done,
-              iconOff: Icons.alarm_off,
+              iconOff: CupertinoIcons.power, 
               textSize: 16,
               width: 110,
             ),

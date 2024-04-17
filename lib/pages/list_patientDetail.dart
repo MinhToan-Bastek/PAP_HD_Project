@@ -273,7 +273,7 @@ class _ListPatientDetailState extends State<ListPatientDetail> {
                               status: _currentStatus,
                             );
                           } else {
-                            return Center(child: CircularProgressIndicator());
+                            return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),));
                           }
                         },
                       ),

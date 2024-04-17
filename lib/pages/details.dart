@@ -106,7 +106,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       }
                     }
                     // Hiển thị loading spinner khi dữ liệu đang được tải
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),));
                   },
                 ),
               ],

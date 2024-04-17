@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double logoSize = 40.0;
+    double logoSize = 30.0;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

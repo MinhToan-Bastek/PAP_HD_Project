@@ -136,6 +136,7 @@ import 'package:pap_hd/notifications/NotificationService.dart';
 import 'package:pap_hd/pages/login.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> backgroundMessageHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
@@ -162,7 +163,8 @@ void main() async {
   await initializeFirebase();
   final String currentUsername = await getCurrentUsername();
   setupFirebaseMessagingHandlers(currentUsername);
-  runApp(const MyApp());
+   initializeDateFormatting().then((_) => runApp(MyApp()));
+
   // NotificationService().loadNotifications(); // Better to move inside MyApp for lifecycle management
 }
 

@@ -20,6 +20,7 @@ Widget build(BuildContext context) {
       children: [
         Expanded(
           child: TextField(
+             cursorColor: Colors.teal,
             controller: _controller, // Thêm controller vào TextField
             decoration: InputDecoration(
               hintText: 'Tìm Kiếm',

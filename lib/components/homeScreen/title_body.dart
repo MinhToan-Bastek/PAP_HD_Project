@@ -53,7 +53,7 @@ class TitleBody extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text(
-            'PAP Project',
+            'HD PAP',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 24.0,

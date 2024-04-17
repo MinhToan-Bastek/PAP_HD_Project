@@ -160,7 +160,7 @@ class CustomSearchDelegate extends SearchDelegate {
       future: ApiService().searchPatients(username, query),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),));
         } else if (snapshot.hasError) {
           return Center(child: Text('Không tìm thấy kết quả'));
         } else {
