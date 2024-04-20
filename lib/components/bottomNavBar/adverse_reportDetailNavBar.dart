@@ -1,25 +1,14 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:pap_hd/components/adverse_reporting/body_adverse_Reporting.dart';
 import 'package:pap_hd/pages/home.dart';
-import 'package:pap_hd/pages/info_ReExam_Pending.dart';
-import 'package:pap_hd/model/img_provider.dart';
 import 'package:pap_hd/pages/patient_registration.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
+import 'package:pap_hd/pages/patient_searchApproved.dart';
 
-class AdverseReportNavBar extends StatelessWidget {
-  final GlobalKey<AdverseReportingBodyState> formKey;
-   final VoidCallback onSavePressed;
-  AdverseReportNavBar({super.key, required this.formKey, required this.onSavePressed});
+class BottomNavBarReportDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // Màu nền theo hình ảnh
       type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(
@@ -29,34 +18,39 @@ class AdverseReportNavBar extends StatelessWidget {
           ),
           label: 'Trang chủ',
         ),
-         BottomNavigationBarItem(
+        
+        BottomNavigationBarItem(
           icon: SvgPicture.asset(
-            'assets/bottomNavBar/icon_save.svg',
+            'assets/bottomNavBar/icon_duyet.svg',
             height: 30,
           ),
-          label: 'Lưu',
+          label: 'Duyệt',
         ),
+        
       ],
-      selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.black,
+      selectedItemColor: Colors.black, 
+      unselectedItemColor: Colors.black, 
       selectedLabelStyle: TextStyle(fontSize: 8),
       unselectedLabelStyle: TextStyle(fontSize: 8),
-      currentIndex: 0,
+      // Đặt index hiện tại để hỗ trợ highlighting item hiện tại, nếu cần
+      currentIndex: 0, // Trang chủ được chọn mặc định
       onTap: (index) {
         switch (index) {
           case 0:
-            //  Navigator.push(
+            // Navigator.push(
             //   context,
             //   MaterialPageRoute(builder: (context) => HomeScreen()),
             // );
             break;
           case 1:
-           onSavePressed();
+            //  Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => PatientSearchApprovedScreen()),
+            // );
             break;
-        
+           
         }
       },
     );
-       
   }
 }

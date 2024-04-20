@@ -3,10 +3,14 @@ import 'package:pap_hd/components/adverse_reporting/attached_adverse_Reporting.d
 import 'package:pap_hd/components/adverse_reporting/body_adverse_Reporting.dart';
 import 'package:pap_hd/components/adverse_reporting/searchBar_adverse_Reporting.dart';
 import 'package:pap_hd/components/adverse_reporting/title_adverse_Reporting.dart';
+import 'package:pap_hd/components/adverse_reporting_Detail/attachCheckbox.dart';
+import 'package:pap_hd/components/adverse_reporting_Detail/attachment_sectionDetailReport.dart';
+import 'package:pap_hd/components/adverse_reporting_Detail/body_adverse_reportDetail.dart';
 import 'package:pap_hd/components/approved_Calendar_ReExam/attached_Calendar.dart';
 import 'package:pap_hd/components/approved_Calendar_ReExam/body_Calendar_ReExam.dart';
 import 'package:pap_hd/components/approved_Calendar_ReExam/searchBarApproved_ReExam.dart';
 import 'package:pap_hd/components/approved_Calendar_ReExam/title_approvedReExam.dart';
+import 'package:pap_hd/components/bottomNavBar/adverse_reportDetailNavBar.dart';
 import 'package:pap_hd/components/bottomNavBar/adverse_reportNavBar.dart';
 import 'package:pap_hd/components/bottomNavBar/approved_ReExamBottomNav.dart';
 import 'package:pap_hd/components/bottomNavBar/calendar_approved_bottomNav.dart';
@@ -16,30 +20,28 @@ import 'package:pap_hd/components/patient_registration/attachment_section.dart';
 import 'package:pap_hd/components/update_info/attached_update.dart';
 import 'package:pap_hd/components/update_info/update_info_body.dart';
 
-class AdverseReporting extends StatefulWidget {
+class AdverseReportingDetail extends StatefulWidget {
   final String tenChuongTrinh;
-  final Map<String, dynamic> patientDetail;
+  final Map<String, dynamic> reportDetail;
   final String username;
-  const AdverseReporting(
+  const AdverseReportingDetail(
       {super.key,
       required this.tenChuongTrinh,
-      required this.patientDetail,
+      required this.reportDetail,
       required this.username});
 
   @override
-  State<AdverseReporting> createState() => _AdverseReportingState();
+  State<AdverseReportingDetail> createState() => _AdverseReportingDetailState();
 }
 
-class _AdverseReportingState extends State<AdverseReporting> {
-  final GlobalKey<AdverseReportingBodyState> formKey =
-      GlobalKey<AdverseReportingBodyState>();
+class _AdverseReportingDetailState extends State<AdverseReportingDetail> {
 
-  bool _isToggleOn = false;
+  bool _isToggleOn = true;
   @override
   void initState() {
     super.initState();
     // In ra console khi widget được khởi tạo
-    print('Patient Detail: ${widget.patientDetail}');
+    print('Repoort Detail: ${widget.reportDetail}');
     print('Username: ${widget.username}');
     print('Tên chương trình: ${widget.tenChuongTrinh}');
   }
@@ -79,16 +81,16 @@ class _AdverseReportingState extends State<AdverseReporting> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         //SearchBarAdverseReport(),
-                        AdverseReportingBody(
+                        AdverseReportDetailBody(
                           onToggle: _updateToggleStatus,
-                          patientDetail: widget.patientDetail,
+                          reportDetail: widget.reportDetail,
                           username: widget.username,
-                           key: formKey,
+                          
                         ),
 
                         if (_isToggleOn) ...[
-                          AttachmentSection(),
-                          AttachedReporting(),
+                          AttachmentSectionRpDetail( reportDetail: widget.reportDetail,),
+                          AttachmentChecklistRpDetail(reportDetail: widget.reportDetail),
                         ],
 
                         // Thêm các widget khác nếu cần
@@ -101,12 +103,8 @@ class _AdverseReportingState extends State<AdverseReporting> {
           ),
         ],
       ),
-      bottomNavigationBar: AdverseReportNavBar(
-        formKey: formKey, // Sử dụng GlobalKey đã khởi tạo ở trên
-        onSavePressed: () {
-          if (formKey.currentState != null) {
-            formKey.currentState!.createADR();
-          }}
+      bottomNavigationBar: BottomNavBarReportDetail(
+        
       ),
     );
   }

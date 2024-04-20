@@ -128,11 +128,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pap_hd/api/firebase_api.dart';
 import 'package:pap_hd/components/bottomNavBar/bottomNavBar.dart';
+import 'package:pap_hd/model/checkbox_createADR.dart';
 import 'package:pap_hd/model/checkbox_provider.dart';
 import 'package:pap_hd/model/checkbox_updateReExam.dart';
 import 'package:pap_hd/model/documentImages_provider.dart';
 import 'package:pap_hd/model/img_provider.dart';
 import 'package:pap_hd/notifications/NotificationService.dart';
+import 'package:pap_hd/notifications/flushBar.dart';
 import 'package:pap_hd/pages/login.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -149,23 +151,41 @@ void handleIncomingNotification(RemoteMessage message, String username) {
   String title = message.notification?.title ?? "Thông báo mới";
   String body = message.notification?.body ?? "Bạn có một thông báo mới";
   print("Received notification: $title - $body");
-
   // Assuming NotificationService can handle username internally or it's set globally
   NotificationService().incrementNotificationCount();
   NotificationService().fetchAndLoadNotifications(username);
 }
-void setupFirebaseMessagingHandlers(String username) {
-  FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);  // Corrected this line
-  FirebaseMessaging.onMessage.listen((message) => onMessageHandler(message, username));
-}
+
+// void setupFirebaseMessagingHandlers(String username) {
+//   FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);  // Corrected this line
+//   FirebaseMessaging.onMessage.listen((message) => onMessageHandler(message, username));
+// }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeFirebase();
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  print("Got a message whilst in the foreground!");
+  print("Message data: ${message.data}");
+
+  if (message.notification != null) {
+    print('Message also contained a notification: ${message.notification}');
+  }
+
+  // Handling notification
+  String title = message.notification?.title ?? "No Title";
+  String body = message.notification?.body ?? "No Body";
+  String id = message.data['id'].toString();
+
+  // Displaying the notification
+  //showNotificationFlushbar(context, title, body, id);
+});
+
   final String currentUsername = await getCurrentUsername();
-  setupFirebaseMessagingHandlers(currentUsername);
+  //setupFirebaseMessagingHandlers(currentUsername);
    initializeDateFormatting().then((_) => runApp(MyApp()));
 
-  // NotificationService().loadNotifications(); // Better to move inside MyApp for lifecycle management
+  //NotificationService().loadNotifications(); // Better to move inside MyApp for lifecycle management
 }
 
 Future<void> initializeFirebase() async {
@@ -189,13 +209,17 @@ Future<String> getCurrentUsername() async {
   return prefs.getString('username') ?? 'default_username';
 }
 
-void onMessageHandler(RemoteMessage message, String username) {
+void onMessageHandler(RemoteMessage message, BuildContext context, String username) {
   print("Handling a foreground message: ${message.messageId}");
   if (message.notification != null) {
+    // Correctly passing BuildContext to the showNotificationFlushbar
+    //showNotificationFlushbar(context, message.notification?.title ?? "New Message", message.notification?.body ?? "You have a new message");
     print("Foreground Notification: ${message.notification?.title}, ${message.notification?.body}");
     handleIncomingNotification(message, username);
   }
 }
+
+
 
 
 
@@ -212,7 +236,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => ImageProviderModel()),
         ChangeNotifierProvider(create: (context) => DocumentsData()), 
         ChangeNotifierProvider(create: (context) => DocumentImagesProvider()), 
-        ChangeNotifierProvider(create: (context) => DocumentsDataUpdate()), 
+        ChangeNotifierProvider(create: (context) => DocumentsDataUpdate()),
+        ChangeNotifierProvider(create: (context) => DocumentsDataCreateADR()),  
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

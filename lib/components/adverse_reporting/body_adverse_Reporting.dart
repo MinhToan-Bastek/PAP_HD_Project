@@ -1,43 +1,84 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:pap_hd/model/checkbox_createADR.dart';
+import 'package:pap_hd/model/checkbox_updateReExam.dart';
+import 'package:pap_hd/model/documentImages_provider.dart';
+import 'package:pap_hd/services/api_service.dart';
+import 'package:provider/provider.dart';
 
 class AdverseReportingBody extends StatefulWidget {
-    final ValueChanged<bool> onToggle;
+  final ValueChanged<bool> onToggle;
+  final Map<String, dynamic> patientDetail;
+  final String username;
 
-  AdverseReportingBody({required this.onToggle});
+ const AdverseReportingBody(
+      {Key? key, required this.patientDetail, required this.username, required this.onToggle})
+      : super(key: key);
   @override
-  _AdverseReportingBodyState createState() => _AdverseReportingBodyState();
+  AdverseReportingBodyState createState() => AdverseReportingBodyState();
 }
 
-class _AdverseReportingBodyState extends State<AdverseReportingBody> {
-  final TextEditingController _joiningDateController = TextEditingController();
-  final TextEditingController _appointmentDateController =
-      TextEditingController();
-      final TextEditingController _rememberDateController = TextEditingController();
+class AdverseReportingBodyState extends State<AdverseReportingBody> {
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _cccdController = TextEditingController();
+  TextEditingController _reasonController = TextEditingController();
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
   bool _isReminderOn = false;
+  ApiService apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController =
+        TextEditingController(text: widget.patientDetail['TenBenhNhan'] ?? '');
+    _cccdController =
+        TextEditingController(text: widget.patientDetail['CCCD'] ?? '');
+  }
 
   @override
   void dispose() {
-    _joiningDateController.dispose();
-    _appointmentDateController.dispose();
+    _reasonController.dispose();
+    _nameController.dispose();
+    _cccdController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2101),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        controller.text = _dateFormat.format(pickedDate);
-      });
+  void createADR() async {
+    // Lấy dữ liệu từ Provider hoặc từ nguồn dữ liệu khác
+    final documentsData =
+        Provider.of<DocumentsDataCreateADR>(context, listen: false);
+    final documentImagesProvider =
+        Provider.of<DocumentImagesProvider>(context, listen: false);
+    List<XFile?> documentImages = documentImagesProvider.documentImages;
+
+    // Tạo Map chứa dữ liệu tái khám
+    final Map<String, dynamic> createADRData = {
+      "MaChuongTrinh": widget.patientDetail['MaChuongTrinh'],
+      "MaBenhNhan": widget.patientDetail['MaBenhNhan'],
+      "TuongTacTrucTiep": _isReminderOn ? 1 : 0, 
+      "NguyenNhan": _reasonController.text.trim(),
+       "Check_ADR": documentsData.checkedItems['ADR']! ? "1" : "0",
+      "Check_ContactLog":
+          documentsData.checkedItems['Contact log']! ? "1" : "0",
+   
+      "Username": widget.username,
+      
+    };
+
+    // Thực hiện việc gửi dữ liệu cập nhật
+    try {
+      await ApiService().createADRReport(createADRData, documentImages);
+      Provider.of<DocumentsDataCreateADR>(context, listen: false).reset();
+      Provider.of<DocumentImagesProvider>(context, listen: false).reset();
+      Navigator.pop(context);
+    } catch (e) {
+      // Hiển thị thông báo lỗi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi khi cập nhật thông tin tái khám: $e')),
+      );
     }
   }
 
@@ -48,53 +89,30 @@ class _AdverseReportingBodyState extends State<AdverseReportingBody> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTextField('Họ & tên', false),
+          _buildTextField('Họ & tên', false, controller: _nameController),
           SizedBox(
             height: 5,
           ),
-          _buildTextField('CCCD', false),
+          _buildTextField('CCCD', false, controller: _cccdController),
           SizedBox(
             height: 15,
           ),
+           //ElevatedButton(onPressed: createADR, child: Text('Gửi Báo Cáo')),
           _buildReminderToggle(),
-             if (_isReminderOn) ...[ // Kiểm tra nếu toggle nhắc nhở bật thì hiển thị ngày nhắc
+          if (_isReminderOn) ...[
+            // Kiểm tra nếu toggle nhắc nhở bật thì hiển thị ngày nhắc
             SizedBox(height: 5),
-            _buildTextField('Nguyên nhân báo cáo', true),
+            _buildTextField('Nguyên nhân báo cáo', true,
+                controller: _reasonController),
+            //ElevatedButton(onPressed: createADR, child: Text('Gửi Báo Cáo'))
           ],
         ],
       ),
     );
   }
 
-  Widget _buildTextField(String label, bool isRequired) {
-    return TextFormField(
-      decoration: InputDecoration(
-        label: RichText(
-          text: TextSpan(
-            text: label,
-            style: TextStyle(color: Colors.teal, fontSize: 16),
-            children: isRequired
-                ? [
-                    TextSpan(
-                        text: ' *',
-                        style: TextStyle(color: Colors.red, fontSize: 16))
-                  ]
-                : [],
-          ),
-        ),
-        enabledBorder: _enabledBorder(),
-        focusedBorder: _focusedBorder(),
-        contentPadding: EdgeInsets.only(top: 15),
-        // Chỉnh sửa content padding tại đây
-      ),
-    );
-  }
-
-  Widget _buildDateField(
-    String label,
-    TextEditingController controller,
-    bool isRequired,
-  ) {
+  Widget _buildTextField(String label, bool isRequired,
+      {TextEditingController? controller}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -111,112 +129,108 @@ class _AdverseReportingBodyState extends State<AdverseReportingBody> {
                 : [],
           ),
         ),
-        suffixIcon: Padding(
-          padding: EdgeInsets.only(
-              top: 10.0), // Thêm một khoảng trống phía trên icon
-          child: IconButton(
-            icon: Icon(Icons.calendar_month, color: Colors.teal),
-            onPressed: () {
-              _selectDate(context, controller);
-            },
-          ),
-        ),
         enabledBorder: _enabledBorder(),
         focusedBorder: _focusedBorder(),
         contentPadding: EdgeInsets.only(top: 15),
       ),
-      onTap: () {
-        _selectDate(context, controller);
-      },
     );
   }
 
-  // Widget _buildReminderToggle() {
-  //   return InkWell(
-  //     onTap: () {
-  //       // Không cần thiết phải xử lý onTap tại đây nếu đã có onChanged trong Switch
-  //     },
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(vertical: 8.0),
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //         children: [
-  //           Text(
-  //             'Nhắc lịch tái khám',
-  //             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.teal),
-  //           ),
-  //           Switch(
-  //             value: _isReminderOn,
-  //             onChanged: (value) {
-  //               setState(() {
-  //                 _isReminderOn = value;
-  //                 widget.onToggle(_isReminderOn); // Gọi callback để thông báo trạng thái mới cho widget cha
-  //               });
-  //             },
-  //             activeColor: Colors.teal, // Màu của toggle khi được bật
-  //             inactiveThumbColor: Colors.grey, // Sửa lại màu ở đây nếu muốn
-  //              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                
-        
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
+//   Widget _buildReminderToggle() {
+//   return Padding(
+//     padding: const EdgeInsets.symmetric(vertical: 8.0),
+//     child: Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//       children: [
+//         Text(
+//           'Tương tác trực tiếp',
+//           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.teal),
+//         ),
+//         SizedBox( // Đặt một khoảng trống giữa văn bản và LiteRollingSwitch
+//           width: 10, // Điều chỉnh kích thước của khoảng trống
+//         ),
+//         Transform.translate(
+//           offset: Offset(20, 0), // Điều chỉnh phép dịch chuyển sang phải
+//           child: Transform.scale(
+//             scale: 0.6, // Điều chỉnh tỉ lệ để làm cho LiteRollingSwitch nhỏ hơn
+//             child: LiteRollingSwitch(
+//               animationDuration: Duration(milliseconds: 300), // Tốc độ của Toggle
+//               onTap: () {},
+//               onDoubleTap: () {},
+//               onSwipe: () {},
+//               onChanged: (bool position) {
+//                 setState(() {
+//                   _isReminderOn = position;
+//                   widget.onToggle(_isReminderOn);
+//                 });
+//               },
+//               value: _isReminderOn,
+//               textOn: "",
+//               textOnColor: Colors.white,
+//               textOff: "",
+//               colorOn: Colors.teal,
+//               colorOff: Colors.redAccent,
+//               iconOn: Icons.done,
+//               iconOff: CupertinoIcons.power,
+//               textSize: 16,
+//               width: 110,
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
   Widget _buildReminderToggle() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          'Tương tác trực tiếp',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.teal),
-        ),
-        SizedBox( // Đặt một khoảng trống giữa văn bản và LiteRollingSwitch
-          width: 10, // Điều chỉnh kích thước của khoảng trống
-        ),
-        Transform.translate(
-          offset: Offset(20, 0), // Điều chỉnh phép dịch chuyển sang phải
-          child: Transform.scale(
-            scale: 0.6, // Điều chỉnh tỉ lệ để làm cho LiteRollingSwitch nhỏ hơn
-            child: LiteRollingSwitch(
-              animationDuration: Duration(milliseconds: 300), // Tốc độ của Toggle
-              onTap: () {},
-              onDoubleTap: () {},
-              onSwipe: () {},
-              onChanged: (bool position) {
-                setState(() {
-                  _isReminderOn = position;
-                  widget.onToggle(_isReminderOn);
-                });
-              },
-              value: _isReminderOn,
-              textOn: "",
-              textOnColor: Colors.white,
-              textOff: "",
-              colorOn: Colors.teal,
-              colorOff: Colors.redAccent,
-              iconOn: Icons.done,
-              iconOff: CupertinoIcons.power, 
-              textSize: 16,
-              width: 110,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Tương tác trực tiếp',
+            style: TextStyle(
+                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.teal),
+          ),
+          SizedBox(
+            // Đặt một khoảng trống giữa văn bản và LiteRollingSwitch
+            width: 10, // Điều chỉnh kích thước của khoảng trống
+          ),
+          Transform.translate(
+            offset: Offset(20, 0), // Điều chỉnh phép dịch chuyển sang phải
+            child: Transform.scale(
+              scale:
+                  0.6, // Điều chỉnh tỉ lệ để làm cho LiteRollingSwitch nhỏ hơn
+              child: LiteRollingSwitch(
+                animationDuration:
+                    Duration(milliseconds: 300), // Tốc độ của Toggle
+                onTap: () {}, // Empty function for onTap
+                onDoubleTap: () {}, // Empty function for onDoubleTap
+                onSwipe: () {}, // Empty function for onSwipe
+                onChanged: (bool position) {
+                  setState(() {
+                    _isReminderOn = position;
+                    widget.onToggle(_isReminderOn);
+                  });
+                },
+                value: _isReminderOn,
+                textOn: "",
+                textOnColor: Colors.white,
+                textOff: "",
+                colorOn: Colors.teal,
+                colorOff: Colors.redAccent,
+                iconOn: Icons.done,
+                iconOff: CupertinoIcons.power,
+                textSize: 16,
+                width: 110,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
-
-
-
-
-
+        ],
+      ),
+    );
+  }
 
   UnderlineInputBorder _enabledBorder() {
     return const UnderlineInputBorder(

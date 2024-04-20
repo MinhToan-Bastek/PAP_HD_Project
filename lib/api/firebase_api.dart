@@ -1,8 +1,9 @@
 
-import 'dart:convert';
+
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:pap_hd/notifications/flushBar.dart';
 
 // class FirebaseApi {
 //   final _firebaseMessaging = FirebaseMessaging.instance;
@@ -70,10 +71,12 @@ import 'package:flutter/material.dart';
 //         onMessage(title, body, id);  
 //       }
 //     });
+    
 
 //     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
 //       print("onMessageOpenedApp: ${message.notification?.body}");
 //     });
+    
 //   }
 // }
 
@@ -98,16 +101,16 @@ class FirebaseApi {
       final String? title = message.notification?.title;
       final String? body = message.notification?.body;
       String id = message.data['id'].toString(); // Get the ID from data payload
-       String data2 = message.data.toString();
+       //String data2 = message.data.toString();
       
-      _showNotification(context, title ?? "No title", body ?? "No body", id,data2);
+      _showNotification(context, title ?? "No title", body ?? "No body", id);
       print('ID là : $id');
-      print('data là : $data2');
+      //print('data là : $data2');
     });
   }
  
     void _showNotification(
-      BuildContext context, String title, String body, String id, String data2) {
+      BuildContext context, String title, String body, String id,) {
     var androidDetails = AndroidNotificationDetails(
       "channelId",
       "Local Notification",
@@ -120,7 +123,7 @@ class FirebaseApi {
     flutterLocalNotificationsPlugin.show(0, title, body, generalNotificationDetails);
 
     // Use Flushbar to show the notification
-    showNotificationFlushbar(context, title, body, id,data2);
+    showNotificationFlushbar(context, title, body, id);
   }
 }
 

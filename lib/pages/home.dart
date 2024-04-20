@@ -41,6 +41,7 @@
 
 
 import 'package:another_flushbar/flushbar.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pap_hd/api/firebase_api.dart';
 import 'package:pap_hd/components/homeScreen/body.dart';
@@ -68,6 +69,23 @@ class _HomeScreenState extends State<HomeScreen> {
    @override
   void initState() {
     super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  print("Got a message whilst in the foreground!");
+  print("Message data: ${message.data}");
+
+  if (message.notification != null) {
+    print('Message also contained a notification: ${message.notification}');
+  }
+
+  // Handling notification
+  String title = message.notification?.title ?? "No Title";
+  String body = message.notification?.body ?? "No Body";
+  String id = message.data['id'].toString();
+
+  // Displaying the notification
+  showNotificationFlushbar(context, title, body, id);
+});
+   
     loadNotifications();
         // FirebaseApi().initNotifications(context);
         // loadNotificationCount();

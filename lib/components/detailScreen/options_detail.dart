@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pap_hd/model/ListAdverseStatus.dart';
 import 'package:pap_hd/model/ListPatient_CardScroll.dart';
 import 'package:pap_hd/pages/adverse_reporting.dart';
 import 'package:pap_hd/pages/adverse_status.dart';
@@ -22,7 +23,9 @@ class OptionsGrid extends StatefulWidget {
       {Key? key,
       required this.maChuongTrinh,
       required this.username,
-      required this.pid,required this.name, required this.tenChuongTrinh})
+      required this.pid,
+      required this.name,
+      required this.tenChuongTrinh})
       : super(key: key);
 
   @override
@@ -58,7 +61,54 @@ class _OptionsGridState extends State<OptionsGrid> {
           context,
           MaterialPageRoute(
             builder: (context) => ListPatientDetail(
-            tenChuongTrinh: widget.tenChuongTrinh,
+              tenChuongTrinh: widget.tenChuongTrinh,
+              patientsList: patientsList,
+              summary: summary,
+              username: widget.username,
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Unexpected response format');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi khi tải danh sách bệnh nhân: $e')),
+      );
+    }
+  }
+
+  //Danh sách tình trạng biến cố bất lợi
+
+  void fetchAndNavigateToListStatusAdverse(BuildContext context) async {
+    try {
+      final response = await ApiService().fetchStatusAdverse(
+        username: widget.username,
+        status: -1,
+        pageIndex: 1,
+        pageSize: 5,
+        sortColumn: "Id",
+        sortDir: "asc",
+      );
+
+      if (response is Map<String, dynamic>) {
+        List<dynamic> patientsJson = response['ListADRReports'] ?? [];
+        List<Adverse> patientsList =
+            patientsJson.map((json) => Adverse.fromJson(json)).toList();
+
+        PatientSummary summary = PatientSummary(
+          total: response['TongCong'],
+          confirmed: response['XacNhan'],
+          temporaryConfirmed: response['XacNhanTamThoi'],
+          rejected: response['TuChoi'],
+          awaitingConfirmation: response['ChoXacNhan'],
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdverseStatus(
+              tenChuongTrinh: widget.tenChuongTrinh,
               patientsList: patientsList,
               summary: summary,
               username: widget.username,
@@ -86,12 +136,11 @@ class _OptionsGridState extends State<OptionsGrid> {
         'icon': 'assets/detailScreen/icon_patient.svg',
         'label': 'Đăng ký bệnh nhân',
         'screen': PatientRegistScreen(
-          maChuongTrinh: widget.maChuongTrinh,
-          username: widget.username,
-          pid: widget.pid,
-          name: widget.name,
-          tenChuongTrinh : widget.tenChuongTrinh
-        )
+            maChuongTrinh: widget.maChuongTrinh,
+            username: widget.username,
+            pid: widget.pid,
+            name: widget.name,
+            tenChuongTrinh: widget.tenChuongTrinh)
       },
       {
         'icon': 'assets/detailScreen/icon_approved.svg',
@@ -110,9 +159,9 @@ class _OptionsGridState extends State<OptionsGrid> {
       {
         'icon': 'assets/detailScreen/icon_reportbl.svg',
         'label': 'Báo cáo biến cố bất lợi',
-        'screen': AdverseReporting(
-          tenChuongTrinh: widget.tenChuongTrinh,
-          )
+        // 'screen': AdverseReporting(
+        //   tenChuongTrinh: widget.tenChuongTrinh,
+        //   )
       },
       {
         'icon': 'assets/detailScreen/icon_infopati.svg',
@@ -125,9 +174,6 @@ class _OptionsGridState extends State<OptionsGrid> {
       {
         'iconData': CupertinoIcons.exclamationmark_circle,
         'label': 'Tình trạng báo cáo biến cố bất lợi',
-        'screen': AdverseStatus(
-          tenChuongTrinh: widget.tenChuongTrinh,
-        )
       },
       {
         'iconData': CupertinoIcons.book,
@@ -163,21 +209,59 @@ class _OptionsGridState extends State<OptionsGrid> {
         itemBuilder: (context, index) {
           final option = options[index];
           return InkWell(
+            //     onTap: () {
+            //       // if (option['label'] == 'Danh sách bệnh nhân') {
+            //       //   fetchAndNavigateToListPatients(context);
+            //       // } else if (option.containsKey('screen')) {
+            //       //   final screenWidget = option['screen'];
+            //       //   if (screenWidget != null) {
+            //       //     Navigator.push(
+            //       //       context,
+            //       //       MaterialPageRoute(
+            //       //           builder: (context) => screenWidget as Widget),
+            //       //     );
+            //       //   }
+            //       // }
+            //        switch (option['label']) {
+            //     case 'Danh sách bệnh nhân':
+            //         fetchAndNavigateToListPatients(context);
+            //         break;
+            //     case 'Tình trạng báo cáo biến cố bất lợi':
+            //         fetchAndNavigateToListStatusAdverse(context);
+            //         break;
+            //     default:
+            //         // Handle other cases or provide a default action
+            //         break;
+            // }
+            //       print("${option['label']} pressed");
+            //     },
             onTap: () {
-              if (option['label'] == 'Danh sách bệnh nhân') {
-                fetchAndNavigateToListPatients(context);
-              } else if (option.containsKey('screen')) {
-                final screenWidget = option['screen'];
-                if (screenWidget != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => screenWidget as Widget),
-                  );
-                }
+              switch (option['label']) {
+                case 'Danh sách bệnh nhân':
+                  fetchAndNavigateToListPatients(context);
+                  break;
+                case 'Tình trạng báo cáo biến cố bất lợi':
+                  fetchAndNavigateToListStatusAdverse(context);
+                  break;
+                default:
+                  // Check if the 'screen' key exists and contains a valid widget to navigate to
+                  if (option.containsKey('screen') &&
+                      option['screen'] is Widget) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => option['screen'] as Widget),
+                    );
+                  } else {
+                    // Optionally, handle cases where there is no 'screen' defined or the definition is not valid
+                    print(
+                        'No screen defined for ${option['label']} or not a Widget');
+                  }
+                  break;
               }
               print("${option['label']} pressed");
             },
+
             child: OptionItem(
               iconAsset: option['icon'] as String?,
               iconData: option['iconData'] as IconData?,
@@ -202,14 +286,13 @@ class OptionItem extends StatelessWidget {
     this.iconData, // Thêm tham số này
   })  : assert(iconAsset != null || iconData != null,
             'Cần cung cấp ít nhất một loại icon'),
-        super(key: key); 
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        
         if (iconAsset != null)
           SvgPicture.asset(
             iconAsset!,

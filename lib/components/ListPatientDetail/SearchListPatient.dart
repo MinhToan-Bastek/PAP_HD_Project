@@ -26,10 +26,10 @@ Widget build(BuildContext context) {
               hintText: 'Tìm Kiếm',
               hintStyle: TextStyle(fontSize: 14.0, color: Colors.grey),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.teal),
+                borderSide: BorderSide(color: Colors.teal,width: 0.5),
               ),
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.teal, width: 2),
+                borderSide: BorderSide(color: Colors.teal, width: 1),
               ),
               suffixIcon: Padding(
                 padding: EdgeInsets.only(

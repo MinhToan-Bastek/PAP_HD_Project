@@ -441,6 +441,95 @@ Future<Map<String, dynamic>> getInforExaminationById(String username, int id,) a
         }
     }
 
+//Tạo báo cáo biến cố bất lợi 
+Future<void> createADRReport(Map<String, dynamic> createADRData, List<XFile?> documentImages) async {
+    final url = Uri.parse("$_baseUrl/Values/CreateADRReport");
+    var request = http.MultipartRequest('POST', url);
 
+    // Mã hóa tất cả dữ liệu văn bản thành một chuỗi JSON và thêm vào trường 'Data'
+    var patientDataJson = json.encode(createADRData);
+    request.fields['Data'] = patientDataJson;
+print('$patientDataJson');
+    // Xử lý hình ảnh - giả định rằng documentImages chứa đường dẫn đến các hình ảnh
+    List<String> fieldNames = ["ADR", "ContactLog"];  // Tên trường mẫu cho hình ảnh
+    for (int i = 0; i < documentImages.length; i++) {
+        var image = documentImages[i];
+        if (image != null) {
+            var stream = http.ByteStream(image.openRead());
+            var length = await image.length();
+            // Tạo một tên file mới cho mỗi hình ảnh
+            var baseName = fieldNames[i].endsWith('.') ? fieldNames[i].substring(0, fieldNames[i].length - 1) : fieldNames[i];
+            var fileName = '$baseName${path.extension(image.path)}';
+            var multipartFile = http.MultipartFile('File', stream, length, filename: fileName);
+            request.files.add(multipartFile);
+        }
+    }
+
+    // Gửi yêu cầu HTTP
+    var streamedResponse = await request.send();
+    try {
+        var response = await http.Response.fromStream(streamedResponse);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+            print('Thông tin biến cố và hình ảnh đã được tải lên server thành công.');
+            print('Phản hồi từ server: ${response.body}');
+        } else {
+            print('Mã trạng thái: ${response.statusCode}');
+            print('Phản hồi chi tiết từ server: ${response.body}');
+        }
+    } catch (e) {
+        print('Có lỗi xảy ra trong quá trình xử lý phản hồi: $e');
+    }
+}
+//Danh sách tình trạng biến cố bất lợi
+ Future<Map<String, dynamic>> fetchStatusAdverse({
+    required String username,
+    String query = "",
+    required int status,
+    required int pageIndex,
+    required int pageSize,
+    required String sortColumn,
+    required String sortDir,
+  }) async {
+    final url = Uri.parse("$_baseUrl/Values/GetListADRReport");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json; charset=UTF-8"},
+      body: jsonEncode({
+        'username': username,
+        'query': query,
+        'status': status,
+        'pageindex': pageIndex,
+        'pagesize': pageSize,
+        'sortcolumn': sortColumn,
+        'sortdir': sortDir,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load patients');
+    }
+  }
+  //Xem chi tiết báo cáo biến cố bất lợi 
+  Future<Map<String, dynamic>> getADRReportById(String username, int id) async {
+    final url = Uri.parse("$_baseUrl/Values/GetADRReportById");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        'username': username,
+        'id': id,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load report detail');
+    }
+  }
 
 }
