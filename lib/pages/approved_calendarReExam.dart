@@ -13,24 +13,29 @@ import 'package:pap_hd/components/update_info/update_info_body.dart';
 
 class ApprovedCalendarReExam extends StatefulWidget {
   final String tenChuongTrinh;
+  final Map<String, dynamic> examInfo;
+  const ApprovedCalendarReExam(
+      {super.key, required this.tenChuongTrinh, required this.examInfo});
 
-  const ApprovedCalendarReExam({super.key, required this.tenChuongTrinh});
-  
   @override
   State<ApprovedCalendarReExam> createState() => _ApprovedCalendarReExamState();
 }
 
 class _ApprovedCalendarReExamState extends State<ApprovedCalendarReExam> {
-  //Mặc định khi vào màn hình sẽ đóng các widget
+  final GlobalKey<CalendarReExamBodyState> formKey =
+      GlobalKey<CalendarReExamBodyState>();
+
   bool _isToggleOn = false;
-    // Phương thức để cập nhật trạng thái hiển thị của các widget
+  // Phương thức để cập nhật trạng thái hiển thị của các widget
   void _updateToggleStatus(bool isOn) {
     setState(() {
       _isToggleOn = isOn;
     });
   }
+
   @override
   Widget build(BuildContext context) {
+    print("Exam Info Data: ${widget.examInfo}");
     return Scaffold(
       body: Stack(
         children: [
@@ -54,17 +59,21 @@ class _ApprovedCalendarReExamState extends State<ApprovedCalendarReExam> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 15.0),
                     child: Column(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [          
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
                         SearchBarCalendarReExam(),
-                        CalendarReExamBody(onToggle: _updateToggleStatus),
-                       
-                         if (_isToggleOn) ...[
+                        CalendarReExamBody(
+                          onToggle: _updateToggleStatus,
+                          examInfo: widget.examInfo,
+                           key: formKey,
+                        ),
+
+                        if (_isToggleOn) ...[
                           AttachmentSection(),
                           AttachedCalendar(),
-                          AttachmentSection(),
+                          //AttachmentSection(),
                         ],
-                       
+
                         // Thêm các widget khác nếu cần
                       ],
                     ),
@@ -75,8 +84,13 @@ class _ApprovedCalendarReExamState extends State<ApprovedCalendarReExam> {
           ),
         ],
       ),
-      bottomNavigationBar: CalendarBottomNavBarApproved(),
+      bottomNavigationBar: CalendarBottomNavBarApproved(
+        formKey: formKey, // Sử dụng GlobalKey đã khởi tạo ở trên
+        onSavePressed: () {
+          if (formKey.currentState != null) {
+            formKey.currentState!.createAlertExamination();
+          }}
+      ),
     );
   }
-  
 }

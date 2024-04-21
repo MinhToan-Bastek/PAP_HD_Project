@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pap_hd/components/bottomNavBar/regist_bottomNavBar.dart';
 import 'package:pap_hd/components/patient_registration/attached_document.dart';
+import 'package:pap_hd/components/patient_registration/attachment_Section_regist_main.dart';
 import 'package:pap_hd/components/patient_registration/attachment_section.dart';
 import 'package:pap_hd/components/patient_registration/info_patientRegis.dart';
 import 'package:pap_hd/components/patient_registration/title_patientRegis.dart';
@@ -73,7 +74,7 @@ class _PatientRegistScreenState extends State<PatientRegistScreen> {
                           tenChuongTrinh: widget.tenChuongTrinh, 
                         ),
                         AttachedDocumentsSection(),
-                        AttachmentSection(),
+                        AttachmentSectionRegistMain(),
                         // Thêm các widget khác nếu cần
                       ],
                     ),

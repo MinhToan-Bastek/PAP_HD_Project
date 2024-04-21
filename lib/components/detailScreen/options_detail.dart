@@ -145,9 +145,9 @@ class _OptionsGridState extends State<OptionsGrid> {
       {
         'icon': 'assets/detailScreen/icon_approved.svg',
         'label': 'Xác nhận lịch tái khám',
-        'screen': ApprovedCalendarReExam(
-          tenChuongTrinh: widget.tenChuongTrinh,
-        )
+        // 'screen': ApprovedCalendarReExam(
+        //   tenChuongTrinh: widget.tenChuongTrinh,
+        // )
       },
       {
         'icon': 'assets/detailScreen/icon_support.svg',

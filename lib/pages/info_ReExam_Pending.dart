@@ -8,12 +8,18 @@ import 'package:pap_hd/components/info_ReExam_Pending/title_ReExam.dart';
 import 'package:pap_hd/components/patient_registration/attachment_section.dart';
 import 'package:pap_hd/components/update_info/attached_update.dart';
 import 'package:pap_hd/components/update_info/update_info_body.dart';
+import 'package:pap_hd/model/examPending.dart';
+import 'package:provider/provider.dart';
 
 class InfoReExamPending extends StatefulWidget {
    final int idPhieuTaiKham;  
   final String username;
+  final String tenChuongTrinh;
+  // final String maChuongTrinh;
+  // final String maPhieu;
+  final List<Map<String, dynamic>> reExamData;
 
-  const InfoReExamPending({super.key, required this.idPhieuTaiKham, required this.username});  
+  const InfoReExamPending({super.key, required this.idPhieuTaiKham, required this.username, required this.reExamData, required this.tenChuongTrinh});  
   @override
   State<InfoReExamPending> createState() => _InfoReExamPendingState();
 }
@@ -22,11 +28,18 @@ class _InfoReExamPendingState extends State<InfoReExamPending> {
   @override
 void initState() {
     super.initState();
+    
     print("Id Phiếu tái khám : ${widget.idPhieuTaiKham} và username: ${widget.username}");
+    
+     print("reExamData : ${widget.reExamData}");
 }
+
+
+
 
   @override
   Widget build(BuildContext context) {
+    //final examInfo = Provider.of<ExaminationInfoProvider>(context).examInfo; 
     return Scaffold(
       body: Stack(
         children: [
@@ -41,7 +54,7 @@ void initState() {
           ),
           Column(
             children: [
-              TitleReExam(), // Phần title không cuộn
+              TitleReExam(tenChuongTrinh: widget.tenChuongTrinh,), // Phần title không cuộn
               Expanded(
                 child: SingleChildScrollView(
                   // Phần cuộn cho nội dung dưới title
@@ -66,8 +79,8 @@ void initState() {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavBarReExam(),
+      bottomNavigationBar: BottomNavBarReExam(tenChuongTrinh: widget.tenChuongTrinh,),
     );
-  }
+  } 
   
 }

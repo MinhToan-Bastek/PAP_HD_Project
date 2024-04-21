@@ -261,6 +261,9 @@ void _onSupportiveMedicineBoxQuantityChanged() {
                         controller.text =
                             DateFormat('MM/dd/yyyy').format(selectedDate);
                         Navigator.pop(context); // Close the modal bottom sheet
+                        //Correctly format the date to "day/month/year"
+                      // controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+                      // Navigator.pop(context); // Close the modal bottom sheet
                       },
                       onPageChanged: (focusedDay) {
                         // No need to call setState() here

@@ -59,6 +59,7 @@ class _ListReExamState extends State<ListReExam> {
         maChuongTrinh: widget.patientDetail['MaChuongTrinh'],
         maBenhNhan: widget.patientDetail['MaBenhNhan'],
       );
+       print("API Data Received: $result");
       setState(() {
         _allReExams = result
             .map((item) => {
@@ -67,9 +68,12 @@ class _ListReExamState extends State<ListReExam> {
                   "appointmentDate": item['NgayHenTaiKham'],
                   "idPhieuTaiKham": item['IdPhieuTaiKham'],
                   "tinhTrang": item['TinhTrang'],
+                  // "maPhieu": item['MaPhieu'],
+                  // "maChuongTrinh": item['MaChuongTrinh'] ?? 'unknown',
                 })
             .toList();
         reExams = List.from(_allReExams);
+         print("Mapped Exams: $reExams"); 
       });
     } catch (e) {
       print("Failed to fetch re-exam data: $e");
@@ -126,8 +130,11 @@ class _ListReExamState extends State<ListReExam> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => InfoReExamPending(
+                                    tenChuongTrinh: widget.tenChuongTrinh,
                                      idPhieuTaiKham: int.parse(exam['idPhieuTaiKham']),
-                                    username: widget.username,
+                                    username: widget.username, reExamData: _allReExams,
+                                    // maChuongTrinh: exam["MaChuongTrinh"],
+                                    // maPhieu: exam["MaPhieu"],
                                   ),
                                 ),
                               );

@@ -1,18 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:pap_hd/model/checkbox_createADR.dart';
+import 'package:pap_hd/model/documentImages_provider.dart';
+import 'package:pap_hd/services/api_service.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarReExamBody extends StatefulWidget {
     final ValueChanged<bool> onToggle;
+      final Map<String, dynamic> examInfo;
+      
 
-  CalendarReExamBody({required this.onToggle});
+  CalendarReExamBody(
+    {Key? key, required this.onToggle, required this.examInfo})
+      : super(key: key);
   @override
-  _CalendarReExamBodyState createState() => _CalendarReExamBodyState();
+  CalendarReExamBodyState createState() => CalendarReExamBodyState();
 }
 
-class _CalendarReExamBodyState extends State<CalendarReExamBody> {
+class CalendarReExamBodyState extends State<CalendarReExamBody> {
+   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _cccdController = TextEditingController();
   final TextEditingController _joiningDateController = TextEditingController();
   final TextEditingController _appointmentDateController =
       TextEditingController();
@@ -20,115 +31,234 @@ class _CalendarReExamBodyState extends State<CalendarReExamBody> {
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
   bool _isReminderOn = false;
 
-  @override
+   @override
+  void initState() {
+    super.initState();
+    // Initialize all controllers with data from examInfo
+    _nameController.text = widget.examInfo['tenBenhNhan'] ?? '';
+    _cccdController.text = widget.examInfo['cccd'] ?? '';
+    _joiningDateController.text = widget.examInfo['ngayKham'] ?? '';
+    _appointmentDateController.text = widget.examInfo['ngayHenTaiKham'] ?? '';
+  }
+
+ @override
   void dispose() {
+    _nameController.dispose();
+    _cccdController.dispose();
     _joiningDateController.dispose();
     _appointmentDateController.dispose();
     super.dispose();
   }
 
-  // Future<void> _selectDate(
-  //     BuildContext context, TextEditingController controller) async {
-  //   final DateTime? pickedDate = await showDatePicker(
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(1900),
-  //     lastDate: DateTime(2101),
-  //   );
-  //   if (pickedDate != null) {
-  //     setState(() {
-  //       controller.text = _dateFormat.format(pickedDate);
-  //     });
-  //   }
-  // }
-  void _selectDate(
-      BuildContext context, TextEditingController controller) async {
-    DateTime selectedDate = DateTime.now();
+  void createAlertExamination() async {
+    // Lấy dữ liệu từ Provider hoặc từ nguồn dữ liệu khác
+    final documentsData =
+        Provider.of<DocumentsDataCreateADR>(context, listen: false);
+    final documentImagesProvider =
+        Provider.of<DocumentImagesProvider>(context, listen: false);
+    List<XFile?> documentImages = documentImagesProvider.documentImages;
 
-    // showModalBottomSheet returns a Future that completes when the bottom sheet is closed.
-    await showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setModalState) {
-              return Container(
-                height: MediaQuery.of(context).size.height / 2,
-                child: Column(
-                  children: [
-                    TableCalendar(
-                       locale: 'vi_VN',
-                      //rowHeight: 40,
-                      headerStyle: HeaderStyle(
-                          formatButtonVisible: false, titleCentered: true),
-                      firstDay: DateTime.utc(2010, 10, 16),
-                      lastDay: DateTime.utc(2030, 3, 14),
-                      focusedDay: DateTime.now(),
-                      currentDay: DateTime.now(),
-                      selectedDayPredicate: (day) {
-                        return isSameDay(selectedDate, day);
+    // Tạo Map chứa dữ liệu tái khám
+    final Map<String, dynamic> createAlertExamData = {
+      "MaChuongTrinh": widget.examInfo['maChuongTrinh'],
+      "MaPhieu": widget.examInfo['maPhieu'],  
+
+      "NgayNhacLich": _rememberDateController.text.trim(),  
+
+       "Check_ADR": documentsData.checkedItems['ADR']! ? "1" : "0",
+      "Check_ContactLog":
+          documentsData.checkedItems['Contact log']! ? "1" : "0",
+   
+      "Username": widget.examInfo['username'],
+      
+    };
+
+    // Thực hiện việc gửi dữ liệu cập nhật
+    try {
+      await ApiService().createAlertExamination(createAlertExamData, documentImages);
+      Provider.of<DocumentsDataCreateADR>(context, listen: false).reset();
+      Provider.of<DocumentImagesProvider>(context, listen: false).reset();
+      Navigator.pop(context);
+    } catch (e) {
+      // Hiển thị thông báo lỗi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi khi cập nhật thông tin tái khám: $e')),
+      );
+    }
+  }
+  void _selectDate(BuildContext context, TextEditingController controller) async {
+  DateTime selectedDate = DateTime.now();
+
+  // showModalBottomSheet returns a Future that completes when the bottom sheet is closed.
+  await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Container(
+              height: MediaQuery.of(context).size.height / 2,
+              child: Column(
+                children: [
+                  TableCalendar(
+                    locale: 'vi_VN', // Ensure locale is set for proper localization
+                    headerStyle: HeaderStyle(
+                      formatButtonVisible: false, 
+                      titleCentered: true
+                    ),
+                    firstDay: DateTime.utc(2010, 10, 16),
+                    lastDay: DateTime.utc(2030, 3, 14),
+                    focusedDay: DateTime.now(),
+                    currentDay: DateTime.now(),
+                    selectedDayPredicate: (day) {
+                      return isSameDay(selectedDate, day);
+                    },
+                    calendarBuilders: CalendarBuilders(
+                      dowBuilder: (context, day) {
+                        if (day.weekday == DateTime.sunday) {
+                          return Center(
+                            child: Text(
+                              'Chủ nhật',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          );
+                        }
                       },
-                      calendarBuilders: CalendarBuilders(
-                        dowBuilder: (context, day) {
-                          if (day.weekday == DateTime.sunday) {
-                            return Center(
-                              child: Text(
-                                'Ch nhật',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            );
-                          }
-                        },
-                        defaultBuilder: (context, day, focusedDay) {
-                          if (day.weekday == DateTime.sunday) {
-                            // Đối với các ngày Chủ nhật
-                            return Center(
-                              child: Text(
-                                DateFormat('d').format(day),
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            );
-                          } else {
-                            // Đối với các ngày khác trong tuần
-                            return Center(
-                              child: Text(
-                                DateFormat('d').format(day),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setModalState(() {
-                          selectedDate = selectedDay;
-                          //focusedDay = focusedDay;
-                        });
-                        // Directly set the date and close the modal when a day is selected
+                      defaultBuilder: (context, day, focusedDay) {
+                        if (day.weekday == DateTime.sunday) {
+                          return Center(
+                            child: Text(
+                              DateFormat('d').format(day),
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          );
+                        } else {
+                          return Center(
+                            child: Text(
+                              DateFormat('d').format(day),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setModalState(() {
+                        selectedDate = selectedDay;
+                      });
+                      // // Correctly format the date to "day/month/year"
+                      // controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+                      // Navigator.pop(context); // Close the modal bottom sheet
                         controller.text =
                             DateFormat('MM/dd/yyyy').format(selectedDate);
-                        Navigator.pop(context); // Close the modal bottom sheet
-                      },
-                      onPageChanged: (focusedDay) {
-                        // No need to call setState() here
-                      },
-                      calendarStyle: CalendarStyle(
-                        weekendTextStyle: TextStyle(color: Colors.red),
-                        selectedDecoration: BoxDecoration(
-                          color: Colors.teal,
-                          shape: BoxShape.circle,
-                        ),
-                        todayDecoration: BoxDecoration(
-                          color: Colors.teal,
-                          shape: BoxShape.circle,
-                        ),
+                        Navigator.pop(context);
+                    },
+                    calendarStyle: CalendarStyle(
+                      weekendTextStyle: TextStyle(color: Colors.red),
+                      selectedDecoration: BoxDecoration(
+                        color: Colors.teal,
+                        shape: BoxShape.circle,
+                      ),
+                      todayDecoration: BoxDecoration(
+                        color: Colors.teal,
+                        shape: BoxShape.circle,
                       ),
                     ),
-                  ],
-                ),
-              );
-            },
-          );
-        });
-  }
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      });
+}
+
+  // void _selectDate(
+  //     BuildContext context, TextEditingController controller) async {
+  //   DateTime selectedDate = DateTime.now();
+
+  //   // showModalBottomSheet returns a Future that completes when the bottom sheet is closed.
+  //   await showModalBottomSheet(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return StatefulBuilder(
+  //           builder: (BuildContext context, StateSetter setModalState) {
+  //             return Container(
+  //               height: MediaQuery.of(context).size.height / 2,
+  //               child: Column(
+  //                 children: [
+  //                   TableCalendar(
+  //                      locale: 'vi_VN',
+  //                     //rowHeight: 40,
+  //                     headerStyle: HeaderStyle(
+  //                         formatButtonVisible: false, titleCentered: true),
+  //                     firstDay: DateTime.utc(2010, 10, 16),
+  //                     lastDay: DateTime.utc(2030, 3, 14),
+  //                     focusedDay: DateTime.now(),
+  //                     currentDay: DateTime.now(),
+  //                     selectedDayPredicate: (day) {
+  //                       return isSameDay(selectedDate, day);
+  //                     },
+  //                     calendarBuilders: CalendarBuilders(
+  //                       dowBuilder: (context, day) {
+  //                         if (day.weekday == DateTime.sunday) {
+  //                           return Center(
+  //                             child: Text(
+  //                               'Ch nhật',
+  //                               style: TextStyle(color: Colors.red),
+  //                             ),
+  //                           );
+  //                         }
+  //                       },
+  //                       defaultBuilder: (context, day, focusedDay) {
+  //                         if (day.weekday == DateTime.sunday) {
+  //                           // Đối với các ngày Chủ nhật
+  //                           return Center(
+  //                             child: Text(
+  //                               DateFormat('d').format(day),
+  //                               style: TextStyle(color: Colors.red),
+  //                             ),
+  //                           );
+  //                         } else {
+  //                           // Đối với các ngày khác trong tuần
+  //                           return Center(
+  //                             child: Text(
+  //                               DateFormat('d').format(day),
+  //                             ),
+  //                           );
+  //                         }
+  //                       },
+  //                     ),
+  //                     onDaySelected: (selectedDay, focusedDay) {
+  //                       setModalState(() {
+  //                         selectedDate = selectedDay;
+  //                         //focusedDay = focusedDay;
+  //                       });
+  //                       // Directly set the date and close the modal when a day is selected
+  //                       controller.text =
+  //                           DateFormat('MM/dd/yyyy').format(selectedDate);
+  //                       Navigator.pop(context); // Close the modal bottom sheet
+  //                     },
+  //                     onPageChanged: (focusedDay) {
+  //                       // No need to call setState() here
+  //                     },
+  //                     calendarStyle: CalendarStyle(
+  //                       weekendTextStyle: TextStyle(color: Colors.red),
+  //                       selectedDecoration: BoxDecoration(
+  //                         color: Colors.teal,
+  //                         shape: BoxShape.circle,
+  //                       ),
+  //                       todayDecoration: BoxDecoration(
+  //                         color: Colors.teal,
+  //                         shape: BoxShape.circle,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             );
+  //           },
+  //         );
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -137,11 +267,9 @@ class _CalendarReExamBodyState extends State<CalendarReExamBody> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTextField('Họ & tên', false),
-          SizedBox(
-            height: 5,
-          ),
-          _buildTextField('CCCD', false),
+          _buildTextField('Họ & tên',false, _nameController, ),
+          SizedBox(height: 5),
+          _buildTextField('CCCD',false, _cccdController),
           SizedBox(
             height: 5,
           ),
@@ -163,9 +291,11 @@ class _CalendarReExamBodyState extends State<CalendarReExamBody> {
       ),
     );
   }
+   
 
-  Widget _buildTextField(String label, bool isRequired) {
+  Widget _buildTextField(String label, bool isRequired,TextEditingController controller) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(
         label: RichText(
           text: TextSpan(

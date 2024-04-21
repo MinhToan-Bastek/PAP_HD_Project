@@ -6,6 +6,7 @@ import 'package:pap_hd/components/patient_registration/info_patientRegis.dart';
 import 'package:pap_hd/model/checkbox_provider.dart';
 import 'package:pap_hd/model/checkbox_updateReExam.dart';
 import 'package:pap_hd/model/documentImages_provider.dart';
+import 'package:pap_hd/model/examPending.dart';
 import 'package:pap_hd/services/api_service.dart';
 import 'package:provider/provider.dart';
 
@@ -58,64 +59,117 @@ class InfoReExamBodyPenState extends State<InfoReExamBodyPen> {
 
   void fetchExaminationInfo() async {
     try {
-      var apiResponse = await ApiService()
-          .getInforExaminationById(widget.username, widget.idPhieuTaiKham);
+      var apiResponse = await ApiService().getInforExaminationById(widget.username, widget.idPhieuTaiKham);
       if (apiResponse != null) {
-        // Định dạng ngày nhận được từ API
+        // Date formatting setup
         DateFormat inputFormat = DateFormat("M/d/yyyy hh:mm:ss a");
-        // Định dạng ngày để hiển thị
         DateFormat outputFormat = DateFormat("dd/MM/yyyy");
 
         DateTime ngayKham = inputFormat.parse(apiResponse['NgayKham']);
-        DateTime ngayHenTaiKham =
-            inputFormat.parse(apiResponse['NgayHenTaiKham']);
+        DateTime ngayHenTaiKham = inputFormat.parse(apiResponse['NgayHenTaiKham']);
 
+        // Prepare data to update in provider
+        var updatedInfo = {
+          'idPhieuTaiKham': widget.idPhieuTaiKham,
+          'username': widget.username,
+          'ngayKham': outputFormat.format(ngayKham),
+          'ngayHenTaiKham': outputFormat.format(ngayHenTaiKham),
+          'tenBenhNhan': apiResponse['TenBenhNhan'] ?? '',
+          'cccd': apiResponse['CCCD'] ?? '',
+           'maPhieu': apiResponse['MaPhieu'] ?? '',
+           'maChuongTrinh': apiResponse['MaChuongTrinh'] ?? '',
+          // Add other necessary pieces similarly
+        };
+
+        // Update provider
+        Provider.of<ExaminationInfoProvider>(context, listen: false).updateExamInfo(updatedInfo);
+
+        // Update UI elements
         setState(() {
           _nameController.text = apiResponse['TenBenhNhan'] ?? '';
           _cccdController.text = apiResponse['CCCD'] ?? '';
           _joiningDateController.text = outputFormat.format(ngayKham);
           _appointmentDateController.text = outputFormat.format(ngayHenTaiKham);
-          _medicineBoxController.text =
-              apiResponse['ThuocThuongMaiHamLuong'] ?? '';
-          _medicineBoxQuantityController.text =
-              (double.parse(apiResponse['ThuocThuongMaiSoLuong'].toString()))
-                  .toInt()
-                  .toString();
-          _supportiveMedicineBoxController.text =
-              apiResponse['ThuocHoTroHamLuong'] ?? '';
-          _supportiveMedicineBoxQuantityController.text =
-              (double.parse(apiResponse['ThuocHoTroSoLuong'].toString()))
-                  .toInt()
-                  .toString();
-
-          _emptyMedicineBoxController.text =
-              apiResponse['VoThuocRongHamLuong'] ?? '';
-          _emptyMedicineBoxQuantityController.text =
-              (double.parse(apiResponse['VoThuocRongSoLuong'].toString()))
-                  .toInt()
-                  .toString();
-
-          _returnedMedicineBoxController.text =
-              apiResponse['ThuocTraLaiHamLuong'] ?? '';
-          _returnedMedicineBoxQuantityController.text =
-              (double.parse(apiResponse['ThuocTraLaiSoLuong'].toString()))
-                  .toInt()
-                  .toString();
-
-          _lostMedicineBoxController.text =
-              apiResponse['ThuocThatLacHamLuong'] ?? '';
-          _lostMedicineBoxQuantityController.text =
-              (double.parse(apiResponse['ThuocThatLacSoLuong'].toString()))
-                  .toInt()
-                  .toString();
+          _medicineBoxController.text = apiResponse['ThuocThuongMaiHamLuong'] ?? '';
+          _medicineBoxQuantityController.text = (double.parse(apiResponse['ThuocThuongMaiSoLuong'].toString())).toInt().toString();
+          _supportiveMedicineBoxController.text = apiResponse['ThuocHoTroHamLuong'] ?? '';
+          _supportiveMedicineBoxQuantityController.text = (double.parse(apiResponse['ThuocHoTroSoLuong'].toString())).toInt().toString();
+          _emptyMedicineBoxController.text = apiResponse['VoThuocRongHamLuong'] ?? '';
+          _emptyMedicineBoxQuantityController.text = (double.parse(apiResponse['VoThuocRongSoLuong'].toString())).toInt().toString();
+          _returnedMedicineBoxController.text = apiResponse['ThuocTraLaiHamLuong'] ?? '';
+          _returnedMedicineBoxQuantityController.text = (double.parse(apiResponse['ThuocTraLaiSoLuong'].toString())).toInt().toString();
+          _lostMedicineBoxController.text = apiResponse['ThuocThatLacHamLuong'] ?? '';
+          _lostMedicineBoxQuantityController.text = (double.parse(apiResponse['ThuocThatLacSoLuong'].toString())).toInt().toString();
         });
       }
     } catch (e) {
       print("Không thể lấy thông tin khám: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi khi lấy thông tin khám: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi khi lấy thông tin khám: $e')));
     }
-  }
+}
+
+
+  // void fetchExaminationInfo() async {
+  //   try {
+  //     var apiResponse = await ApiService()
+  //         .getInforExaminationById(widget.username, widget.idPhieuTaiKham);
+  //     if (apiResponse != null) {
+       
+  //       // Định dạng ngày nhận được từ API
+  //       DateFormat inputFormat = DateFormat("M/d/yyyy hh:mm:ss a");
+  //       // Định dạng ngày để hiển thị
+  //       DateFormat outputFormat = DateFormat("dd/MM/yyyy");
+
+  //       DateTime ngayKham = inputFormat.parse(apiResponse['NgayKham']);
+  //       DateTime ngayHenTaiKham =
+  //           inputFormat.parse(apiResponse['NgayHenTaiKham']);
+
+  //       setState(() {
+  //         _nameController.text = apiResponse['TenBenhNhan'] ?? '';
+  //         _cccdController.text = apiResponse['CCCD'] ?? '';
+  //         _joiningDateController.text = outputFormat.format(ngayKham);
+  //         _appointmentDateController.text = outputFormat.format(ngayHenTaiKham);
+  //         _medicineBoxController.text =
+  //             apiResponse['ThuocThuongMaiHamLuong'] ?? '';
+  //         _medicineBoxQuantityController.text =
+  //             (double.parse(apiResponse['ThuocThuongMaiSoLuong'].toString()))
+  //                 .toInt()
+  //                 .toString();
+  //         _supportiveMedicineBoxController.text =
+  //             apiResponse['ThuocHoTroHamLuong'] ?? '';
+  //         _supportiveMedicineBoxQuantityController.text =
+  //             (double.parse(apiResponse['ThuocHoTroSoLuong'].toString()))
+  //                 .toInt()
+  //                 .toString();
+
+  //         _emptyMedicineBoxController.text =
+  //             apiResponse['VoThuocRongHamLuong'] ?? '';
+  //         _emptyMedicineBoxQuantityController.text =
+  //             (double.parse(apiResponse['VoThuocRongSoLuong'].toString()))
+  //                 .toInt()
+  //                 .toString();
+
+  //         _returnedMedicineBoxController.text =
+  //             apiResponse['ThuocTraLaiHamLuong'] ?? '';
+  //         _returnedMedicineBoxQuantityController.text =
+  //             (double.parse(apiResponse['ThuocTraLaiSoLuong'].toString()))
+  //                 .toInt()
+  //                 .toString();
+
+  //         _lostMedicineBoxController.text =
+  //             apiResponse['ThuocThatLacHamLuong'] ?? '';
+  //         _lostMedicineBoxQuantityController.text =
+  //             (double.parse(apiResponse['ThuocThatLacSoLuong'].toString()))
+  //                 .toInt()
+  //                 .toString();
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print("Không thể lấy thông tin khám: $e");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Lỗi khi lấy thông tin khám: $e')));
+  //   }
+  // }
 
 // void fetchExaminationInfo() async {
 //     try {

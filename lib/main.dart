@@ -132,6 +132,7 @@ import 'package:pap_hd/model/checkbox_createADR.dart';
 import 'package:pap_hd/model/checkbox_provider.dart';
 import 'package:pap_hd/model/checkbox_updateReExam.dart';
 import 'package:pap_hd/model/documentImages_provider.dart';
+import 'package:pap_hd/model/examPending.dart';
 import 'package:pap_hd/model/img_provider.dart';
 import 'package:pap_hd/notifications/NotificationService.dart';
 import 'package:pap_hd/notifications/flushBar.dart';
@@ -238,6 +239,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => DocumentImagesProvider()), 
         ChangeNotifierProvider(create: (context) => DocumentsDataUpdate()),
         ChangeNotifierProvider(create: (context) => DocumentsDataCreateADR()),  
+        ChangeNotifierProvider(create: (context) => ExaminationInfoProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

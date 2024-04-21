@@ -87,20 +87,20 @@ class CustomBottomNavBarRegist extends StatelessWidget {
           ),
           label: 'Trang chủ',
         ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/bottomNavBar/icon_scan.svg',
-            height: 30,
-          ),
-          label: 'Chụp tài liệu',
-        ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/bottomNavBar/icon_image.svg',
-            height: 30,
-          ),
-          label: 'Chọn từ thư viện',
-        ),
+        // BottomNavigationBarItem(
+        //   icon: SvgPicture.asset(
+        //     'assets/bottomNavBar/icon_scan.svg',
+        //     height: 30,
+        //   ),
+        //   label: 'Chụp tài liệu',
+        // ),
+        // BottomNavigationBarItem(
+        //   icon: SvgPicture.asset(
+        //     'assets/bottomNavBar/icon_image.svg',
+        //     height: 30,
+        //   ),
+        //   label: 'Chọn từ thư viện',
+        // ),
         BottomNavigationBarItem(
           
           icon: SvgPicture.asset(
@@ -123,13 +123,8 @@ class CustomBottomNavBarRegist extends StatelessWidget {
             //   MaterialPageRoute(builder: (context) => HomeScreen()),
             // );
             // break;
+        
           case 1:
-            getImageFromCamera(context);
-            break;
-          case 2:
-            getImageFromGallery(context);
-            break;
-          case 3:
          onSavePressed();
             break;
         }
